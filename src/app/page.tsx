@@ -272,13 +272,16 @@ export default async function LandingPage() {
             <PricingCard
               name="Grátis"
               price="R$ 0"
-              period="/mês"
+              period=""
               description="Para conhecer a Luna."
               features={[
-                '5 análises por mês',
-                'Upload de PDF',
+                '50 mensagens (total)',
+                '5 análises de documento',
+                '2 gerações de PDF',
+                'Até 5 documentos',
+                'Upload de PDF e Word',
                 'Score de risco',
-                'Painel web básico',
+                'Interação por voz',
               ]}
               cta="Começar Grátis"
               ctaHref="/register"
@@ -291,11 +294,13 @@ export default async function LandingPage() {
               period="/mês"
               description="Para profissionais e escritórios."
               features={[
-                'Análises ilimitadas',
-                'Geração de contratos',
-                'Interação por voz',
-                'Exportação em PDF',
+                '100 mensagens por dia',
+                '20 análises por dia',
+                '10 gerações de PDF/dia',
+                'Até 500 documentos',
                 'OCR de imagens',
+                'Interação por voz',
+                'Exportação avançada',
                 'Suporte prioritário',
               ]}
               cta="Assinar Pro"
@@ -309,7 +314,7 @@ export default async function LandingPage() {
               period=""
               description="Para empresas e times jurídicos."
               features={[
-                'Tudo do Pro',
+                'Uso ilimitado',
                 'Multi-usuários',
                 'API dedicada',
                 'SLA garantido',
