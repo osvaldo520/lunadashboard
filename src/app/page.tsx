@@ -25,27 +25,28 @@ export default async function LandingPage() {
           NAVBAR
       ═══════════════════════════════════════ */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#06070a]/80 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center font-bold text-sm">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center font-bold text-sm">
               E
             </div>
-            <span className="text-lg font-bold tracking-tight">Entrelinhas</span>
+            <span className="text-base sm:text-lg font-bold tracking-tight">Entrelinhas</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8 text-sm text-slate-400">
+          {/* Oculta em tablet pequeno e celular, mostra só em PC (lg) */}
+          <div className="hidden lg:flex items-center gap-8 text-sm text-slate-400">
             <a href="#recursos" className="hover:text-white transition-colors">Recursos</a>
             <a href="#como-funciona" className="hover:text-white transition-colors">Como Funciona</a>
             <a href="#precos" className="hover:text-white transition-colors">Preços</a>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="text-sm text-slate-400 hover:text-white transition-colors px-3 py-2">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link href="/login" className="hidden sm:block text-sm text-slate-400 hover:text-white transition-colors px-3 py-2">
               Entrar
             </Link>
             <Link 
               href="/register"
-              className="text-sm font-medium bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition-all hover:shadow-lg hover:shadow-indigo-500/25"
+              className="text-xs sm:text-sm font-medium bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-all hover:shadow-lg hover:shadow-indigo-500/25"
             >
               Comece Grátis
             </Link>
