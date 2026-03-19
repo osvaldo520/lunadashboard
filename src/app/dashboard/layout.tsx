@@ -31,8 +31,9 @@ export default async function DashboardLayout({
       />
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
-        <div className="p-6 lg:p-10">
+      <main className="flex-1 overflow-y-auto relative w-full">
+        {/* Espaçamento extra no mobile (pt-24) para o Hamburger Menu flutuante não sobrepor os Títulos */}
+        <div className="p-6 pt-24 lg:p-10">
           {children}
         </div>
       </main>
