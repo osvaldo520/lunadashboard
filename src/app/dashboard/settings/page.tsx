@@ -89,6 +89,11 @@ export default function SettingsPage() {
         </p>
       </div>
 
+      {/* Telegram Linking (Magic Code) Section - Moved to top for better Onboarding UX */}
+      <div id="telegram-link">
+        <TelegramLinkCard profile={profile!} supabase={supabase} onUpdate={loadProfile} />
+      </div>
+
       {/* Profile Section */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 space-y-5">
         <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
@@ -187,9 +192,6 @@ export default function SettingsPage() {
           </button>
         </div>
       </div>
-
-      {/* Telegram Linking (Magic Code) Section */}
-      <TelegramLinkCard profile={profile!} supabase={supabase} onUpdate={loadProfile} />
 
       {/* Plan info */}
       <div className="rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-6">

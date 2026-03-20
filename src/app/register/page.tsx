@@ -11,6 +11,7 @@ export default function RegisterPage() {
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -22,10 +23,17 @@ export default function RegisterPage() {
     setError('');
     setLoading(true);
 
-    // Validação de Senha Forte
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+    // Validação de Senha Forte (Mínimo 8 caracteres, 1 maiúscula, 1 minúscula, 1 número e 1 símbolo)
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}[\];:,.?~-]).{8,}$/;
+    
+    if (password !== confirmPassword) {
+      setError('As senhas não coincidem.');
+      setLoading(false);
+      return;
+    }
+
     if (!passwordRegex.test(password)) {
-      setError('A senha deve ter no mínimo 8 caracteres, contendo pelo menos 1 letra maiúscula, 1 minúscula e 1 número.');
+      setError('A senha não atende a todos os requisitos de segurança.');
       setLoading(false);
       return;
     }
@@ -124,13 +132,13 @@ export default function RegisterPage() {
               <div className="relative">
                 <input
                   id="whatsapp"
-                  type="dropdown"
+                  type="tel"
                   value={whatsapp}
                   onChange={(e) => setWhatsapp(e.target.value.replace(/\D/g, ''))} // Limita a apenas números
                   placeholder="11999999999"
                   maxLength={11}
                   required
-                  className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-2.5 pr-12 text-white placeholder-slate-500 
+                  className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-2.5 pr-12 text-white placeholder:text-slate-600 
                     focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200"
                 />
                 <Phone className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-500/50" />
@@ -148,10 +156,9 @@ export default function RegisterPage() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Maiúscula, minúscula e número (Mín. 8)"
+                  placeholder="Sua senha segura"
                   required
-                  minLength={8}
-                  className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-2.5 pr-12 text-white placeholder-slate-500 
+                  className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-2.5 pr-12 text-white placeholder:text-slate-600 
                     focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200"
                 />
                 <button
@@ -162,6 +169,61 @@ export default function RegisterPage() {
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
+              </div>
+
+              {/* Regras da Senha */}
+              <div className="mt-2 space-y-1.5 p-3 rounded-lg bg-slate-950/50 border border-slate-800/50">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Requisitos da Senha:</p>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                  <div className={`flex items-center gap-1.5 text-[11px] ${password.length >= 8 ? 'text-emerald-400' : 'text-slate-500'}`}>
+                    <div className={`w-1 h-1 rounded-full ${password.length >= 8 ? 'bg-emerald-400' : 'bg-slate-600'}`} />
+                    Mín. 8 caracteres
+                  </div>
+                  <div className={`flex items-center gap-1.5 text-[11px] ${/[A-Z]/.test(password) ? 'text-emerald-400' : 'text-slate-500'}`}>
+                    <div className={`w-1 h-1 rounded-full ${/[A-Z]/.test(password) ? 'bg-emerald-400' : 'bg-slate-600'}`} />
+                    1 Letra Maiúscula
+                  </div>
+                  <div className={`flex items-center gap-1.5 text-[11px] ${/[a-z]/.test(password) ? 'text-emerald-400' : 'text-slate-500'}`}>
+                    <div className={`w-1 h-1 rounded-full ${/[a-z]/.test(password) ? 'bg-emerald-400' : 'bg-slate-600'}`} />
+                    1 Letra Minúscula
+                  </div>
+                  <div className={`flex items-center gap-1.5 text-[11px] ${/\d/.test(password) ? 'text-emerald-400' : 'text-slate-500'}`}>
+                    <div className={`w-1 h-1 rounded-full ${/\d/.test(password) ? 'bg-emerald-400' : 'bg-slate-600'}`} />
+                    1 Número
+                  </div>
+                  <div className={`flex items-center gap-1.5 text-[11px] ${/[!@#$%^&*()_+{}[\];:,.?~-]/.test(password) ? 'text-emerald-400' : 'text-slate-500'}`}>
+                    <div className={`w-1 h-1 rounded-full ${/[!@#$%^&*()_+{}[\];:,.?~-]/.test(password) ? 'bg-emerald-400' : 'bg-slate-600'}`} />
+                    1 Símbolo (!@#...)
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Confirm Password */}
+            <div className="space-y-1.5">
+              <label htmlFor="confirm-password" className="text-sm font-medium text-slate-300">
+                Confirmar Senha
+              </label>
+              <div className="relative">
+                <input
+                  id="confirm-password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Repita sua senha"
+                  required
+                  className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-2.5 pr-12 text-white placeholder:text-slate-600 
+                    focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200"
+                />
+                {confirmPassword && (
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                    {password === confirmPassword ? (
+                      <span className="text-emerald-500 text-xs font-bold">Coincide</span>
+                    ) : (
+                      <span className="text-red-500 text-xs font-bold">Diferente</span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
