@@ -26,22 +26,23 @@ export function AnalyzeButton({ documentId, status }: AnalyzeButtonProps) {
   };
 
   const isAnalyzing = status === 'analyzing';
-  const isFirstAnalysis = status === 'uploaded' || status === 'pending';
+  const isPendingQueue = status === 'pending';
+  const isFirstAnalysis = status === 'uploaded';
   const isRetry = status === 'error' || status === 'completed';
 
   return (
     <button
       onClick={handleAnalyze}
-      disabled={isPending || isAnalyzing}
+      disabled={isPending || isAnalyzing || isPendingQueue}
       className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-        isPending || isAnalyzing
+        isPending || isAnalyzing || isPendingQueue
           ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
           : isRetry 
             ? 'bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
             : 'bg-indigo-600 hover:bg-indigo-500 text-white border border-indigo-500'
       }`}
     >
-      {isPending || isAnalyzing ? (
+      {isPending || isAnalyzing || isPendingQueue ? (
         <RotateCw className="h-4 w-4 animate-spin text-indigo-400" />
       ) : isRetry ? (
         <RotateCw className="h-4 w-4" />
@@ -49,7 +50,7 @@ export function AnalyzeButton({ documentId, status }: AnalyzeButtonProps) {
         <Play className="h-4 w-4" />
       )}
       
-      {isPending 
+      {isPending || isPendingQueue
         ? 'Aguarde...' 
         : isAnalyzing 
           ? 'Analisando...' 
