@@ -71,8 +71,8 @@ export function DocumentsTable({ documents: initialDocuments }: DocumentsTablePr
   }
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/50 overflow-hidden">
-      <table className="w-full">
+    <div className="rounded-2xl border border-slate-800 bg-slate-900/50 overflow-x-auto w-full">
+      <table className="w-full min-w-[750px]">
         <thead>
           <tr className="border-b border-slate-800">
             <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Título</th>

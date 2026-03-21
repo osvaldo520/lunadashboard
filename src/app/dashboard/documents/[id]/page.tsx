@@ -57,12 +57,12 @@ export default async function DocumentDetailsPage({
           <ArrowLeft className="h-4 w-4" />
           Voltar para Documentos
         </Link>
-        <div className="flex items-start justify-between">
-          <div>
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+          <div className="w-full md:w-auto">
             <h1 className="text-2xl font-bold tracking-tight text-white mb-2">
               {doc.title}
             </h1>
-            <div className="flex items-center gap-4 text-sm text-slate-400">
+            <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-sm text-slate-400">
               {fileUrl ? (
                 <DocumentPreviewModal fileUrl={fileUrl} docType={doc.doc_type} filePath={doc.file_path} />
               ) : (
@@ -79,14 +79,14 @@ export default async function DocumentDetailsPage({
             </div>
           </div>
           
-          <div className="flex flex-col items-end justify-start gap-4">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col items-start md:items-end justify-start gap-4 w-full md:w-auto">
+            <div className="flex flex-wrap items-center gap-2">
               <AnalyzeButton documentId={doc.id} status={doc.status} />
               <DeleteButton documentId={doc.id} documentTitle={doc.title} />
             </div>
             
             {doc.risk_score != null && (
-              <div className="text-right">
+              <div className="text-left md:text-right mt-2 md:mt-0">
                 <div className="text-sm font-medium text-slate-400 mb-1">Score de Risco</div>
                 <RiskBadge score={doc.risk_score} />
               </div>
@@ -98,14 +98,14 @@ export default async function DocumentDetailsPage({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content (Analysis Summary) */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 md:p-8">
-            <div className="flex items-center justify-between mb-6">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-4 sm:p-6 md:p-8">
+            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-6">
               <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-indigo-400" />
                 Resumo da Análise
               </h2>
               {doc.analysis_summary && (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2 w-full xl:w-auto">
                   <ExportDocumentButton 
                     documentId={doc.id}
                     format="pdf"
