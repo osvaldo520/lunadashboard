@@ -28,24 +28,22 @@ export function AnalyzeButton({ documentId, status }: AnalyzeButtonProps) {
 
   const isAnalyzing = status === 'analyzing';
   const isFirstAnalysis = status === 'uploaded' || status === 'pending';
-  const isRetry = status === 'error' || status === 'completed' || status === 'analyzing';
+  const isRetry = status === 'error' || status === 'completed';
 
   return (
     <button
       onClick={handleAnalyze}
-      disabled={isPending}
-      title={isAnalyzing ? "Forçar reinício da análise caso esteja travada" : ""}
+      disabled={isPending || isAnalyzing}
+      title={isAnalyzing ? "A inteligência artificial está lendo seu documento. Isso pode levar alguns segundos..." : ""}
       className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-        isPending
+        isPending || isAnalyzing
           ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
-          : isAnalyzing
-            ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/30'
-            : isRetry 
-              ? 'bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
-              : 'bg-indigo-600 hover:bg-indigo-500 text-white border border-indigo-500'
+          : isRetry 
+            ? 'bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
+            : 'bg-indigo-600 hover:bg-indigo-500 text-white border border-indigo-500'
       }`}
     >
-      {isPending ? (
+      {isPending || isAnalyzing ? (
         <RotateCw className="h-4 w-4 animate-spin text-indigo-400" />
       ) : isRetry ? (
         <RotateCw className="h-4 w-4" />
@@ -54,14 +52,14 @@ export function AnalyzeButton({ documentId, status }: AnalyzeButtonProps) {
       )}
       
       {isPending 
-        ? 'Iniciando...' 
+        ? 'Aguarde...' 
         : isAnalyzing 
-          ? 'Forçar Reinício (Travado?)' 
+          ? 'Analisando...' 
           : isFirstAnalysis
             ? 'Analisar'
             : isRetry 
               ? 'Analisar Novamente'
-              : 'Analisar Agora'}
+              : 'Analisar'}
     </button>
   );
 }
