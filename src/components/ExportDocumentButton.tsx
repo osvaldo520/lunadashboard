@@ -53,14 +53,8 @@ export function ExportDocumentButton({ documentId, format, contentType, label }:
               // Finaliza WebSocket
               supabase.removeChannel(channel);
               
-              // Dispara Download
-              const link = document.createElement('a');
-              link.href = payload.new.file_url;
-              link.target = '_blank';
-              link.download = '';
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
+              // Dispara Download na MESMA ABA (Navegação Top-Level Burla Anti-Popups 100%)
+              window.location.assign(payload.new.file_url);
               
               setLoading(false);
               setSuccess(true);
