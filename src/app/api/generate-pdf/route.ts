@@ -4,8 +4,9 @@ import { NextRequest, NextResponse } from 'next/server';
  * API Route: /api/generate-pdf
  * 
  * Converte Markdown → PDF usando o serviço externo md-to-pdf.fly.dev
- * Roda no servidor Next.js (não no browser) para evitar CORS.
- * Leve: só faz proxy da conversão, sem Puppeteer ou RAM pesada.
+ * Como o painel Next.js roda na Vercel, ele não tem acesso ao Puppeteer local da VPS do bot.
+ * Portanto, ele delega a transformação para este microserviço em nuvem,
+ * enviando os atributos de CSS Premium para que o resultado fique idêntico ao do bot.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -17,45 +18,20 @@ export async function POST(req: NextRequest) {
 
     const pdfServiceUrl = process.env.PDF_SERVICE_URL || 'https://md-to-pdf.fly.dev';
 
-    // ═══════════════════════════════════════════
-    // PRÉ-PROCESSAMENTO: Converte emojis populares em marcadores de texto profissionais
-    // O serviço md-to-pdf roda em container Linux sem fontes emoji instaladas.
-    // ═══════════════════════════════════════════
-    const emojiMap: Record<string, string> = {
-      '⚠️': '[ATENÇÃO]', '⚡': '[!]', '🔴': '[CRÍTICO]', '🟡': '[MODERADO]', '🟢': '[OK]',
-      '✅': '[✓]', '❌': '[✗]', '⭐': '[★]', '🔥': '[!]', '💡': '[DICA]',
-      '📋': '[DOC]', '📄': '[DOC]', '📊': '[ANÁLISE]', '📈': '[GRÁFICO]', '📌': '[PONTO]',
-      '🔒': '[SEGURANÇA]', '🔓': '[DESBLOQUEADO]', '🛡️': '[PROTEÇÃO]', '⚖️': '[JURÍDICO]',
-      '👤': '[PARTE]', '👥': '[PARTES]', '🏢': '[EMPRESA]', '🏠': '[IMÓVEL]',
-      '💰': '[VALOR]', '💵': '[R$]', '💳': '[PAGAMENTO]', '📅': '[DATA]', '⏰': '[PRAZO]',
-      '🔗': '[LINK]', '📝': '[NOTA]', '📎': '[ANEXO]', '🗂️': '[SEÇÃO]',
-      '🎯': '[OBJETIVO]', '🚨': '[ALERTA]', '💼': '[CONTRATO]', '🔍': '[DETALHE]',
-      '✨': '[DESTAQUE]', '❗': '[!]', '❓': '[?]', '➡️': '→', '⬆️': '↑', '⬇️': '↓',
-      '1️⃣': '1.', '2️⃣': '2.', '3️⃣': '3.', '4️⃣': '4.', '5️⃣': '5.',
-      '6️⃣': '6.', '7️⃣': '7.', '8️⃣': '8.', '9️⃣': '9.', '🔟': '10.',
-      '📢': '[AVISO]', '🏆': '[DESTAQUE]', '💬': '[OBS]', '🧾': '[RECIBO]',
-      '🏷️': '[TAG]', '📜': '[CLÁUSULA]', '⚙️': '[CONFIG]', '🔑': '[CHAVE]',
-    };
-
-    let processedContent = content;
-    for (const [emoji, label] of Object.entries(emojiMap)) {
-      processedContent = processedContent.replaceAll(emoji, label);
-    }
-
-    // Remove quaisquer emojis restantes que não estão no mapa
-    // (range Unicode de emojis comuns)
-    processedContent = processedContent.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '');
-
-    // Prepara o body como form-urlencoded (formato do md-to-pdf)
+    // O serviço envia o texto intacto para renderizar com Emojis Nativos
     const params = new URLSearchParams();
-    params.append('markdown', processedContent);
+    params.append('markdown', content);
+    
+    // CSS Institucional Premium
     params.append('css', `
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Color+Emoji&display=swap');
+
       body { 
-        font-family: 'Segoe UI', 'Noto Sans', Tahoma, Geneva, Verdana, sans-serif; 
-        padding: 30px 40px; 
-        line-height: 1.7; 
-        color: #1a1a1a;
-        font-size: 13px;
+        font-family: 'Inter', 'Noto Color Emoji', sans-serif; 
+        padding: 40px 50px; 
+        line-height: 1.6; 
+        color: #334155;
+        font-size: 12px;
       }
       h1 { 
         color: #1e3a5f; 
@@ -75,19 +51,25 @@ export async function POST(req: NextRequest) {
       table { 
         border-collapse: collapse; 
         width: 100%; 
-        margin: 12px 0;
-        font-size: 12px;
+        margin: 24px 0;
+        font-size: 11px;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
       }
       th { 
-        background: #1e3a5f; 
-        color: white; 
-        padding: 8px 12px; 
+        background: #0f172a; 
+        color: #ffffff; 
+        padding: 12px 16px; 
         text-align: left; 
         font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
       }
       td { 
         border: 1px solid #e2e8f0; 
-        padding: 8px 12px; 
+        padding: 12px 16px; 
+        color: #1e293b;
       }
       tr:nth-child(even) { background: #f8fafc; }
       blockquote { 
@@ -107,17 +89,9 @@ export async function POST(req: NextRequest) {
       ul, ol { padding-left: 20px; }
       li { margin-bottom: 4px; }
       hr { border: none; border-top: 1px solid #e2e8f0; margin: 24px 0; }
-      @page { 
-        margin: 20mm 15mm; 
-        @bottom-center { 
-          content: "Entrelinhas — Análise Jurídica Inteligente"; 
-          font-size: 9px; 
-          color: #94a3b8; 
-        }
-      }
     `);
 
-    console.log(`[API /generate-pdf] Gerando PDF para: ${title || 'sem título'}`);
+    console.log(`[API /generate-pdf] Solicitando PDF Cloud externo para: ${title || 'sem título'}`);
 
     const response = await fetch(pdfServiceUrl, {
       method: 'POST',
@@ -126,13 +100,13 @@ export async function POST(req: NextRequest) {
     });
 
     if (!response.ok) {
-      throw new Error(`Serviço de PDF retornou status ${response.status}`);
+      const err = await response.text();
+      throw new Error(`Serviço de Nuvem (md-to-pdf) retornou status ${response.status}: ${err}`);
     }
 
     const pdfBuffer = await response.arrayBuffer();
 
-    const safeTitle = (title || 'documento')
-      .replace(/[^a-zA-Z0-9]/g, '_');
+    const safeTitle = (title || 'documento').replace(/[^a-zA-Z0-9]/g, '_');
 
     return new NextResponse(pdfBuffer, {
       status: 200,
@@ -144,7 +118,7 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     console.error('[API /generate-pdf] Error:', err.message);
     return NextResponse.json(
-      { error: err.message || 'Falha ao gerar PDF.' },
+      { error: err.message || 'Falha ao conectar no Motor de PDF Local.' },
       { status: 500 }
     );
   }
