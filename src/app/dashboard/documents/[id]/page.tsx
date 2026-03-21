@@ -8,6 +8,8 @@ import { ExportDocumentButton } from '@/components/ExportDocumentButton';
 import { RealtimeDocumentRefresher } from '@/components/RealtimeDocumentRefresher';
 import { AnalyzeButton } from '@/components/AnalyzeButton';
 import { DeleteButton } from '@/components/DeleteButton';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -125,15 +127,10 @@ export default async function DocumentDetailsPage({
             </div>
             
             {doc.analysis_summary ? (
-              <div className="prose prose-invert max-w-none prose-p:text-slate-300 prose-headings:text-white prose-a:text-indigo-400 prose-strong:text-white">
-                {/* Parse basic markdown from the LLM */}
-                {doc.analysis_summary.split('\n').map((line: string, i: number) => {
-                  if (line.startsWith('### ')) return <h3 key={i} className="text-lg font-bold mt-6 mb-3">{line.replace('### ', '')}</h3>;
-                  if (line.startsWith('## ')) return <h2 key={i} className="text-xl font-bold mt-8 mb-4 border-b border-slate-800 pb-2">{line.replace('## ', '')}</h2>;
-                  if (line.startsWith('- ')) return <li key={i} className="ml-4 mb-1">{line.replace('- ', '')}</li>;
-                  if (line.trim() === '') return <br key={i} />;
-                  return <p key={i} className="mb-4">{line}</p>;
-                })}
+              <div className="prose prose-invert max-w-none prose-p:text-slate-300 prose-headings:text-white prose-a:text-indigo-400 prose-strong:text-white prose-table:w-full prose-table:border-collapse prose-th:bg-slate-800/50 prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:text-sm prose-th:font-semibold prose-th:text-white prose-td:border-t prose-td:border-slate-800 prose-td:px-4 prose-td:py-3 prose-td:text-sm prose-td:text-slate-300">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {doc.analysis_summary}
+                </ReactMarkdown>
               </div>
             ) : (
               <div className="text-center py-12">

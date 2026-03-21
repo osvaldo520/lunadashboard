@@ -291,8 +291,8 @@ export default async function LandingPage() {
             {/* Pro */}
             <PricingCard
               name="Pro"
-              price="R$ 97"
-              period="/mês"
+              price="R$ Em Breve"
+              period=""
               description="Para profissionais e escritórios."
               features={[
                 '100 mensagens por dia',
@@ -304,9 +304,10 @@ export default async function LandingPage() {
                 'Exportação avançada',
                 'Suporte prioritário',
               ]}
-              cta="Assinar Pro"
-              ctaHref="/register"
+              cta="Em Breve"
+              ctaHref="#"
               highlighted={true}
+              disabled={true}
             />
             {/* Enterprise */}
             <PricingCard
@@ -322,9 +323,10 @@ export default async function LandingPage() {
                 'Treinamento da equipe',
                 'Personalização da Luna',
               ]}
-              cta="Falar com Vendas"
-              ctaHref="mailto:contato@entrelinhas.app"
+              cta="Em Breve"
+              ctaHref="#"
               highlighted={false}
+              disabled={true}
             />
           </div>
         </div>
@@ -406,9 +408,9 @@ function StepCard({ number, title, description }: { number: string; title: strin
   );
 }
 
-function PricingCard({ name, price, period, description, features, cta, ctaHref, highlighted }: {
+function PricingCard({ name, price, period, description, features, cta, ctaHref, highlighted, disabled }: {
   name: string; price: string; period: string; description: string;
-  features: string[]; cta: string; ctaHref: string; highlighted: boolean;
+  features: string[]; cta: string; ctaHref: string; highlighted: boolean; disabled?: boolean;
 }) {
   return (
     <div className={`relative rounded-2xl border p-6 flex flex-col ${
@@ -441,16 +443,28 @@ function PricingCard({ name, price, period, description, features, cta, ctaHref,
         ))}
       </ul>
 
-      <Link
-        href={ctaHref}
-        className={`text-center py-2.5 rounded-xl text-sm font-semibold transition-all ${
-          highlighted
-            ? 'bg-indigo-600 hover:bg-indigo-500 text-white hover:shadow-lg hover:shadow-indigo-500/25'
-            : 'border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white'
-        }`}
-      >
-        {cta}
-      </Link>
+      {disabled ? (
+        <span
+          className={`block text-center py-2.5 rounded-xl text-sm font-semibold transition-all cursor-default ${
+            highlighted
+              ? 'bg-indigo-600/60 text-white/80'
+              : 'border border-slate-700/60 text-slate-400'
+          }`}
+        >
+          {cta}
+        </span>
+      ) : (
+        <Link
+          href={ctaHref}
+          className={`block text-center py-2.5 rounded-xl text-sm font-semibold transition-all ${
+            highlighted
+              ? 'bg-indigo-600 hover:bg-indigo-500 text-white hover:shadow-lg hover:shadow-indigo-500/25'
+              : 'border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white'
+          }`}
+        >
+          {cta}
+        </Link>
+      )}
     </div>
   );
 }
