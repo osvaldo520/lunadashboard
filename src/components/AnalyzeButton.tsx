@@ -15,13 +15,6 @@ export function AnalyzeButton({ documentId, status }: AnalyzeButtonProps) {
   const router = useRouter();
 
   const handleAnalyze = () => {
-    if (status === 'analyzing') {
-      const confirmReset = window.confirm(
-        'Este documento já consta como EM ANÁLISE no servidor.\n\nVocê só deve forçar o reinício se a I.A estiver travada há mais de 5 minutos, pois isso consumirá seus créditos novamente.\n\nDeseja forçar o destravamento e reiniciar?'
-      );
-      if (!confirmReset) return;
-    }
-
     startTransition(async () => {
       const result = await requestAnalysis(documentId);
       if (result?.success) {
@@ -34,21 +27,18 @@ export function AnalyzeButton({ documentId, status }: AnalyzeButtonProps) {
 
   const isAnalyzing = status === 'analyzing';
   const isFirstAnalysis = status === 'uploaded' || status === 'pending';
-  const isRetry = status === 'error' || status === 'completed' || status === 'analyzing';
+  const isRetry = status === 'error' || status === 'completed';
 
   return (
     <button
       onClick={handleAnalyze}
-      disabled={isPending}
-      title={isAnalyzing ? "Clique para forçar o destravamento caso esteja travado há muito tempo." : ""}
+      disabled={isPending || isAnalyzing}
       className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-        isPending
+        isPending || isAnalyzing
           ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
-          : isAnalyzing
-            ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/30'
-            : isRetry 
-              ? 'bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
-              : 'bg-indigo-600 hover:bg-indigo-500 text-white border border-indigo-500'
+          : isRetry 
+            ? 'bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
+            : 'bg-indigo-600 hover:bg-indigo-500 text-white border border-indigo-500'
       }`}
     >
       {isPending || isAnalyzing ? (
@@ -62,7 +52,7 @@ export function AnalyzeButton({ documentId, status }: AnalyzeButtonProps) {
       {isPending 
         ? 'Aguarde...' 
         : isAnalyzing 
-          ? 'Destravar (Force Restart)' 
+          ? 'Analisando...' 
           : isFirstAnalysis
             ? 'Analisar'
             : isRetry 
