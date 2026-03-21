@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { DocumentPreviewModal } from '@/components/DocumentPreviewModal';
 import { DownloadAnalysisButton } from '@/components/DownloadAnalysisButton';
-import { GeneratePdfButton } from '@/components/GeneratePdfButton';
+import { ExportDocumentButton } from '@/components/ExportDocumentButton';
 import { RealtimeDocumentRefresher } from '@/components/RealtimeDocumentRefresher';
 import { AnalyzeButton } from '@/components/AnalyzeButton';
 import { DeleteButton } from '@/components/DeleteButton';
@@ -106,9 +106,15 @@ export default async function DocumentDetailsPage({
               </h2>
               {doc.analysis_summary && (
                 <div className="flex items-center gap-2">
-                  <GeneratePdfButton 
-                    content={doc.analysis_summary} 
-                    documentTitle={doc.title} 
+                  <ExportDocumentButton 
+                    documentId={doc.id}
+                    format="pdf"
+                    contentType="analysis"
+                  />
+                  <ExportDocumentButton 
+                    documentId={doc.id}
+                    format="docx"
+                    contentType="analysis"
                   />
                   <DownloadAnalysisButton 
                     content={doc.analysis_summary} 

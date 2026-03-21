@@ -18,20 +18,47 @@ export async function POST(req: NextRequest) {
 
     const pdfServiceUrl = process.env.PDF_SERVICE_URL || 'https://md-to-pdf.fly.dev';
 
-    // O serviço envia o texto intacto para renderizar com Emojis Nativos
-    const params = new URLSearchParams();
-    params.append('markdown', content);
-    
-    // CSS Institucional Premium
-    params.append('css', `
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Color+Emoji&display=swap');
+    // ═══════════════════════════════════════════
+    // Pré-processamento Seguro: Trocando emojis do Telegram
+    // por marcadores de texto (O serviço Fly.dev usa Pandoc/WeasyPrint 
+    // que falha ao tentar renderizar @import de fontes web)
+    // ═══════════════════════════════════════════
+    const emojiMap: Record<string, string> = {
+      '⚠️': '[ATENÇÃO]', '⚡': '[!]', '🔴': '[CRÍTICO]', '🟡': '[MODERADO]', '🟢': '[OK]',
+      '✅': '[✓]', '❌': '[✗]', '⭐': '[★]', '🔥': '[!]', '💡': '[DICA]',
+      '📋': '[DOC]', '📄': '[DOC]', '📊': '[ANÁLISE]', '📈': '[GRÁFICO]', '📌': '[PONTO]',
+      '🔒': '[SEGURANÇA]', '🔓': '[DESBLOQUEADO]', '🛡️': '[PROTEÇÃO]', '⚖️': '[JURÍDICO]',
+      '👤': '[PARTE]', '👥': '[PARTES]', '🏢': '[EMPRESA]', '🏠': '[IMÓVEL]',
+      '💰': '[VALOR]', '💵': '[R$]', '💳': '[PAGAMENTO]', '📅': '[DATA]', '⏰': '[PRAZO]',
+      '🔗': '[LINK]', '📝': '[NOTA]', '📎': '[ANEXO]', '🗂️': '[SEÇÃO]',
+      '🎯': '[OBJETIVO]', '🚨': '[ALERTA]', '💼': '[CONTRATO]', '🔍': '[DETALHE]',
+      '✨': '[DESTAQUE]', '❗': '[!]', '❓': '[?]', '➡️': '→', '⬆️': '↑', '⬇️': '↓',
+      '1️⃣': '1.', '2️⃣': '2.', '3️⃣': '3.', '4️⃣': '4.', '5️⃣': '5.',
+      '6️⃣': '6.', '7️⃣': '7.', '8️⃣': '8.', '9️⃣': '9.', '🔟': '10.',
+      '📢': '[AVISO]', '🏆': '[DESTAQUE]', '💬': '[OBS]', '🧾': '[RECIBO]',
+      '🏷️': '[TAG]', '📜': '[CLÁUSULA]', '⚙️': '[CONFIG]', '🔑': '[CHAVE]',
+    };
 
+    let processedContent = content;
+    for (const [emoji, label] of Object.entries(emojiMap)) {
+      processedContent = processedContent.replaceAll(emoji, label);
+    }
+    processedContent = processedContent.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '');
+
+    const params = new URLSearchParams();
+    params.append('markdown', processedContent);
+    
+    // Injetamos um título pro Pandoc não reclamar
+    params.append('title', title || 'Documento Entrelinhas');
+    
+    // CSS Institucional Seguro (Sem @import, box-shadow ou fonts externas)
+    params.append('css', `
       body { 
-        font-family: 'Inter', 'Noto Color Emoji', sans-serif; 
-        padding: 40px 50px; 
+        font-family: 'Segoe UI', 'Noto Sans', Tahoma, Geneva, Verdana, sans-serif; 
+        padding: 30px 40px; 
         line-height: 1.6; 
-        color: #334155;
-        font-size: 12px;
+        color: #1a1a1a;
+        font-size: 13px;
       }
       h1 { 
         color: #1e3a5f; 
@@ -51,24 +78,20 @@ export async function POST(req: NextRequest) {
       table { 
         border-collapse: collapse; 
         width: 100%; 
-        margin: 24px 0;
-        font-size: 11px;
-        border-radius: 6px;
-        overflow: hidden;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        margin: 12px 0;
+        font-size: 12px;
       }
       th { 
         background: #0f172a; 
         color: #ffffff; 
-        padding: 12px 16px; 
+        padding: 8px 12px; 
         text-align: left; 
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
       }
       td { 
         border: 1px solid #e2e8f0; 
-        padding: 12px 16px; 
+        padding: 8px 12px; 
         color: #1e293b;
       }
       tr:nth-child(even) { background: #f8fafc; }
