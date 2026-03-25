@@ -111,8 +111,8 @@ export function Sidebar({ userName, userEmail, userPlan }: SidebarProps) {
             <Moon className="h-5 w-5 text-indigo-400" />
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="text-sm font-bold text-white tracking-tight truncate">Luna</h2>
-            <p className="text-xs text-slate-500 truncate">Dashboard</p>
+            <h2 className="text-sm font-bold text-white tracking-tight truncate">Judite</h2>
+            <p className="text-xs text-slate-500 truncate">Pauta</p>
           </div>
           {/* Botão Fechar Interno (Mobile) */}
           <button 
@@ -158,7 +158,7 @@ export function Sidebar({ userName, userEmail, userPlan }: SidebarProps) {
                   Evolua para o Pro
                 </h3>
                 <p className="text-xs text-slate-400 mb-3 relative z-10">
-                  Análises e gerações ilimitadas com a Luna.
+                  Análises e gerações ilimitadas com a Judite.
                 </p>
                 <button
                   onClick={handleUpgrade}

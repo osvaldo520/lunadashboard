@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { User, Building2, Save, Loader2, CheckCircle, Moon, Sun } from 'lucide-react';
+import { User, Building2, Save, Loader2, CheckCircle, Moon, Sun, Zap, Crown } from 'lucide-react';
 
 interface Profile {
   id: string;
@@ -11,9 +11,11 @@ interface Profile {
   company_name: string | null;
   phone: string | null;
   plan: string;
+  plan_type: string;
   telegram_id: string | null;
   telegram_pin: string | null;
   telegram_pin_expires_at: string | null;
+  expert_mode: boolean;
 }
 
 export default function SettingsPage() {
@@ -21,6 +23,8 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [expertToggling, setExpertToggling] = useState(false);
+  const [upgrading, setUpgrading] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const supabase = createClient();
 
@@ -193,21 +197,144 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Plan info */}
-      <div className="rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-6">
+      {/* Expert Mode Section */}
+      <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-6">
         <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-sm font-semibold text-white">Plano atual</h3>
-            <p className="text-xs text-slate-400 mt-1">
-              Você está no plano <span className="font-bold text-indigo-400 uppercase">{profile?.plan || 'free'}</span>
-            </p>
+          <div className="flex items-center gap-3">
+            <div className={`flex items-center justify-center w-10 h-10 rounded-xl ${
+              profile?.expert_mode 
+                ? 'bg-amber-500/20 border border-amber-500/30' 
+                : 'bg-slate-800 border border-slate-700'
+            }`}>
+              <Zap className={`h-5 w-5 ${profile?.expert_mode ? 'text-amber-400' : 'text-slate-500'}`} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-white">Modo Expert</h3>
+                {profile?.expert_mode && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 uppercase tracking-wider">
+                    Ativo
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                {profile?.expert_mode 
+                  ? 'Claude Haiku 4.5 — Precisão jurídica premium (Anthropic)' 
+                  : 'DeepSeek V3 — Motor padrão (econômico)'
+                }
+              </p>
+            </div>
           </div>
           <button
-            disabled
-            className="rounded-xl bg-indigo-600/50 px-4 py-2 text-sm text-indigo-200 cursor-not-allowed opacity-60"
+            onClick={async () => {
+              if (!profile) return;
+              setExpertToggling(true);
+              const newValue = !profile.expert_mode;
+              const { error } = await supabase
+                .from('profiles')
+                .update({ expert_mode: newValue })
+                .eq('id', profile.id);
+              if (!error) {
+                setProfile(prev => prev ? { ...prev, expert_mode: newValue } : null);
+              }
+              setExpertToggling(false);
+            }}
+            disabled={expertToggling}
+            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 ${
+              profile?.expert_mode ? 'bg-amber-500' : 'bg-slate-700'
+            } ${expertToggling ? 'opacity-50' : ''}`}
           >
-            Upgrade (em breve)
+            <span
+              className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
+                profile?.expert_mode ? 'translate-x-6' : 'translate-x-1'
+              }`}
+            />
           </button>
+        </div>
+        {profile?.expert_mode && (
+          <div className="mt-3 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+            <p className="text-xs text-amber-300/80">
+              ⚡ O modo Expert consome <strong>5x mais</strong> do seu limite diário. Use para análises que exigem máxima precisão jurídica.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Plan & Upgrade */}
+      <div className={`rounded-2xl border p-6 ${
+        (profile?.plan_type || profile?.plan || 'free') === 'pro' 
+          ? 'border-emerald-500/20 bg-emerald-500/5' 
+          : 'border-indigo-500/20 bg-indigo-500/5'
+      }`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`flex items-center justify-center w-10 h-10 rounded-xl ${
+              (profile?.plan_type || profile?.plan || 'free') === 'pro'
+                ? 'bg-emerald-500/20 border border-emerald-500/30'
+                : 'bg-indigo-500/20 border border-indigo-500/30'
+            }`}>
+              <Crown className={`h-5 w-5 ${
+                (profile?.plan_type || profile?.plan || 'free') === 'pro' ? 'text-emerald-400' : 'text-indigo-400'
+              }`} />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-white">Plano atual</h3>
+              <p className="text-xs text-slate-400 mt-0.5">
+                {(profile?.plan_type || profile?.plan || 'free') === 'pro' ? (
+                  <span className="text-emerald-400 font-bold">PRO — Limites diários renovam à meia-noite</span>
+                ) : (
+                  <span>Plano <span className="font-bold text-indigo-400 uppercase">gratuito</span> — 50 mensagens totais</span>
+                )}
+              </p>
+            </div>
+          </div>
+          {(profile?.plan_type || profile?.plan || 'free') !== 'pro' ? (
+            <button
+              onClick={async () => {
+                setUpgrading(true);
+                try {
+                  const { data: { session } } = await supabase.auth.getSession();
+                  if (!session) throw new Error('Sessão expirada');
+                  
+                  const res = await fetch(
+                    `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/stripe-checkout`,
+                    {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${session.access_token}`,
+                      },
+                    }
+                  );
+                  const data = await res.json();
+                  if (data.url) {
+                    window.location.href = data.url;
+                  } else {
+                    alert('Erro ao iniciar checkout. Tente novamente.');
+                  }
+                } catch (err) {
+                  console.error('[Checkout]', err);
+                  alert('Erro ao conectar com Stripe.');
+                } finally {
+                  setUpgrading(false);
+                }
+              }}
+              disabled={upgrading}
+              className="flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white 
+                hover:bg-indigo-500 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed
+                transition-all duration-200 shadow-lg shadow-indigo-500/25"
+            >
+              {upgrading ? (
+                <><Loader2 className="h-4 w-4 animate-spin" /> Redirecionando...</>
+              ) : (
+                <><Crown className="h-4 w-4" /> Upgrade para Pro</>
+              )}
+            </button>
+          ) : (
+            <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
+              ✅ Ativo
+            </span>
+          )}
         </div>
       </div>
 
@@ -313,7 +440,7 @@ function TelegramLinkCard({
           </div>
           <div>
             <h3 className="text-lg font-semibold text-white">Telegram Vinculado</h3>
-            <p className="text-sm text-slate-400">Sua conta do Telegram está conectada com a Luna.</p>
+            <p className="text-sm text-slate-400">Sua conta do Telegram está conectada com a Judite.</p>
           </div>
         </div>
         <div className="flex items-center justify-between rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-4">
@@ -343,13 +470,13 @@ function TelegramLinkCard({
         </div>
         <div>
           <h3 className="text-lg font-semibold text-white">Conectar Telegram</h3>
-          <p className="text-sm text-slate-400">Vincule sua conta para conversar com a Luna via Telegram.</p>
+          <p className="text-sm text-slate-400">Vincule sua conta para conversar com a Judite via Telegram.</p>
         </div>
       </div>
 
       {hasPinActive ? (
         <div className="p-5 rounded-2xl border border-blue-500/30 bg-blue-900/20 space-y-4">
-          <p className="text-sm text-slate-300">Envie o comando abaixo para a Luna no Telegram ou use o botão mágico:</p>
+          <p className="text-sm text-slate-300">Envie o comando abaixo para a Judite no Telegram ou use o botão mágico:</p>
           
           <code className="text-2xl font-mono font-bold text-white tracking-widest bg-slate-900/80 px-4 py-2 rounded-xl border border-slate-700 block w-fit shadow-lg">
             /vincular {profile.telegram_pin}
@@ -365,7 +492,7 @@ function TelegramLinkCard({
 
           <div className="flex items-center gap-3">
             <a 
-              href={`https://t.me/Eusouluna_bot?text=/vincular%20${profile.telegram_pin}`} 
+              href={`https://t.me/EusouJudite_bot?text=/vincular%20${profile.telegram_pin}`} 
               target="_blank" 
               rel="noreferrer"
               className="inline-flex items-center gap-2 rounded-xl bg-[#2AABEE] hover:bg-[#228cbd] px-5 py-3 text-white font-medium transition-all shadow-lg shadow-blue-500/20"

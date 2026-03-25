@@ -31,7 +31,7 @@ export function RealtimeDocumentRefresher({ documentId }: RealtimeDocumentRefres
       )
       .subscribe();
 
-    // Escuta também a tabela analysis_logs para esse documento, caso a Luna adicione um log novo
+    // Escuta também a tabela analysis_logs para esse documento, caso a Judite adicione um log novo
     const logsChannel = supabase
       .channel(`logs-updates-${documentId}`)
       .on(

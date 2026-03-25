@@ -135,7 +135,7 @@ export default async function DocumentDetailsPage({
             ) : (
               <div className="text-center py-12">
                 <p className="text-slate-400">Nenhuma análise disponível para este documento ainda.</p>
-                <p className="text-sm text-slate-500 mt-2">Clique em &quot;Analisar&quot; acima para iniciar a avaliação jurídica com a Luna.</p>
+                <p className="text-sm text-slate-500 mt-2">Clique em &quot;Analisar&quot; acima para iniciar a avaliação jurídica com a Judite.</p>
               </div>
             )}
           </div>
@@ -178,7 +178,7 @@ export default async function DocumentDetailsPage({
                       {new Date(log.created_at).toLocaleString('pt-BR')}
                     </p>
                     <p className="text-sm text-white font-medium">
-                      Análise concluída (Luna)
+                      Análise concluída (Judite)
                     </p>
                   </div>
                 ))}

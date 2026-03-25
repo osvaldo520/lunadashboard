@@ -83,7 +83,7 @@ export default function RegisterPage() {
             Criar Conta
           </h1>
           <p className="mt-2 text-sm text-slate-400">
-            Comece a usar a Luna agora
+            Comece a usar a Judite agora
           </p>
         </div>
 

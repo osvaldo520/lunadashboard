@@ -4,10 +4,10 @@ import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Entrelinhas — Análise e Geração de Contratos com IA',
-  description: 'Envie seu contrato e receba uma análise completa de riscos em minutos. Crie documentos jurídicos por voz ou texto com a Luna IA. Proteja seu negócio sem depender de horas do time jurídico.',
+  title: 'Judite — Análise e Geração de Contratos com IA',
+  description: 'Envie seu contrato e receba uma análise completa de riscos em minutos. Crie documentos jurídicos por voz ou texto com a Judite IA. Proteja seu negócio sem depender de horas do time jurídico.',
   openGraph: {
-    title: 'Entrelinhas — Sua Assistente Jurídica Inteligente',
+    title: 'Judite — Sua Assistente Jurídica Inteligente',
     description: 'IA que analisa riscos, identifica cláusulas abusivas, gera contratos e conversa com você por voz. Experimente grátis.',
     type: 'website',
   },
@@ -28,9 +28,9 @@ export default async function LandingPage() {
         <div className="max-w-6xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <div className="w-7 h-7 sm:w-8 sm:h-8 shrink-0 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center font-bold text-sm">
-              E
+              J
             </div>
-            <span className="text-[15px] sm:text-lg font-bold tracking-tight truncate">Entrelinhas</span>
+            <span className="text-[15px] sm:text-lg font-bold tracking-tight truncate">Judite</span>
           </Link>
 
           {/* Oculta em tablet pequeno e celular, mostra só em PC (lg) */}
@@ -66,13 +66,13 @@ export default async function LandingPage() {
             {/* Badge */}
             <div className="animate-fade-in-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-medium mb-8">
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-              Luna IA — Sua assistente jurídica pessoal
+              Judite IA — Sua assistente jurídica pessoal
             </div>
 
             {/* H1 */}
             <h1 className="animate-fade-in-up-delay-1 text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6">
               Pare de Perder Horas Revisando Contratos.{' '}
-              <span className="text-gradient">A Luna Faz em Minutos.</span>
+              <span className="text-gradient">A Judite Faz em Minutos.</span>
             </h1>
 
             {/* Subtitle */}
@@ -108,7 +108,7 @@ export default async function LandingPage() {
                   <div className="w-3 h-3 rounded-full bg-red-500/60" />
                   <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
                   <div className="w-3 h-3 rounded-full bg-green-500/60" />
-                  <span className="ml-3 text-xs text-slate-600">entrelinhas.app/dashboard</span>
+                  <span className="ml-3 text-xs text-slate-600">judite.app/pauta</span>
                 </div>
 
                 {/* Fake KPI Row */}
@@ -161,7 +161,7 @@ export default async function LandingPage() {
         <div className="max-w-4xl mx-auto px-6 text-center">
           <p className="text-xs font-medium text-slate-600 uppercase tracking-widest mb-6">Construído com tecnologias de ponta</p>
           <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-4 text-slate-600">
-            {['Luna IA', 'Next.js', 'Supabase', 'Telegram', 'Criptografia E2E'].map((tech) => (
+            {['Judite IA', 'Next.js', 'Supabase', 'Telegram', 'Segurança em Camadas'].map((tech) => (
               <span key={tech} className="text-sm font-medium hover:text-slate-400 transition-colors">{tech}</span>
             ))}
           </div>
@@ -179,7 +179,7 @@ export default async function LandingPage() {
               <span className="text-gradient">faria por você.</span>
             </h2>
             <p className="text-slate-400 max-w-xl mx-auto">
-              A Luna não é só uma ferramenta. É sua assistente jurídica que analisa, cria, corrige e conversa com você naturalmente.
+              A Judite não é só uma ferramenta. É sua assistente jurídica que analisa, cria, corrige e conversa com você naturalmente.
             </p>
           </div>
 
@@ -188,31 +188,31 @@ export default async function LandingPage() {
             <FeatureCard
               icon={<BrainIcon />}
               title="Análise de Risco Inteligente"
-              description="Envie qualquer contrato — PDF, Word ou imagem. A Luna identifica cláusulas abusivas, multas ocultas e riscos invisíveis em segundos."
+              description="Envie qualquer contrato — PDF, Word ou foto escaneada. A Judite identifica cláusulas abusivas, multas ocultas e riscos invisíveis em segundos."
             />
             {/* Feature 2 */}
             <FeatureCard
               icon={<PencilIcon />}
               title="Geração de Documentos"
-              description="Peça à Luna para criar contratos, termos, procurações ou qualquer documento jurídico do zero. Ela redige com linguagem técnica precisa."
+              description="Peça à Judite para criar contratos, termos, procurações ou qualquer documento jurídico do zero. Ela redige com linguagem técnica precisa."
             />
             {/* Feature 3 */}
             <FeatureCard
               icon={<MicIcon />}
               title="Converse por Voz ou Texto"
-              description="Mande um áudio no Telegram e a Luna responde por voz. Peça análises, ajustes e ela te envia o PDF formatado direto no chat — sem abrir nenhum site."
+              description="Mande um áudio no Telegram e a Judite responde por voz. Peça análises, ajustes e ela te envia o PDF formatado direto no chat — sem abrir nenhum site."
             />
             {/* Feature 4 */}
             <FeatureCard
               icon={<RepeatIcon />}
               title="Correção e Ajustes"
-              description="'Luna, troque a cláusula 5 por algo mais favorável ao locatário.' Ela ajusta, reescreve e te entrega o documento revisado na hora."
+              description="'Judite, troque a cláusula 5 por algo mais favorável ao locatário.' Ela ajusta, reescreve e te entrega o documento revisado na hora."
             />
             {/* Feature 5 */}
             <FeatureCard
               icon={<ShieldIcon />}
               title="Segurança Corporativa"
-              description="Seus documentos ficam criptografados com Row Level Security. Nenhum outro usuário, nem a equipe Entrelinhas, acessa seus dados."
+              description="Seus documentos ficam criptografados com Row Level Security. Nenhum outro usuário, nem a equipe Judite, acessa seus dados."
             />
             {/* Feature 6 */}
             <FeatureCard
@@ -240,12 +240,12 @@ export default async function LandingPage() {
             <StepCard
               number="01"
               title="Envie o Documento"
-              description="Faça upload pelo painel web ou mande direto no Telegram. PDF, Word, imagem — a Luna aceita tudo."
+              description="Faça upload pelo painel web ou mande direto no Telegram. PDF, Word ou foto escaneada — a Judite aceita tudo."
             />
             <StepCard
               number="02"
-              title="Luna Analisa ou Cria"
-              description="Clique em 'Analisar' para um parecer completo, ou peça por chat: 'Luna, crie um contrato de aluguel para mim'."
+              title="Judite Analisa ou Cria"
+              description="Clique em 'Analisar' para um parecer completo, ou peça por chat: 'Judite, crie um contrato de aluguel para mim'."
             />
             <StepCard
               number="03"
@@ -274,7 +274,7 @@ export default async function LandingPage() {
               name="Grátis"
               price="R$ 0"
               period=""
-              description="Para conhecer a Luna."
+              description="Para conhecer a Judite."
               features={[
                 '50 mensagens (total)',
                 '5 análises de documento',
@@ -321,7 +321,7 @@ export default async function LandingPage() {
                 'API dedicada',
                 'SLA garantido',
                 'Treinamento da equipe',
-                'Personalização da Luna',
+                'Personalização da Judite',
               ]}
               cta="Em Breve"
               ctaHref="#"
@@ -361,9 +361,9 @@ export default async function LandingPage() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2.5">
               <div className="w-7 h-7 rounded-md bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center font-bold text-xs">
-                E
+                J
               </div>
-              <span className="text-sm font-semibold">Entrelinhas</span>
+              <span className="text-sm font-semibold">Judite</span>
             </div>
             <div className="flex items-center gap-6 text-xs text-slate-600">
               <a href="#" className="hover:text-slate-400 transition-colors">Termos de Uso</a>
@@ -371,7 +371,7 @@ export default async function LandingPage() {
               <a href="#" className="hover:text-slate-400 transition-colors">Contato</a>
             </div>
             <p className="text-xs text-slate-700">
-              © {new Date().getFullYear()} Entrelinhas. Todos os direitos reservados.
+              © {new Date().getFullYear()} Judite AI. Todos os direitos reservados.
             </p>
           </div>
         </div>

@@ -41,7 +41,7 @@ export function ExportDocumentButton({ documentId, format, contentType, label }:
 
       const { job_id } = await response.json();
 
-      // 2. Escutar a resposta assíncrona da Luna (VPS) via WebSocket
+      // 2. Escutar a resposta assíncrona da Judite (VPS) via WebSocket
       const channel = supabase.channel(`job-${job_id}`)
         .on(
           'postgres_changes',

@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Luna Dashboard — Gestão Inteligente de Documentos',
-  description: 'Painel de controle para gestão de contratos e documentos jurídicos com análise inteligente por IA.',
+  title: 'Judite Pauta — Gestão Inteligente de Documentos',
+  description: 'Pauta: painel de controle para gestão de contratos e documentos jurídicos com análise inteligente por IA.',
 };
 
 export default function RootLayout({

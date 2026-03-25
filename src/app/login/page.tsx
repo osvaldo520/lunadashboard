@@ -47,10 +47,10 @@ export default function LoginPage() {
         {/* Logo / Brand */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 mb-4">
-            <span className="text-3xl">🌙</span>
+            <span className="text-3xl">⚖️</span>
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-white">
-            Luna Dashboard
+            Judite Pauta
           </h1>
           <p className="mt-2 text-sm text-slate-400">
             Gestão inteligente de documentos

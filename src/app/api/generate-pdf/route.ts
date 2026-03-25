@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     params.append('markdown', processedContent);
     
     // Injetamos um título pro Pandoc não reclamar
-    params.append('title', title || 'Documento Entrelinhas');
+    params.append('title', title || 'Documento Judite');
     
     // CSS Institucional Seguro (Sem @import, box-shadow ou fonts externas)
     params.append('css', `

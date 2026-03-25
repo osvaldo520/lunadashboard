@@ -14,7 +14,7 @@ export async function requestAnalysis(documentId: string) {
       return { success: false, error: 'Não autorizado.' };
     }
 
-    // Set document status to pending to trigger the Luna bot via Realtime
+    // Set document status to pending to trigger the Judite bot via Realtime
     const { error } = await supabase
       .from('documents')
       .update({ 

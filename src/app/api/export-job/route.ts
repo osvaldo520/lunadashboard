@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server';
  * API Route: /api/export-job
  * 
  * Cria um Job assíncrono na tabela `document_jobs` do Supabase.
- * A Luna (VPS) está escutando esta tabela e fará a renderização pesada em background.
+ * A Judite (VPS) está escutando esta tabela e fará a renderização pesada em background.
  */
 export async function POST(req: NextRequest) {
   try {

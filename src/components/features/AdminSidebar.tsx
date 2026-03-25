@@ -79,7 +79,7 @@ export function AdminSidebar({ userName, userEmail }: AdminSidebarProps) {
             <ShieldCheck className="h-5 w-5 text-amber-400" />
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="text-sm font-bold text-white tracking-tight truncate">Luna Admin</h2>
+            <h2 className="text-sm font-bold text-white tracking-tight truncate">Judite Admin</h2>
             <p className="text-[10px] text-amber-500/80 font-bold uppercase tracking-widest">Painel Gestor</p>
           </div>
           <button onClick={() => setIsOpen(false)} className="lg:hidden p-2 text-slate-400 hover:text-white">
@@ -119,7 +119,7 @@ export function AdminSidebar({ userName, userEmail }: AdminSidebarProps) {
               className="flex items-center gap-2 text-xs font-medium text-slate-500 hover:text-indigo-400 transition-colors group"
             >
               <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" />
-              Voltar ao Dashboard
+              Voltar à Pauta
             </Link>
           </div>
         </div>
