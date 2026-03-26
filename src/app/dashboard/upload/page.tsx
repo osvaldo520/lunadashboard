@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { Upload, FileText, X, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 
+const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
+
 const ACCEPTED_TYPES = [
   'application/pdf',
   'image/jpeg',
@@ -43,14 +45,18 @@ export default function UploadPage() {
   const supabase = createClient();
 
   const handleFiles = (fileList: FileList) => {
-    const newFiles: UploadedFile[] = Array.from(fileList)
-      .filter(f => ACCEPTED_TYPES.includes(f.type) || f.name.endsWith('.md'))
-      .map(f => ({ file: f, status: 'idle' as const }));
+    const validType = Array.from(fileList).filter(f => ACCEPTED_TYPES.includes(f.type) || f.name.endsWith('.md'));
+    const tooLarge = validType.filter(f => f.size > MAX_FILE_SIZE);
+    const accepted = validType.filter(f => f.size <= MAX_FILE_SIZE);
 
-    if (newFiles.length < fileList.length) {
+    if (validType.length < fileList.length) {
       alert('Alguns arquivos foram ignorados (tipo não suportado). Aceitos: PDF, JPEG, PNG, DOC, DOCX, TXT, MD.');
     }
+    if (tooLarge.length > 0) {
+      alert(`${tooLarge.length} arquivo(s) excede(m) o limite de 1 MB e foi/foram ignorado(s):\n${tooLarge.map(f => `• ${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)`).join('\n')}`);
+    }
 
+    const newFiles: UploadedFile[] = accepted.map(f => ({ file: f, status: 'idle' as const }));
     setFiles(prev => [...prev, ...newFiles]);
   };
 
@@ -70,6 +76,41 @@ export default function UploadPage() {
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+
+    // Verificar limite de documentos do plano
+    const { data: profile } = await supabase.from('profiles').select('plan_type').eq('id', user.id).single();
+    const planType = profile?.plan_type || 'free';
+    const maxDocs = planType === 'pro' ? 500 : 5;
+    const maxStorageMB = planType === 'pro' ? 200 : 10;
+
+    const { count } = await supabase.from('documents').select('id', { count: 'exact', head: true }).eq('user_id', user.id);
+    const currentCount = count || 0;
+    const pendingCount = files.filter(f => f.status === 'idle').length;
+
+    if (currentCount + pendingCount > maxDocs) {
+      alert(`Limite de documentos atingido!\n\nSeu plano ${planType.toUpperCase()} permite até ${maxDocs} documentos.\nVocê já tem ${currentCount} documento(s).\n\n${planType === 'free' ? '🚀 Faça upgrade para o Pro e tenha até 500 documentos!' : 'Entre em contato para um plano Enterprise.'}`);
+      setUploading(false);
+      return;
+    }
+
+    // Verificar limite de storage total do plano
+    const { data: storageDocs } = await supabase
+      .from('documents')
+      .select('file_size')
+      .eq('user_id', user.id);
+
+    const usedBytes = (storageDocs || []).reduce((sum, d) => sum + (d.file_size || 0), 0);
+    const pendingBytes = files.filter(f => f.status === 'idle').reduce((sum, f) => sum + f.file.size, 0);
+    const totalAfterUpload = usedBytes + pendingBytes;
+    const maxStorageBytes = maxStorageMB * 1024 * 1024;
+
+    if (totalAfterUpload > maxStorageBytes) {
+      const usedMB = (usedBytes / 1024 / 1024).toFixed(1);
+      const pendingMB = (pendingBytes / 1024 / 1024).toFixed(1);
+      alert(`Limite de armazenamento atingido!\n\nSeu plano ${planType.toUpperCase()} permite até ${maxStorageMB} MB.\nUsado: ${usedMB} MB | Este upload: ${pendingMB} MB\n\n${planType === 'free' ? '🚀 Faça upgrade para o Pro e tenha até 200 MB de armazenamento!' : 'Entre em contato para um plano Enterprise.'}`);
+      setUploading(false);
+      return;
+    }
 
     for (let i = 0; i < files.length; i++) {
       setFiles(prev => prev.map((f, idx) => idx === i ? { ...f, status: 'uploading' } : f));
@@ -175,7 +216,7 @@ export default function UploadPage() {
           Arraste arquivos aqui ou <span className="text-indigo-400">clique para selecionar</span>
         </p>
         <p className="text-xs text-slate-500">
-          PDF, JPEG, PNG, DOC, DOCX, TXT, MD • Máx. 50 MB por arquivo
+          PDF, JPEG, PNG, DOC, DOCX, TXT, MD • Máx. 1 MB por arquivo
         </p>
       </div>
 
