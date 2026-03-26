@@ -98,6 +98,74 @@ export default function SettingsPage() {
         <TelegramLinkCard profile={profile!} supabase={supabase} onUpdate={loadProfile} />
       </div>
 
+      {/* Expert Mode Section */}
+      <div className={`rounded-2xl border p-6 transition-all duration-300 ${
+        profile?.expert_mode 
+          ? 'border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-orange-500/5 shadow-lg shadow-amber-500/5' 
+          : 'border-slate-800 bg-slate-900/30'
+      }`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-300 ${
+              profile?.expert_mode 
+                ? 'bg-amber-500/20 border border-amber-500/30 shadow-lg shadow-amber-500/10' 
+                : 'bg-slate-800 border border-slate-700'
+            }`}>
+              <Zap className={`h-5 w-5 transition-colors duration-300 ${profile?.expert_mode ? 'text-amber-400' : 'text-slate-500'}`} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-white">Modo Expert</h3>
+                {profile?.expert_mode && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 uppercase tracking-wider animate-pulse">
+                    Ativo
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                {profile?.expert_mode 
+                  ? 'Precisão jurídica máxima — Motor premium da Judite IA' 
+                  : 'Ative para usar o motor de IA mais avançado da Judite'
+                }
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={async () => {
+              if (!profile) return;
+              setExpertToggling(true);
+              const newValue = !profile.expert_mode;
+              const { error } = await supabase
+                .from('profiles')
+                .update({ expert_mode: newValue })
+                .eq('id', profile.id);
+              if (!error) {
+                setProfile(prev => prev ? { ...prev, expert_mode: newValue } : null);
+              }
+              setExpertToggling(false);
+            }}
+            disabled={expertToggling}
+            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 ${
+              profile?.expert_mode ? 'bg-amber-500' : 'bg-slate-700'
+            } ${expertToggling ? 'opacity-50' : ''}`}
+          >
+            <span
+              className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
+                profile?.expert_mode ? 'translate-x-6' : 'translate-x-1'
+              }`}
+            />
+          </button>
+        </div>
+        {profile?.expert_mode && (
+          <div className="mt-4 px-4 py-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
+            <p className="text-xs text-amber-300/90 leading-relaxed">
+              ⚡ O Modo Expert utiliza o motor de IA mais preciso da Judite para análises jurídicas de alta complexidade. 
+              Cada interação consome <strong>5x mais</strong> do seu limite diário.
+            </p>
+          </div>
+        )}
+      </div>
+
       {/* Profile Section */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 space-y-5">
         <div className="flex items-center gap-3 pb-4 border-b border-slate-800">
@@ -197,68 +265,6 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Expert Mode Section */}
-      <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`flex items-center justify-center w-10 h-10 rounded-xl ${
-              profile?.expert_mode 
-                ? 'bg-amber-500/20 border border-amber-500/30' 
-                : 'bg-slate-800 border border-slate-700'
-            }`}>
-              <Zap className={`h-5 w-5 ${profile?.expert_mode ? 'text-amber-400' : 'text-slate-500'}`} />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-semibold text-white">Modo Expert</h3>
-                {profile?.expert_mode && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 uppercase tracking-wider">
-                    Ativo
-                  </span>
-                )}
-              </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                {profile?.expert_mode 
-                  ? 'Claude Haiku 4.5 — Precisão jurídica premium (Anthropic)' 
-                  : 'DeepSeek V3 — Motor padrão (econômico)'
-                }
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={async () => {
-              if (!profile) return;
-              setExpertToggling(true);
-              const newValue = !profile.expert_mode;
-              const { error } = await supabase
-                .from('profiles')
-                .update({ expert_mode: newValue })
-                .eq('id', profile.id);
-              if (!error) {
-                setProfile(prev => prev ? { ...prev, expert_mode: newValue } : null);
-              }
-              setExpertToggling(false);
-            }}
-            disabled={expertToggling}
-            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 ${
-              profile?.expert_mode ? 'bg-amber-500' : 'bg-slate-700'
-            } ${expertToggling ? 'opacity-50' : ''}`}
-          >
-            <span
-              className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
-                profile?.expert_mode ? 'translate-x-6' : 'translate-x-1'
-              }`}
-            />
-          </button>
-        </div>
-        {profile?.expert_mode && (
-          <div className="mt-3 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
-            <p className="text-xs text-amber-300/80">
-              ⚡ O modo Expert consome <strong>5x mais</strong> do seu limite diário. Use para análises que exigem máxima precisão jurídica.
-            </p>
-          </div>
-        )}
-      </div>
 
       {/* Plan & Upgrade */}
       <div className={`rounded-2xl border p-6 ${

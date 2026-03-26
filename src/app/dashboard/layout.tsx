@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { Sidebar } from '@/components/features/Sidebar';
+import { ExpertBadge } from '@/components/features/ExpertBadge';
 
 export default async function DashboardLayout({
   children,
@@ -35,6 +36,14 @@ export default async function DashboardLayout({
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto relative w-full flex flex-col">
+        {/* Expert Badge — Mobile (top-right, espelha o hamburger top-left) */}
+        <div className="lg:hidden fixed top-6 right-6 z-40">
+          <ExpertBadge />
+        </div>
+        {/* Expert Badge — Desktop (top-right do main) */}
+        <div className="hidden lg:block fixed top-6 right-10 z-40">
+          <ExpertBadge />
+        </div>
         {/* Banner CTA para Conectar Telegram */}
         {needsTelegram && (
           <div className="w-full bg-gradient-to-r from-indigo-600 to-blue-500 px-6 py-3 shadow-lg shadow-indigo-500/20 flex flex-col sm:flex-row items-center justify-between gap-3 animate-in slide-in-from-top-4 duration-500 shrink-0 z-40 mt-16 lg:mt-0">
