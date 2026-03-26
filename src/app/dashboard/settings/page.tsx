@@ -492,7 +492,7 @@ function TelegramLinkCard({
 
           <div className="flex items-center gap-3">
             <a 
-              href={`https://t.me/EusouJudite_bot?text=/vincular%20${profile.telegram_pin}`} 
+              href={`https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}?text=/vincular%20${profile.telegram_pin}`} 
               target="_blank" 
               rel="noreferrer"
               className="inline-flex items-center gap-2 rounded-xl bg-[#2AABEE] hover:bg-[#228cbd] px-5 py-3 text-white font-medium transition-all shadow-lg shadow-blue-500/20"
