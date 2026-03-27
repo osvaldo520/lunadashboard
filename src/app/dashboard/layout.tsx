@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { Sidebar } from '@/components/features/Sidebar';
 import { ExpertBadge } from '@/components/features/ExpertBadge';
+import { WelcomeModal } from '@/components/features/WelcomeModal';
+import { OnboardingChecklist } from '@/components/features/OnboardingChecklist';
 
 export default async function DashboardLayout({
   children,
@@ -27,6 +29,10 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-950">
+      {/* Onboarding */}
+      <WelcomeModal />
+      <OnboardingChecklist />
+
       {/* Sidebar */}
       <Sidebar 
         userName={profile?.full_name || user.email || 'Usuário'} 
