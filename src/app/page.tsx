@@ -188,37 +188,38 @@ export default async function LandingPage() {
             <FeatureCard
               icon={<BrainIcon />}
               title="Análise de Risco Inteligente"
-              description="Envie qualquer contrato — PDF, Word ou foto escaneada. A Judite identifica cláusulas abusivas, multas ocultas e riscos invisíveis em segundos."
+              description="Envie qualquer contrato — PDF, Word ou tire uma foto direto pelo celular. A Judite identifica cláusulas abusivas, multas ocultas e riscos invisíveis em segundos."
             />
-            {/* Feature 2 */}
+            {/* Feature 2 — Expert Mode */}
+            <FeatureCard
+              icon={<BoltIcon />}
+              title="⚡ Modo Avançado (Expert)"
+              description="Ative o motor de IA premium para análises mais profundas — com fundamentação legal detalhada, checklist LGPD/CDC e recomendações de negociação. Seu modo padrão continua funcionando normalmente."
+              highlighted
+            />
+            {/* Feature 3 */}
+            <FeatureCard
+              icon={<CameraIcon />}
+              title="Leitura de Documentos por Foto"
+              description="Tire uma foto do contrato na mesa e envie pelo Telegram. A Judite extrai o texto automaticamente e analisa na hora — sem scanner, sem digitalização manual."
+            />
+            {/* Feature 4 */}
             <FeatureCard
               icon={<PencilIcon />}
               title="Geração de Documentos"
               description="Peça à Judite para criar contratos, termos, procurações ou qualquer documento jurídico do zero. Ela redige com linguagem técnica precisa."
             />
-            {/* Feature 3 */}
+            {/* Feature 5 */}
             <FeatureCard
               icon={<MicIcon />}
               title="Converse por Voz ou Texto"
               description="Mande um áudio no Telegram e a Judite responde por voz. Peça análises, ajustes e ela te envia o PDF formatado direto no chat — sem abrir nenhum site."
             />
-            {/* Feature 4 */}
-            <FeatureCard
-              icon={<RepeatIcon />}
-              title="Correção e Ajustes"
-              description="'Judite, troque a cláusula 5 por algo mais favorável ao locatário.' Ela ajusta, reescreve e te entrega o documento revisado na hora."
-            />
-            {/* Feature 5 */}
+            {/* Feature 6 */}
             <FeatureCard
               icon={<ShieldIcon />}
               title="Segurança Corporativa"
               description="Seus documentos ficam criptografados com Row Level Security. Nenhum outro usuário, nem a equipe Judite, acessa seus dados."
-            />
-            {/* Feature 6 */}
-            <FeatureCard
-              icon={<DownloadIcon />}
-              title="PDF Profissional em Todo Lugar"
-              description="Exporte pelo painel web ou receba direto no Telegram. PDF formatado com identidade visual, pronto para enviar ao cliente ou ao tribunal."
             />
           </div>
         </div>
@@ -252,6 +253,123 @@ export default async function LandingPage() {
               title="Receba e Aja"
               description="Análise com score de risco, PDF formatado e recomendações claras. Peça ajustes por voz até ficar perfeito."
             />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════
+          PRÉVIA DE ANÁLISE
+      ═══════════════════════════════════════ */}
+      <section className="py-24 md:py-32">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+              Veja como uma análise da Judite<br className="hidden md:block" />
+              <span className="text-gradient">se parece na prática.</span>
+            </h2>
+            <p className="text-slate-400 max-w-2xl mx-auto">
+              Upload, clique em analisar e receba um parecer completo com score de risco, cláusulas identificadas, checklist de compliance e recomendações claras.
+            </p>
+          </div>
+
+          {/* Preview Cards */}
+          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            {/* Card 1: Cláusulas Críticas */}
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 hover:border-indigo-500/20 transition-all">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-lg">⚠️</span>
+                <h3 className="text-base font-semibold text-white">Cláusulas Críticas Identificadas</h3>
+              </div>
+              <div className="space-y-2">
+                {[
+                  { clause: 'Limitação de Responsabilidade', risk: 'Abusiva', color: 'text-red-400 bg-red-500/10' },
+                  { clause: 'Alteração Unilateral sem Prazo', risk: 'Importante', color: 'text-amber-400 bg-amber-500/10' },
+                  { clause: 'Encerramento Arbitrário', risk: 'Importante', color: 'text-amber-400 bg-amber-500/10' },
+                  { clause: 'Cessão de Direitos Autorais', risk: 'Abusiva', color: 'text-red-400 bg-red-500/10' },
+                  { clause: 'Multa Rescisória 50%', risk: 'Abusiva', color: 'text-red-400 bg-red-500/10' },
+                ].map((item) => (
+                  <div key={item.clause} className="flex items-center justify-between rounded-lg bg-slate-800/30 px-3 py-2">
+                    <span className="text-xs text-slate-300 truncate mr-2">{item.clause}</span>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${item.color}`}>{item.risk}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-800">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-slate-500">Placar de Risco Geral</span>
+                  <span className="text-sm font-bold text-red-400">ALTÍSSIMO — 92/100</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2: Checklist Compliance */}
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 hover:border-indigo-500/20 transition-all">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-lg">🛡️</span>
+                <h3 className="text-base font-semibold text-white">Checklist de Compliance</h3>
+              </div>
+              <div className="space-y-2">
+                {[
+                  { req: 'LGPD — Base Legal Explícita', status: '❌', statusText: 'Falhou', color: 'text-red-400' },
+                  { req: 'LGPD — Direitos do Titular', status: '❌', statusText: 'Falhou', color: 'text-red-400' },
+                  { req: 'CDC — Equilíbrio de Direitos', status: '❌', statusText: 'Falhou', color: 'text-red-400' },
+                  { req: 'CDC — Clareza de Termos', status: '⚠️', statusText: 'Parcial', color: 'text-amber-400' },
+                  { req: 'Código Civil — Boa-fé', status: '✅', statusText: 'OK', color: 'text-emerald-400' },
+                ].map((item) => (
+                  <div key={item.req} className="flex items-center justify-between rounded-lg bg-slate-800/30 px-3 py-2">
+                    <span className="text-xs text-slate-300 truncate mr-2">{item.req}</span>
+                    <span className={`text-xs font-medium ${item.color}`}>{item.status} {item.statusText}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-800">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-slate-500">Fundamentação</span>
+                  <span className="text-xs text-indigo-400">Lei 8.078/90 · Lei 13.709/18 · CC/2002</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3: Recomendações */}
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 hover:border-indigo-500/20 transition-all md:col-span-2">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-lg">📋</span>
+                <h3 className="text-base font-semibold text-white">Recomendações Finais</h3>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="w-2 h-2 rounded-full bg-red-500" />
+                    <span className="text-sm font-medium text-red-400">NÃO ASSINE neste momento</span>
+                  </div>
+                  <ul className="space-y-1.5 text-xs text-slate-400">
+                    <li className="flex items-start gap-1.5"><span className="text-red-400 mt-0.5">•</span>Documento não preenchido (placeholders em aberto)</li>
+                    <li className="flex items-start gap-1.5"><span className="text-red-400 mt-0.5">•</span>Viola dispositivos obrigatórios do CDC</li>
+                    <li className="flex items-start gap-1.5"><span className="text-red-400 mt-0.5">•</span>Desatende exigências mínimas da LGPD</li>
+                  </ul>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                    <span className="text-sm font-medium text-emerald-400">Próximos Passos</span>
+                  </div>
+                  <ul className="space-y-1.5 text-xs text-slate-400">
+                    <li className="flex items-start gap-1.5"><span className="text-emerald-400 mt-0.5">1.</span>Solicite versão completa com todas as seções preenchidas</li>
+                    <li className="flex items-start gap-1.5"><span className="text-emerald-400 mt-0.5">2.</span>Renegocie cláusulas 5, 6 e 7</li>
+                    <li className="flex items-start gap-1.5"><span className="text-emerald-400 mt-0.5">3.</span>Valide com advogado inscrito na OAB/UF</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Disclaimer */}
+          <div className="mt-8 text-center">
+            <p className="text-[11px] text-slate-600 max-w-2xl mx-auto leading-relaxed">
+              ⚖️ Os resultados podem variar conforme o tipo de documento, complexidade e modo de análise selecionado. 
+              Esta análise é de caráter informativo e deve ser revisada por advogado(a) inscrito(a) na Ordem dos Advogados do Brasil (OAB) 
+              antes de qualquer decisão jurídica.
+            </p>
           </div>
         </div>
       </section>
@@ -291,7 +409,7 @@ export default async function LandingPage() {
             {/* Pro */}
             <PricingCard
               name="Pro"
-              price="R$ Em Breve"
+              price="Em Breve"
               period=""
               description="Para profissionais e escritórios."
               features={[
@@ -299,7 +417,8 @@ export default async function LandingPage() {
                 '20 análises por dia',
                 '10 gerações de PDF/dia',
                 'Até 500 documentos',
-                'OCR de imagens',
+                'Leitura por foto (10/dia)',
+                '⚡ Modo Avançado (Expert)',
                 'Interação por voz',
                 'Exportação avançada',
                 'Suporte prioritário',
@@ -316,14 +435,14 @@ export default async function LandingPage() {
               period=""
               description="Para empresas e times jurídicos."
               features={[
-                'Uso ilimitado',
+                'Tudo do Pro incluso',
+                'Volume ilimitado',
                 'Multi-usuários',
-                'API dedicada',
                 'SLA garantido',
-                'Treinamento da equipe',
                 'Personalização da Judite',
+                'Onboarding dedicado',
               ]}
-              cta="Em Breve"
+              cta="Falar com Equipe"
               ctaHref="#"
               highlighted={false}
               disabled={true}
@@ -374,6 +493,13 @@ export default async function LandingPage() {
               © {new Date().getFullYear()} Judite AI. Todos os direitos reservados.
             </p>
           </div>
+          <div className="mt-8 pt-6 border-t border-white/5 text-center">
+            <p className="text-[10px] text-slate-700 max-w-xl mx-auto leading-relaxed">
+              ⚖️ Judite é uma ferramenta de apoio à análise jurídica e não constitui consultoria legal. 
+              Todos os relatórios e documentos gerados devem ser revisados por advogado(a) inscrito(a) na OAB 
+              antes de qualquer decisão ou uso em processos judiciais.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
@@ -384,14 +510,27 @@ export default async function LandingPage() {
    COMPONENTES INLINE
 ═══════════════════════════════════════ */
 
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
+function FeatureCard({ icon, title, description, highlighted }: { icon: React.ReactNode; title: string; description: string; highlighted?: boolean }) {
   return (
-    <div className="group rounded-2xl border border-slate-800 bg-slate-900/30 p-6 hover:border-indigo-500/30 hover:bg-slate-900/60 transition-all duration-300">
-      <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-4 group-hover:bg-indigo-500/20 transition-colors">
+    <div className={`group rounded-2xl border p-6 transition-all duration-300 ${
+      highlighted 
+        ? 'border-indigo-500/40 bg-indigo-500/5 hover:border-indigo-500/60 hover:bg-indigo-500/10 ring-1 ring-indigo-500/10' 
+        : 'border-slate-800 bg-slate-900/30 hover:border-indigo-500/30 hover:bg-slate-900/60'
+    }`}>
+      <div className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 transition-colors ${
+        highlighted
+          ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300 group-hover:bg-indigo-500/30'
+          : 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400 group-hover:bg-indigo-500/20'
+      }`}>
         {icon}
       </div>
       <h3 className="text-base font-semibold text-white mb-2">{title}</h3>
       <p className="text-sm text-slate-400 leading-relaxed">{description}</p>
+      {highlighted && (
+        <div className="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-medium text-indigo-400">
+          Disponível no plano Pro
+        </div>
+      )}
     </div>
   );
 }
@@ -481,6 +620,23 @@ function BrainIcon() {
   );
 }
 
+function BoltIcon() {
+  return (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+    </svg>
+  );
+}
+
+function CameraIcon() {
+  return (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
+    </svg>
+  );
+}
+
 function PencilIcon() {
   return (
     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -497,14 +653,6 @@ function MicIcon() {
   );
 }
 
-function RepeatIcon() {
-  return (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 14.652" />
-    </svg>
-  );
-}
-
 function ShieldIcon() {
   return (
     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -513,10 +661,3 @@ function ShieldIcon() {
   );
 }
 
-function DownloadIcon() {
-  return (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-    </svg>
-  );
-}
