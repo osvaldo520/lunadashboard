@@ -12,6 +12,7 @@ interface Profile {
   phone: string | null;
   plan: string;
   plan_type: string;
+  plan_expires_at: string | null;
   telegram_id: string | null;
   telegram_pin: string | null;
   telegram_pin_expires_at: string | null;
@@ -244,8 +245,8 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Appearance Section */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+      {/* Appearance Section — Comentado até implementação completa */}
+      {/* <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-amber-500/10">
@@ -263,7 +264,7 @@ export default function SettingsPage() {
             Alternar
           </button>
         </div>
-      </div>
+      </div> */}
 
 
       {/* Plan & Upgrade */}
@@ -287,7 +288,11 @@ export default function SettingsPage() {
               <h3 className="text-sm font-semibold text-white">Plano atual</h3>
               <p className="text-xs text-slate-400 mt-0.5">
                 {(profile?.plan_type || profile?.plan || 'free') === 'pro' ? (
-                  <span className="text-emerald-400 font-bold">PRO — Limites diários renovam à meia-noite</span>
+                  profile?.plan_expires_at ? (
+                    <span className="text-amber-400 font-bold">PRO — Cancelado, acesso até {new Date(profile.plan_expires_at).toLocaleDateString('pt-BR')}</span>
+                  ) : (
+                    <span className="text-emerald-400 font-bold">PRO — Limites diários renovam à meia-noite</span>
+                  )
                 ) : (
                   <span>Plano <span className="font-bold text-indigo-400 uppercase">gratuito</span> — 50 mensagens totais</span>
                 )}
@@ -327,8 +332,37 @@ export default function SettingsPage() {
                 <><Crown className="h-4 w-4" /> Upgrade para Pro</>
               )}
             </button>
+          ) : profile?.plan_expires_at ? (
+            /* Cancelamento pendente — acesso até fim do ciclo */
+            <div className="flex flex-col items-end gap-1.5">
+              <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 uppercase tracking-wider">
+                ⏳ Cancelado
+              </span>
+              <button
+                onClick={async () => {
+                  setUpgrading(true);
+                  try {
+                    const { data, error } = await supabase.functions.invoke('stripe-portal', {
+                      method: 'POST',
+                    });
+                    if (error) throw error;
+                    if (data?.url) window.location.href = data.url;
+                  } catch (err) {
+                    console.error('[Portal]', err);
+                    alert('Erro ao conectar com Stripe.');
+                  } finally {
+                    setUpgrading(false);
+                  }
+                }}
+                disabled={upgrading}
+                className="text-[11px] text-indigo-400 hover:text-indigo-300 transition-colors underline underline-offset-2 font-medium"
+              >
+                Reativar assinatura
+              </button>
+            </div>
           ) : (
-            <div className="flex items-center gap-3">
+            /* Pro ativo normal */
+            <div className="flex flex-col items-end gap-1.5">
               <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
                 ✅ Ativo
               </span>
@@ -340,13 +374,8 @@ export default function SettingsPage() {
                     const { data, error } = await supabase.functions.invoke('stripe-portal', {
                       method: 'POST',
                     });
-                    
                     if (error) throw error;
-                    if (data?.url) {
-                      window.location.href = data.url;
-                    } else {
-                      alert('Erro ao abrir portal. Tente novamente.');
-                    }
+                    if (data?.url) window.location.href = data.url;
                   } catch (err) {
                     console.error('[Portal]', err);
                     alert('Erro ao conectar com Stripe.');
@@ -357,7 +386,7 @@ export default function SettingsPage() {
                 disabled={upgrading}
                 className="text-[11px] text-slate-500 hover:text-red-400 transition-colors underline underline-offset-2"
               >
-                Cancelar assinatura
+                Gerenciar assinatura
               </button>
             </div>
           )}
