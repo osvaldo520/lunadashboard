@@ -299,21 +299,12 @@ export default function SettingsPage() {
               onClick={async () => {
                 setUpgrading(true);
                 try {
-                  const { data: { session } } = await supabase.auth.getSession();
-                  if (!session) throw new Error('Sessão expirada');
+                  const { data, error } = await supabase.functions.invoke('stripe-checkout', {
+                    method: 'POST',
+                  });
                   
-                  const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/stripe-checkout`,
-                    {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${session.access_token}`,
-                      },
-                    }
-                  );
-                  const data = await res.json();
-                  if (data.url) {
+                  if (error) throw error;
+                  if (data?.url) {
                     window.location.href = data.url;
                   } else {
                     alert('Erro ao iniciar checkout. Tente novamente.');
@@ -346,21 +337,12 @@ export default function SettingsPage() {
                   if (!confirm('Tem certeza que deseja cancelar sua assinatura Pro?\n\nVocê continuará com acesso até o final do período já pago.')) return;
                   setUpgrading(true);
                   try {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (!session) throw new Error('Sessão expirada');
+                    const { data, error } = await supabase.functions.invoke('stripe-portal', {
+                      method: 'POST',
+                    });
                     
-                    const res = await fetch(
-                      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/stripe-portal`,
-                      {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                          'Authorization': `Bearer ${session.access_token}`,
-                        },
-                      }
-                    );
-                    const data = await res.json();
-                    if (data.url) {
+                    if (error) throw error;
+                    if (data?.url) {
                       window.location.href = data.url;
                     } else {
                       alert('Erro ao abrir portal. Tente novamente.');
