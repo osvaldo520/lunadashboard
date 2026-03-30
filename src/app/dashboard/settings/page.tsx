@@ -337,9 +337,47 @@ export default function SettingsPage() {
               )}
             </button>
           ) : (
-            <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
-              ✅ Ativo
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
+                ✅ Ativo
+              </span>
+              <button
+                onClick={async () => {
+                  if (!confirm('Tem certeza que deseja cancelar sua assinatura Pro?\n\nVocê continuará com acesso até o final do período já pago.')) return;
+                  setUpgrading(true);
+                  try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session) throw new Error('Sessão expirada');
+                    
+                    const res = await fetch(
+                      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/stripe-portal`,
+                      {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'Authorization': `Bearer ${session.access_token}`,
+                        },
+                      }
+                    );
+                    const data = await res.json();
+                    if (data.url) {
+                      window.location.href = data.url;
+                    } else {
+                      alert('Erro ao abrir portal. Tente novamente.');
+                    }
+                  } catch (err) {
+                    console.error('[Portal]', err);
+                    alert('Erro ao conectar com Stripe.');
+                  } finally {
+                    setUpgrading(false);
+                  }
+                }}
+                disabled={upgrading}
+                className="text-[11px] text-slate-500 hover:text-red-400 transition-colors underline underline-offset-2"
+              >
+                Cancelar assinatura
+              </button>
+            </div>
           )}
         </div>
       </div>

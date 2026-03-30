@@ -1,9 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 import { Sidebar } from '@/components/features/Sidebar';
 import { ExpertBadge } from '@/components/features/ExpertBadge';
 import { WelcomeModal } from '@/components/features/WelcomeModal';
 import { OnboardingChecklist } from '@/components/features/OnboardingChecklist';
+import { PaymentToast } from '@/components/features/PaymentToast';
 
 export default async function DashboardLayout({
   children,
@@ -32,6 +34,11 @@ export default async function DashboardLayout({
       {/* Onboarding */}
       <WelcomeModal />
       <OnboardingChecklist />
+
+      {/* Toast de pagamento Stripe */}
+      <Suspense fallback={null}>
+        <PaymentToast />
+      </Suspense>
 
       {/* Sidebar */}
       <Sidebar 
