@@ -291,7 +291,7 @@ export default function SettingsPage() {
                   profile?.plan_expires_at ? (
                     <span className="text-amber-400 font-bold">PRO — Cancelado, acesso até {new Date(profile.plan_expires_at).toLocaleDateString('pt-BR')}</span>
                   ) : (
-                    <span className="text-emerald-400 font-bold">PRO — Limites diários renovam à meia-noite</span>
+                    <span className="text-emerald-400 font-bold">PRO — Limites renovam diariamente</span>
                   )
                 ) : (
                   <span>Plano <span className="font-bold text-indigo-400 uppercase">gratuito</span> — 50 mensagens totais</span>
@@ -357,7 +357,7 @@ export default function SettingsPage() {
                 disabled={upgrading}
                 className="text-[11px] text-indigo-400 hover:text-indigo-300 transition-colors underline underline-offset-2 font-medium"
               >
-                Reativar assinatura
+                {upgrading ? '⏳ Redirecionando...' : 'Reativar assinatura'}
               </button>
             </div>
           ) : (
@@ -368,7 +368,6 @@ export default function SettingsPage() {
               </span>
               <button
                 onClick={async () => {
-                  if (!confirm('Tem certeza que deseja cancelar sua assinatura Pro?\n\nVocê continuará com acesso até o final do período já pago.')) return;
                   setUpgrading(true);
                   try {
                     const { data, error } = await supabase.functions.invoke('stripe-portal', {
@@ -384,9 +383,9 @@ export default function SettingsPage() {
                   }
                 }}
                 disabled={upgrading}
-                className="text-[11px] text-slate-500 hover:text-red-400 transition-colors underline underline-offset-2"
+                className="text-[11px] text-slate-400 hover:text-indigo-400 transition-colors underline underline-offset-2"
               >
-                Gerenciar assinatura
+                {upgrading ? '⏳ Redirecionando...' : 'Gerenciar assinatura'}
               </button>
             </div>
           )}
