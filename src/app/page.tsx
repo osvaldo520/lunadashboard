@@ -409,8 +409,8 @@ export default async function LandingPage() {
             {/* Pro */}
             <PricingCard
               name="Pro"
-              price="Em Breve"
-              period=""
+              price="R$ 197"
+              period="/mês"
               description="Para profissionais e escritórios."
               features={[
                 '100 mensagens por dia',
@@ -423,10 +423,10 @@ export default async function LandingPage() {
                 'Exportação avançada',
                 'Suporte prioritário',
               ]}
-              cta="Em Breve"
-              ctaHref="#"
+              cta="Assinar Pro"
+              ctaHref="/register?plan=pro"
               highlighted={true}
-              disabled={true}
+              disabled={false}
             />
             {/* Enterprise */}
             <PricingCard
