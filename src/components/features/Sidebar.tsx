@@ -108,7 +108,7 @@ export function Sidebar({ userName, userEmail, userPlan }: SidebarProps) {
         {/* Brand */}
         <div className="flex items-center gap-3 px-6 py-6 border-b border-slate-800 h-[88px] shrink-0">
           <div className="flex items-center justify-center w-10 h-10 shrink-0 rounded-xl bg-indigo-600/20 border border-indigo-500/30">
-            <Moon className="h-5 w-5 text-indigo-400" />
+            <span className="text-xl">⚖️</span>
           </div>
           <div className="flex-1 min-w-0">
             <h2 className="text-sm font-bold text-white tracking-tight truncate">Judite</h2>

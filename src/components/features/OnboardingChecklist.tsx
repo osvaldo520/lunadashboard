@@ -21,15 +21,16 @@ export function OnboardingChecklist() {
 
   useEffect(() => {
     const check = async () => {
-      // Já dispensou?
-      if (localStorage.getItem('judite_onboarding_done')) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoading(false); return; }
+
+      // Já dispensou (especificamente este usuário)?
+      const storageKey = `judite_onboarding_done_${user.id}`;
+      if (localStorage.getItem(storageKey)) {
         setDismissed(true);
         setLoading(false);
         return;
       }
-
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setLoading(false); return; }
 
       // Checar Telegram vinculado
       const { data: profile } = await supabase
@@ -59,7 +60,7 @@ export function OnboardingChecklist() {
       if (newSteps.every(s => s.done)) {
         setAllDone(true);
         setTimeout(() => {
-          localStorage.setItem('judite_onboarding_done', 'true');
+          localStorage.setItem(`judite_onboarding_done_${user.id}`, 'true');
           setDismissed(true);
         }, 3000);
       }
@@ -103,8 +104,9 @@ export function OnboardingChecklist() {
                 <p className="text-[10px] text-slate-500 mt-0.5">{completedCount}/{steps.length} concluídos</p>
               </div>
               <button 
-                onClick={() => {
-                  localStorage.setItem('judite_onboarding_done', 'true');
+                onClick={async () => {
+                  const { data: { user } } = await supabase.auth.getUser();
+                  if (user) localStorage.setItem(`judite_onboarding_done_${user.id}`, 'true');
                   setDismissed(true);
                 }}
                 className="text-slate-600 hover:text-slate-400 text-xs transition-colors"

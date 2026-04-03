@@ -161,7 +161,7 @@ export default async function LandingPage() {
         <div className="max-w-4xl mx-auto px-6 text-center">
           <p className="text-xs font-medium text-slate-600 uppercase tracking-widest mb-6">Construído com tecnologias de ponta</p>
           <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-4 text-slate-600">
-            {['Judite IA', 'Next.js', 'Supabase', 'Telegram', 'Segurança em Camadas'].map((tech) => (
+            {['Judite IA', 'Next.js', 'Supabase', 'Telegram', '41 APIs Gov', 'Segurança em Camadas'].map((tech) => (
               <span key={tech} className="text-sm font-medium hover:text-slate-400 transition-colors">{tech}</span>
             ))}
           </div>
@@ -221,6 +221,29 @@ export default async function LandingPage() {
               title="Segurança Corporativa"
               description="Seus documentos ficam criptografados com Row Level Security. Nenhum outro usuário, nem a equipe Judite, acessa seus dados."
             />
+          </div>
+
+          {/* Feature Destaque — Investigadora Governamental */}
+          <div className="mt-6 group rounded-2xl border border-indigo-500/40 bg-indigo-500/5 hover:border-indigo-500/60 hover:bg-indigo-500/10 ring-1 ring-indigo-500/10 p-6 md:p-8 transition-all duration-300">
+            <div className="flex flex-col md:flex-row md:items-center gap-6">
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-300 group-hover:bg-indigo-500/30 transition-colors">
+                  <GovIcon />
+                </div>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-white mb-2">🏛️ Investigadora Governamental</h3>
+                <p className="text-sm text-slate-400 leading-relaxed">
+                  Acesso direto ao STF, Câmara dos Deputados, Diário Oficial, Banco Central, DataJud e mais 36 APIs públicas brasileiras. 
+                  Pesquise processos judiciais, compare indicadores econômicos, investigue editais de licitação e monitore publicações oficiais — tudo por conversa natural, sem sair do chat.
+                </p>
+              </div>
+              <div className="flex-shrink-0">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-medium text-indigo-400 whitespace-nowrap">
+                  Disponível no plano Pro
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -419,6 +442,7 @@ export default async function LandingPage() {
                 'Até 500 documentos',
                 'Leitura por foto (10/dia)',
                 '⚡ Modo Avançado (Expert)',
+                '🏛️ Dados oficiais do governo',
                 'Interação por voz',
                 'Exportação avançada',
                 'Suporte prioritário',
@@ -707,3 +731,10 @@ function ShieldIcon() {
   );
 }
 
+function GovIcon() {
+  return (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
+    </svg>
+  );
+}
