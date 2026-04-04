@@ -530,11 +530,24 @@ function TelegramLinkCard({
 
       {hasPinActive ? (
         <div className="p-5 rounded-2xl border border-blue-500/30 bg-blue-900/20 space-y-4">
-          <p className="text-sm text-slate-300">Envie o comando abaixo para a Judite no Telegram ou use o botão mágico:</p>
+          <p className="text-sm text-slate-300">Clique no botão abaixo para vincular automaticamente, ou copie o comando para enviar manualmente:</p>
           
-          <code className="text-2xl font-mono font-bold text-white tracking-widest bg-slate-900/80 px-4 py-2 rounded-xl border border-slate-700 block w-fit shadow-lg">
-            /vincular {profile.telegram_pin}
-          </code>
+          <div className="flex items-center gap-3">
+            <code className="text-2xl font-mono font-bold text-white tracking-widest bg-slate-900/80 px-4 py-2 rounded-xl border border-slate-700 shadow-lg">
+              /vincular {profile.telegram_pin}
+            </code>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(`/vincular ${profile.telegram_pin}`);
+                const btn = document.getElementById('copy-pin-btn');
+                if (btn) { btn.textContent = '✅ Copiado!'; setTimeout(() => { btn.textContent = '📋 Copiar'; }, 2000); }
+              }}
+              id="copy-pin-btn"
+              className="text-xs text-slate-400 hover:text-white border border-slate-700 hover:border-slate-500 px-3 py-2 rounded-lg transition-all whitespace-nowrap"
+            >
+              📋 Copiar
+            </button>
+          </div>
 
           {/* Countdown Timer */}
           <div className="flex items-center gap-2">
@@ -544,9 +557,9 @@ function TelegramLinkCard({
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <a 
-              href={`https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}?text=/vincular%20${profile.telegram_pin}`} 
+              href={`https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}?start=pin_${profile.telegram_pin}`} 
               target="_blank" 
               rel="noreferrer"
               className="inline-flex items-center gap-2 rounded-xl bg-[#2AABEE] hover:bg-[#228cbd] px-5 py-3 text-white font-medium transition-all shadow-lg shadow-blue-500/20"
@@ -563,6 +576,10 @@ function TelegramLinkCard({
               Novo PIN
             </button>
           </div>
+
+          <p className="text-[11px] text-slate-500 leading-relaxed">
+            💡 Se o Telegram Web abrir sem vincular, cole o comando copiado na conversa com a Judite e envie.
+          </p>
         </div>
       ) : isExpired ? (
         // ── Estado: PIN EXPIROU ──
