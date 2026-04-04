@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
+import GuideModal from '@/components/GuideModal';
 
 export const metadata: Metadata = {
   title: 'Judite — Análise e Geração de Contratos com IA',
@@ -38,7 +39,7 @@ export default async function LandingPage() {
             <a href="#recursos" className="hover:text-white transition-colors">Recursos</a>
             <a href="#como-funciona" className="hover:text-white transition-colors">Como Funciona</a>
             <a href="#precos" className="hover:text-white transition-colors">Preços</a>
-            <Link href="/guide" className="hover:text-white transition-colors">Guia de Uso</Link>
+            <GuideModal />
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">

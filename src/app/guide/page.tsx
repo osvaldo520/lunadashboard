@@ -69,6 +69,8 @@ export default function GuidePage() {
             <div className="space-y-2">
               <ExampleQuery query="Qual o prazo para contestação no JEC?" tag="Dúvida jurídica" />
               <ExampleQuery query="Me explique o que é dano moral in re ipsa" tag="Conceito" />
+              <ExampleQuery query="Essa cláusula de multa rescisória de 50% é legal?" tag="Revisão" />
+              <ExampleQuery query="Conte 15 dias úteis a partir de hoje" tag="Cálculo" />
               <ExampleQuery query="Crie um contrato de aluguel residencial" tag="Geração" />
             </div>
             <div className="mt-4 p-4 rounded-xl bg-indigo-500/5 border border-indigo-500/20">
@@ -123,7 +125,7 @@ export default function GuidePage() {
           {/* Expert */}
           <GuideSection icon="⚡" title="Modo Expert">
             <p className="text-sm text-slate-400 mb-4">
-              Ative nas Configurações do painel para análises com motor de IA premium (Claude).
+              Ative nas Configurações do painel para análises com o motor de IA premium exclusivo da Judite.
               Inclui fundamentação legal detalhada, checklist LGPD/CDC aprofundado e recomendações de negociação.
             </p>
             <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
@@ -140,8 +142,6 @@ export default function GuidePage() {
                 { cmd: '/start', desc: 'Boas-vindas' },
                 { cmd: '/help', desc: 'Ajuda detalhada' },
                 { cmd: '/clear', desc: 'Limpa contexto' },
-                { cmd: '/voz casual', desc: 'Tom descontraído' },
-                { cmd: '/voz formal', desc: 'Tom profissional' },
                 { cmd: '/vincular', desc: 'Vincula ao painel' },
               ].map((item) => (
                 <div key={item.cmd} className="flex items-center gap-3 rounded-lg bg-slate-800/30 border border-slate-700/30 px-3 py-2">
