@@ -1,15 +1,21 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { createClient } from '@/lib/supabase/server';
+import { ArrowLeft } from 'lucide-react';
+
 export const metadata: Metadata = {
   title: 'Guia de Uso — Judite IA',
   description: 'Aprenda a usar todas as funcionalidades da Judite: análise de contratos, geração de documentos, consulta a dados do governo, modo expert e muito mais.',
 };
 
-export default function GuidePage() {
+export default async function GuidePage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <div className="min-h-screen bg-[#06070a] text-white">
-      {/* Navbar simples */}
+      {/* Navbar dinâmica */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#06070a]/80 backdrop-blur-xl">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
@@ -19,15 +25,27 @@ export default function GuidePage() {
             <span className="text-lg font-bold tracking-tight">Judite</span>
           </Link>
           <div className="flex items-center gap-3">
-            <Link href="/login" className="text-sm text-slate-400 hover:text-white transition-colors px-3 py-2">
-              Entrar
-            </Link>
-            <Link
-              href="/register"
-              className="text-sm font-medium bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition-all"
-            >
-              Comece Grátis
-            </Link>
+            {user ? (
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-2 text-sm font-medium bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg border border-slate-700 transition-all shadow-sm"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Voltar para o Painel
+              </Link>
+            ) : (
+              <>
+                <Link href="/login" className="text-sm text-slate-400 hover:text-white transition-colors px-3 py-2">
+                  Entrar
+                </Link>
+                <Link
+                  href="/register"
+                  className="text-sm font-medium bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition-all"
+                >
+                  Comece Grátis
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
