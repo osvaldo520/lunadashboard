@@ -167,7 +167,7 @@ export default function GuidePage() {
               <ExampleQuery query="Consulte o CNPJ XX.XXX.XXX/0001-XX" tag="BrasilAPI" />
               <ExampleQuery query="Pesquise jurisprudência sobre despejo por falta de pagamento" tag="Jurisprudência" />
               <ExampleQuery query="Houve alterações na Lei do Inquilinato em 2025?" tag="Legislação" />
-              <ExampleQuery query="Pesquise sobre o processo 0001234-56.2025.8.26.0100" tag="Processo" />
+              <ExampleQuery query="Pesquise sobre o processo XXXXX-XX.2025.8.26.XXXX" tag="Processo" />
             </div>
             <div className="mt-4 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
               <p className="text-sm text-emerald-300">

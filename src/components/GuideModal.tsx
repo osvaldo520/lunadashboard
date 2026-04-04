@@ -67,6 +67,33 @@ export default function GuideModal() {
             </div>
           </Section>
 
+          {/* Dashboard vs Telegram */}
+          <Section icon="🔄" title="Sua Assistente de Bolso">
+            <div className="grid grid-cols-2 gap-2.5">
+              <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-3 space-y-1.5">
+                <h4 className="text-[11px] font-bold text-white flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5 text-blue-400 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.94z"/></svg>
+                  Telegram
+                </h4>
+                <p className="text-[10px] text-slate-400 leading-relaxed">
+                  Converse por texto/voz, envie documentos do celular, receba PDFs no chat.
+                  Ideal entre audiências ou no trânsito.
+                </p>
+              </div>
+              <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-3 space-y-1.5">
+                <h4 className="text-[11px] font-bold text-white flex items-center gap-1.5">
+                  ⚖️ Painel Web
+                </h4>
+                <p className="text-[10px] text-slate-400 leading-relaxed">
+                  Gerencie documentos, acompanhe uso, configure Expert Mode e acesse seu acervo.
+                </p>
+              </div>
+            </div>
+            <p className="mt-2 text-[10px] text-slate-500">
+              💡 Tudo sincronizado — documentos salvos pelo Telegram aparecem no painel e vice-versa.
+            </p>
+          </Section>
+
           {/* Conversa */}
           <Section icon="💬" title="O que você pode perguntar">
             <div className="space-y-1.5">
@@ -106,8 +133,17 @@ export default function GuideModal() {
               <Example q="Compare gastos do deputado X com Y" tag="Câmara" />
               <Example q="Consulte o CNPJ XX.XXX.XXX/0001-XX" tag="BrasilAPI" />
               <Example q="Jurisprudência sobre despejo" tag="Jurisprud." />
-              <Example q="Mudanças na Lei do Inquilinato em 2025?" tag="Legislação" />
+              <Example q="Alterações na Lei do Inquilinato em 2025?" tag="Legislação" />
+              <Example q="Pesquise o processo XXXXX-XX.2025.8.26.XXXX" tag="Processo" />
             </div>
+          </Section>
+
+          {/* Expert */}
+          <Section icon="⚡" title="Modo Expert">
+            <p className="text-[11px] text-slate-400">
+              Motor de IA premium exclusivo da Judite. Fundamentação legal detalhada, checklist LGPD/CDC aprofundado.
+              Disponível no plano Pro — consome 5x mais créditos.
+            </p>
           </Section>
 
           {/* Expert + Planos compacto */}
