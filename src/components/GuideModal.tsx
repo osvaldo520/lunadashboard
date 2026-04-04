@@ -104,7 +104,9 @@ export default function GuideModal() {
               <Example q="Qual a taxa Selic hoje?" tag="BACEN" />
               <Example q="Processos de dano moral no TJSP" tag="DataJud" />
               <Example q="Compare gastos do deputado X com Y" tag="Câmara" />
-              <Example q="Consulte o CNPJ 12.345.678/0001-90" tag="BrasilAPI" />
+              <Example q="Consulte o CNPJ XX.XXX.XXX/0001-XX" tag="BrasilAPI" />
+              <Example q="Jurisprudência sobre despejo" tag="Jurisprud." />
+              <Example q="Mudanças na Lei do Inquilinato em 2025?" tag="Legislação" />
             </div>
           </Section>
 

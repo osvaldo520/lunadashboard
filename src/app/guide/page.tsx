@@ -61,6 +61,57 @@ export default function GuidePage() {
             </div>
           </GuideSection>
 
+          {/* Dashboard vs Telegram */}
+          <GuideSection icon="🔄" title="Sua Assistente de Bolso">
+            <p className="text-sm text-slate-400 mb-5">
+              A Judite funciona em dois ambientes complementares. Use cada um para o que ele faz melhor:
+            </p>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 space-y-3">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-blue-400 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.94z"/></svg>
+                  <h3 className="text-sm font-bold text-white">Telegram</h3>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Sua <strong className="text-blue-300">assistente de bolso</strong>. Converse em texto ou voz,
+                  envie documentos direto do celular, tire fotos de contratos e receba PDFs no chat.
+                  Ideal para consultas rápidas no corredor do fórum, entre audiências ou no trânsito.
+                </p>
+                <ul className="text-[11px] text-slate-500 space-y-1">
+                  <li>✅ Conversa por texto e voz</li>
+                  <li>✅ Envio de documentos pelo celular</li>
+                  <li>✅ Recebe PDFs diretamente no chat</li>
+                  <li>✅ Consultas governamentais em tempo real</li>
+                </ul>
+              </div>
+
+              <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-5 space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">⚖️</span>
+                  <h3 className="text-sm font-bold text-white">Painel Web (Pauta)</h3>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Seu <strong className="text-indigo-300">escritório digital</strong>. Gerencie documentos organizados,
+                  acompanhe seu uso, configure o Modo Expert, vincule o Telegram e acesse seu
+                  acervo de análises a qualquer momento.
+                </p>
+                <ul className="text-[11px] text-slate-500 space-y-1">
+                  <li>✅ Biblioteca de documentos organizada</li>
+                  <li>✅ Upload por arrastar e soltar</li>
+                  <li>✅ Histórico de análises e pareceres</li>
+                  <li>✅ Configurações e gestão de plano</li>
+                </ul>
+              </div>
+            </div>
+            <div className="mt-4 p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
+              <p className="text-xs text-slate-400 leading-relaxed">
+                💡 <strong className="text-slate-300">Tudo sincronizado:</strong> Documentos salvos pelo Telegram
+                aparecem no painel. Documentos enviados pelo painel podem ser analisados pela Judite no Telegram.
+                Sua conta é única — acesse de onde quiser.
+              </p>
+            </div>
+          </GuideSection>
+
           {/* Conversa */}
           <GuideSection icon="💬" title="Conversando com a Judite">
             <p className="text-sm text-slate-400 mb-4">
@@ -113,7 +164,10 @@ export default function GuidePage() {
               <ExampleQuery query="Busque processos de dano moral no TJSP" tag="DataJud" />
               <ExampleQuery query="Compare gastos do deputado X com Y" tag="Câmara" />
               <ExampleQuery query="Publicações sobre LGPD no diário oficial" tag="DOU" />
-              <ExampleQuery query="Consulte o CNPJ 12.345.678/0001-90" tag="BrasilAPI" />
+              <ExampleQuery query="Consulte o CNPJ XX.XXX.XXX/0001-XX" tag="BrasilAPI" />
+              <ExampleQuery query="Pesquise jurisprudência sobre despejo por falta de pagamento" tag="Jurisprudência" />
+              <ExampleQuery query="Houve alterações na Lei do Inquilinato em 2025?" tag="Legislação" />
+              <ExampleQuery query="Pesquise sobre o processo 0001234-56.2025.8.26.0100" tag="Processo" />
             </div>
             <div className="mt-4 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
               <p className="text-sm text-emerald-300">

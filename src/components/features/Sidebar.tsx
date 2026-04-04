@@ -15,7 +15,8 @@ import {
   Sparkles,
   Loader2,
   Menu,
-  X
+  X,
+  BookOpen
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -28,6 +29,7 @@ const navItems = [
   { href: '/dashboard', label: 'Visão Geral', icon: LayoutDashboard },
   { href: '/dashboard/documents', label: 'Documentos', icon: FileText },
   { href: '/dashboard/upload', label: 'Upload', icon: Upload },
+  { href: '/guide', label: 'Guia de Uso', icon: BookOpen },
   { href: '/dashboard/settings', label: 'Configurações', icon: Settings },
 ];
 
