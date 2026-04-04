@@ -557,24 +557,36 @@ function TelegramLinkCard({
             </span>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-            <a 
-              href={`https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}?start=pin_${profile.telegram_pin}`} 
-              target="_blank" 
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl bg-[#2AABEE] hover:bg-[#228cbd] px-5 py-3 text-white font-medium transition-all shadow-lg shadow-blue-500/20"
-            >
-              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.94z"/></svg>
-              Vincular com 1-Clique
-            </a>
-            <button
-              onClick={handleGeneratePin}
-              disabled={generating}
-              className="rounded-xl border border-slate-700 px-4 py-3 text-sm text-slate-400 hover:text-white hover:border-slate-500 transition-all flex items-center gap-2"
-            >
-              <RefreshCw className={`w-4 h-4 ${generating ? 'animate-spin' : ''}`} />
-              Novo PIN
-            </button>
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <a 
+                href={`https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}?start=pin_${profile.telegram_pin}`} 
+                target="_blank" 
+                rel="noreferrer"
+                className="flex flex-1 justify-center items-center gap-2 rounded-xl bg-[#2AABEE] hover:bg-[#228cbd] px-5 py-3 text-white font-medium transition-all shadow-lg shadow-blue-500/20 text-sm"
+              >
+                <svg className="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.94z"/></svg>
+                Abrir no Aplicativo (Mobile/App)
+              </a>
+              
+              <a 
+                href={`https://web.telegram.org/a/#?tgaddr=${encodeURIComponent(`tg://resolve?domain=${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}&start=pin_${profile.telegram_pin}`)}`} 
+                target="_blank" 
+                rel="noreferrer"
+                className="flex flex-1 justify-center items-center gap-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 px-5 py-3 text-white font-medium transition-all shadow-lg shadow-slate-900/50 text-sm"
+              >
+                🌐 Abrir no navegador (Web)
+              </a>
+
+              <button
+                onClick={handleGeneratePin}
+                disabled={generating}
+                className="rounded-xl border border-slate-700 px-4 py-3 text-sm text-slate-400 hover:text-white hover:border-slate-500 transition-all flex items-center justify-center gap-2 shrink-0 sm:w-auto w-full"
+                title="Gerar um novo PIN"
+              >
+                <RefreshCw className={`w-4 h-4 ${generating ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
           </div>
 
           <p className="text-[11px] text-slate-500 leading-relaxed">
