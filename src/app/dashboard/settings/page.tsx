@@ -530,68 +530,69 @@ function TelegramLinkCard({
 
       {hasPinActive ? (
         <div className="p-5 rounded-2xl border border-blue-500/30 bg-blue-900/20 space-y-4">
-          <p className="text-sm text-slate-300">Clique no botão abaixo para vincular automaticamente, ou copie o comando para enviar manualmente:</p>
-          
-          <div className="flex items-center gap-3">
-            <code className="text-2xl font-mono font-bold text-white tracking-widest bg-slate-900/80 px-4 py-2 rounded-xl border border-slate-700 shadow-lg">
-              /vincular {profile.telegram_pin}
-            </code>
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(`/vincular ${profile.telegram_pin}`);
-                const btn = document.getElementById('copy-pin-btn');
-                if (btn) { btn.textContent = '✅ Copiado!'; setTimeout(() => { btn.textContent = '📋 Copiar'; }, 2000); }
-              }}
-              id="copy-pin-btn"
-              className="text-xs text-slate-400 hover:text-white border border-slate-700 hover:border-slate-500 px-3 py-2 rounded-lg transition-all whitespace-nowrap"
-            >
-              📋 Copiar
-            </button>
-          </div>
+          <p className="text-sm text-slate-300">Escolha uma das opções abaixo para vincular sua conta:</p>
 
-          {/* Countdown Timer */}
-          <div className="flex items-center gap-2">
-            <Timer className="w-4 h-4 text-blue-400" />
-            <span className="text-sm font-mono text-blue-300">
-              Expira em <span className="font-bold">{countdown}</span>
-            </span>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Opção A: Automática */}
+            <div className="p-4 rounded-xl border border-blue-500/20 bg-slate-900/50 flex flex-col justify-between space-y-4">
+              <div>
+                <h4 className="text-sm font-semibold text-white mb-1">Opção A: Link Direto</h4>
+                <p className="text-[11px] text-slate-400 leading-relaxed">O app será aberto com a mensagem pronta. É só apertar enviar!</p>
+              </div>
               <a 
-                href={`https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}?start=pin_${profile.telegram_pin}`} 
+                href={`https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}?text=/vincular%20${profile.telegram_pin}`} 
                 target="_blank" 
                 rel="noreferrer"
-                className="flex flex-1 justify-center items-center gap-2 rounded-xl bg-[#2AABEE] hover:bg-[#228cbd] px-5 py-3 text-white font-medium transition-all shadow-lg shadow-blue-500/20 text-sm"
+                className="flex justify-center items-center gap-2 rounded-xl bg-[#2AABEE] hover:bg-[#228cbd] px-4 py-3 text-white font-medium transition-all shadow-md text-sm"
               >
                 <svg className="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.94z"/></svg>
-                Abrir no Aplicativo (Mobile/App)
+                Abrir Judite no Telegram
               </a>
-              
-              <a 
-                href={`https://web.telegram.org/a/#?tgaddr=${encodeURIComponent(`tg://resolve?domain=${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}&start=pin_${profile.telegram_pin}`)}`} 
-                target="_blank" 
-                rel="noreferrer"
-                className="flex flex-1 justify-center items-center gap-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 px-5 py-3 text-white font-medium transition-all shadow-lg shadow-slate-900/50 text-sm"
-              >
-                🌐 Abrir no navegador (Web)
-              </a>
+            </div>
 
-              <button
-                onClick={handleGeneratePin}
-                disabled={generating}
-                className="rounded-xl border border-slate-700 px-4 py-3 text-sm text-slate-400 hover:text-white hover:border-slate-500 transition-all flex items-center justify-center gap-2 shrink-0 sm:w-auto w-full"
-                title="Gerar um novo PIN"
-              >
-                <RefreshCw className={`w-4 h-4 ${generating ? 'animate-spin' : ''}`} />
-              </button>
+            {/* Opção B: Manual */}
+            <div className="p-4 rounded-xl border border-blue-500/20 bg-slate-900/50 flex flex-col justify-between space-y-4">
+              <div>
+                <h4 className="text-sm font-semibold text-white mb-1">Opção B: PIN Manual</h4>
+                <p className="text-[11px] text-slate-400 leading-relaxed">Pesquise <a href={`https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}`} target="_blank" className="text-blue-400 hover:underline">@JuditeAI_bot</a> no seu app e mande o código abaixo:</p>
+              </div>
+              <div className="flex gap-2">
+                <code className="flex-1 flex justify-center items-center font-mono font-bold text-white tracking-widest bg-slate-800 rounded-xl border border-slate-700">
+                  {profile.telegram_pin}
+                </code>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(profile.telegram_pin || '');
+                    const btn = document.getElementById('copy-pin-btn');
+                    if (btn) { btn.textContent = '✅'; setTimeout(() => { btn.textContent = '📋'; }, 2000); }
+                  }}
+                  id="copy-pin-btn"
+                  className="px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-sm transition-all"
+                  title="Copiar PIN"
+                >
+                  📋
+                </button>
+              </div>
             </div>
           </div>
 
-          <p className="text-[11px] text-slate-500 leading-relaxed">
-            💡 Se o Telegram Web abrir sem vincular, cole o comando copiado na conversa com a Judite e envie.
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+            <div className="flex items-center gap-2">
+              <Timer className="w-4 h-4 text-blue-400" />
+              <span className="text-sm font-mono text-blue-300">
+                Expira em <span className="font-bold">{countdown}</span>
+              </span>
+            </div>
+            
+            <button
+              onClick={handleGeneratePin}
+              disabled={generating}
+              className="text-xs flex items-center justify-center sm:justify-start gap-1.5 text-slate-400 hover:text-white transition-colors py-2 px-3 rounded-lg hover:bg-white/5"
+            >
+              <RefreshCw className={`w-3 h-3 ${generating ? 'animate-spin' : ''}`} />
+              Gerar novo PIN
+            </button>
+          </div>
         </div>
       ) : isExpired ? (
         // ── Estado: PIN EXPIROU ──
