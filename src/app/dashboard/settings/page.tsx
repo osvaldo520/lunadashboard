@@ -534,27 +534,39 @@ function TelegramLinkCard({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Opção A: Automática */}
-            <div className="p-4 rounded-xl border border-blue-500/20 bg-slate-900/50 flex flex-col justify-between space-y-4">
+            <div className="p-4 rounded-xl border border-blue-500/20 bg-slate-900/50 flex flex-col space-y-4">
               <div>
                 <h4 className="text-sm font-semibold text-white mb-1">Opção A: Link Direto</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">O app será aberto com a mensagem pronta. É só apertar enviar!</p>
+                <p className="text-[11px] text-slate-400 leading-relaxed mb-2">A mensagem já vai pronta para envio.</p>
+                <div className="text-[10px] text-amber-500/90 leading-relaxed bg-amber-500/10 px-2 py-1.5 rounded border border-amber-500/20">
+                  ⚠️ <b>Aviso:</b> O botão "App" exige que você <a href="https://telegram.org/" target="_blank" rel="noreferrer" className="underline hover:text-amber-400">tenha o Telegram instalado</a>. Se estiver no PC sem o app, use a opção Web.
+                </div>
               </div>
-              <a 
-                href={`https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}?text=/vincular%20${profile.telegram_pin}`} 
-                target="_blank" 
-                rel="noreferrer"
-                className="flex justify-center items-center gap-2 rounded-xl bg-[#2AABEE] hover:bg-[#228cbd] px-4 py-3 text-white font-medium transition-all shadow-md text-sm"
-              >
-                <svg className="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.94z"/></svg>
-                Abrir Judite no Telegram
-              </a>
+              <div className="flex flex-col gap-2 mt-auto">
+                <a 
+                  href={`https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}?text=/vincular%20${profile.telegram_pin}`} 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="flex justify-center items-center gap-2 rounded-lg bg-[#2AABEE] hover:bg-[#228cbd] px-4 py-2.5 text-white font-medium transition-all shadow-md text-xs"
+                >
+                  📱 Abrir no App (Celular/PC)
+                </a>
+                <a 
+                  href={`https://web.telegram.org/a/#?tgaddr=${encodeURIComponent(`tg://resolve?domain=${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}&text=/vincular%20${profile.telegram_pin}`)}`} 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="flex justify-center items-center gap-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 px-4 py-2.5 text-slate-300 hover:text-white transition-all shadow-md text-xs"
+                >
+                  🌐 Abrir via Telegram Web
+                </a>
+              </div>
             </div>
 
             {/* Opção B: Manual */}
             <div className="p-4 rounded-xl border border-blue-500/20 bg-slate-900/50 flex flex-col justify-between space-y-4">
               <div>
                 <h4 className="text-sm font-semibold text-white mb-1">Opção B: PIN Manual</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">Pesquise <a href={`https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}`} target="_blank" className="text-blue-400 hover:underline">@JuditeAI_bot</a> no seu app e mande o código abaixo:</p>
+                <p className="text-[11px] text-slate-400 leading-relaxed">No aplicativo do Telegram, pesquise por <b className="text-blue-400 select-all">@{process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}</b> e mande o código abaixo na conversa:</p>
               </div>
               <div className="flex gap-2">
                 <code className="flex-1 flex justify-center items-center font-mono font-bold text-white tracking-widest bg-slate-800 rounded-xl border border-slate-700">
