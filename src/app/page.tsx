@@ -81,7 +81,7 @@ export default async function LandingPage() {
             {/* H1 */}
             <h1 className="animate-fade-in-up-delay-1 text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] mb-6">
               Escale a sua operação.<br />
-              <span className="text-gradient">Seu 1º Associado Jurídico Autônomo.</span>
+              <span className="text-gradient">Sua 1ª Associada Jurídica Autônoma.</span>
             </h1>
 
             {/* Subtitle */}
