@@ -457,6 +457,34 @@ function TelegramLinkCard({
     return () => clearInterval(interval);
   }, [profile.telegram_pin, profile.telegram_pin_expires_at, profile.telegram_id]);
 
+  // Escuta supersônica do Supabase Realtime
+  useEffect(() => {
+    if (!profile.id) return;
+
+    const channel = supabase
+      .channel(`profile_changes_${profile.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${profile.id}`
+        },
+        (payload) => {
+          // Se de repente o telegram_id surgir, a gente avisa a tela matriz pra dar F5 local
+          if (payload.new.telegram_id !== profile.telegram_id) {
+            onUpdate();
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [profile.id, profile.telegram_id, supabase, onUpdate]);
+
   const handleGeneratePin = async () => {
     setGenerating(true);
     const pin = Math.floor(100000 + Math.random() * 900000).toString();
