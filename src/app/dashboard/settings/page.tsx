@@ -544,7 +544,7 @@ function TelegramLinkCard({
               </div>
               <div className="flex flex-col gap-2 mt-auto">
                 <a 
-                  href={`https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}?text=/vincular%20${profile.telegram_pin}`} 
+                  href={`https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}?start=vincular_${profile.telegram_pin}`} 
                   target="_blank" 
                   rel="noreferrer"
                   className="flex justify-center items-center gap-2 rounded-lg bg-[#2AABEE] hover:bg-[#228cbd] px-4 py-2.5 text-white font-medium transition-all shadow-md text-xs"
@@ -552,7 +552,7 @@ function TelegramLinkCard({
                   📱 Abrir no App (Celular/PC)
                 </a>
                 <a 
-                  href={`https://web.telegram.org/a/#?tgaddr=${encodeURIComponent(`tg://resolve?domain=${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}&text=/vincular%20${profile.telegram_pin}`)}`} 
+                  href={`https://web.telegram.org/a/#?tgaddr=${encodeURIComponent(`tg://resolve?domain=${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}&start=vincular_${profile.telegram_pin}`)}`} 
                   target="_blank" 
                   rel="noreferrer"
                   className="flex justify-center items-center gap-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 px-4 py-2.5 text-slate-300 hover:text-white transition-all shadow-md text-xs"
