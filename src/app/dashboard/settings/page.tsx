@@ -14,6 +14,7 @@ interface Profile {
   plan_type: string;
   plan_expires_at: string | null;
   telegram_id: string | null;
+  whatsapp_id: string | null;
   telegram_pin: string | null;
   telegram_pin_expires_at: string | null;
   expert_mode: boolean;
@@ -94,9 +95,9 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      {/* Telegram Linking (Magic Code) Section - Moved to top for better Onboarding UX */}
+      {/* Channels Linking (Magic Code) Section - Moved to top for better Onboarding UX */}
       <div id="telegram-link">
-        <TelegramLinkCard profile={profile!} supabase={supabase} onUpdate={loadProfile} />
+        <LinkChannelsCard profile={profile!} supabase={supabase} onUpdate={loadProfile} />
       </div>
 
       {/* Expert Mode Section */}
@@ -413,12 +414,12 @@ export default function SettingsPage() {
 }
 
 // ─────────────────────────────────────────────────
-// Componente de Vínculo com Telegram (Magic Code)
+// Componente de Vínculo de Canais (Omnichannel)
 // ─────────────────────────────────────────────────
-import { RefreshCw, Link2, Unlink, Timer } from 'lucide-react';
+import { RefreshCw, Link2, Unlink, Timer, Smartphone } from 'lucide-react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-function TelegramLinkCard({ 
+function LinkChannelsCard({ 
   profile, 
   supabase, 
   onUpdate 
@@ -433,7 +434,7 @@ function TelegramLinkCard({
 
   // Countdown em tempo real
   useEffect(() => {
-    if (!profile.telegram_pin || !profile.telegram_pin_expires_at || profile.telegram_id) return;
+    if (!profile.telegram_pin || !profile.telegram_pin_expires_at || (profile.telegram_id && profile.whatsapp_id)) return;
 
     const tick = () => {
       const now = Date.now();
@@ -455,7 +456,7 @@ function TelegramLinkCard({
     tick(); // executar imediatamente
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
-  }, [profile.telegram_pin, profile.telegram_pin_expires_at, profile.telegram_id]);
+  }, [profile.telegram_pin, profile.telegram_pin_expires_at, profile.telegram_id, profile.whatsapp_id]);
 
   // Escuta supersônica do Supabase Realtime
   useEffect(() => {
@@ -472,8 +473,8 @@ function TelegramLinkCard({
           filter: `id=eq.${profile.id}`
         },
         (payload) => {
-          // Se de repente o telegram_id surgir, a gente avisa a tela matriz pra dar F5 local
-          if (payload.new.telegram_id !== profile.telegram_id) {
+          // Se de repente o telegram_id ou whatsapp_id surgir, atualizamos
+          if (payload.new.telegram_id !== profile.telegram_id || payload.new.whatsapp_id !== profile.whatsapp_id) {
             onUpdate();
           }
         }
@@ -483,7 +484,7 @@ function TelegramLinkCard({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [profile.id, profile.telegram_id, supabase, onUpdate]);
+  }, [profile.id, profile.telegram_id, profile.whatsapp_id, supabase, onUpdate]);
 
   const handleGeneratePin = async () => {
     setGenerating(true);
@@ -496,170 +497,172 @@ function TelegramLinkCard({
       .eq('id', profile.id);
 
     if (!error) {
-      onUpdate(); // Recarrega o perfil da tela principal
+      onUpdate();
     }
     setGenerating(false);
   };
 
-  const handleUnlink = async () => {
-    if (!confirm('Tem certeza que deseja desvincular o Telegram?')) return;
+  const handleUnlink = async (channel: 'telegram' | 'whatsapp') => {
+    if (!confirm(`Tem certeza que deseja desvincular o ${channel === 'telegram' ? 'Telegram' : 'WhatsApp'}?`)) return;
     
+    const updates = channel === 'telegram' 
+      ? { telegram_id: null } 
+      : { whatsapp_id: null };
+
+    // Se ambos estão desvinculados após isso, zera o PIN também
+    if ((channel === 'telegram' && !profile.whatsapp_id) || (channel === 'whatsapp' && !profile.telegram_id)) {
+      Object.assign(updates, { telegram_pin: null, telegram_pin_expires_at: null });
+    }
+
     await supabase
       .from('profiles')
-      .update({ telegram_id: null, telegram_pin: null, telegram_pin_expires_at: null })
+      .update(updates)
       .eq('id', profile.id);
 
     onUpdate();
   };
 
-  // ── Estado: JÁ VINCULADO ──
-  if (profile.telegram_id) {
+  const hasPinActive = profile.telegram_pin && !isExpired;
+  
+  // Handlers para UI de estados
+  const renderLinkedChannel = (channel: 'telegram' | 'whatsapp') => {
+    const isTelegram = channel === 'telegram';
+    const colorClass = isTelegram ? 'blue' : 'emerald';
+    const icon = isTelegram ? (
+      <svg className={`w-5 h-5 text-${colorClass}-400 fill-current`} viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.94z"/></svg>
+    ) : (
+      <Smartphone className={`w-5 h-5 text-${colorClass}-400`} />
+    );
+
     return (
-      <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-6 space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-500/10">
-            <Link2 className="h-5 w-5 text-emerald-400" />
+      <div className={`p-4 rounded-xl border border-${colorClass}-500/20 bg-${colorClass}-500/5 flex flex-col justify-between h-full space-y-4`}>
+         <div className="flex items-center gap-3">
+          <div className={`flex items-center justify-center w-10 h-10 rounded-xl bg-${colorClass}-500/10`}>
+            {icon}
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-white">Telegram Vinculado</h3>
-            <p className="text-sm text-slate-400">Sua conta do Telegram está conectada com a Judite.</p>
+            <h3 className="text-md font-semibold text-white">{isTelegram ? 'Telegram' : 'WhatsApp'} Vinculado</h3>
+            <p className="text-xs text-slate-400">Ativo e aguardando comandos.</p>
           </div>
         </div>
-        <div className="flex items-center justify-between rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-4">
-          <p className="text-emerald-400 text-sm flex items-center gap-2">
-            <CheckCircle className="h-4 w-4" />
-            Assistente pronta para receber comandos via Telegram.
+        
+        <button 
+          onClick={() => handleUnlink(channel)}
+          className="text-xs text-slate-500 hover:text-red-400 mt-auto flex items-center gap-1 transition-colors self-start"
+        >
+          <Unlink className="w-3 h-3" /> Desvincular {isTelegram ? 'Telegram' : 'WhatsApp'}
+        </button>
+      </div>
+    );
+  };
+
+  const renderLinkOptions = (channel: 'telegram' | 'whatsapp') => {
+    const isTelegram = channel === 'telegram';
+    const numWa = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '';
+    const botTg = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot';
+
+    const linkHref = isTelegram 
+      ? `https://t.me/${botTg}?start=vincular_${profile.telegram_pin}`
+      : `https://wa.me/${numWa}?text=vincular_${profile.telegram_pin}`;
+
+    return (
+      <div className="p-4 rounded-xl border border-blue-500/20 bg-slate-900/50 flex flex-col space-y-4 h-full">
+        <div>
+          <h4 className="text-sm font-semibold text-white mb-1">Vincular {isTelegram ? 'Telegram' : 'WhatsApp'}</h4>
+          <p className="text-[11px] text-slate-400 leading-relaxed mb-3">
+            {isTelegram ? 'O aplicativo mais fluido e rápido para lidar com arquivos grandes.' : 'O mensageiro líder de mercado. Praticidade extrema, recomendável arquivos menores.'}
           </p>
-          <button 
-            onClick={handleUnlink}
-            className="text-xs text-slate-500 hover:text-red-400 flex items-center gap-1 transition-colors"
+        </div>
+        
+        <div className="flex flex-col gap-2 mt-auto">
+          <a 
+            href={linkHref} 
+            target="_blank" 
+            rel="noreferrer"
+            className={`flex justify-center items-center gap-2 rounded-lg ${isTelegram ? 'bg-[#2AABEE] hover:bg-[#228cbd]' : 'bg-[#25D366] hover:bg-[#1DA851]'} px-4 py-2.5 text-white font-medium transition-all shadow-md text-xs`}
           >
-            <Unlink className="w-3 h-3" /> Desvincular
-          </button>
+            {isTelegram ? '📱 Enviar no Telegram' : '📱 Enviar no WhatsApp'}
+          </a>
         </div>
       </div>
     );
-  }
-
-  // ── Estado: PIN ATIVO (não expirado) ──
-  const hasPinActive = profile.telegram_pin && !isExpired;
+  };
 
   return (
-    <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-6 space-y-4">
+    <div className="rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-6 space-y-5">
       <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-500/10">
-          <svg className="w-5 h-5 text-blue-400 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.94z"/></svg>
+        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-500/10">
+          <Link2 className="w-5 h-5 text-indigo-400" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-white">Conectar Telegram</h3>
-          <p className="text-sm text-slate-400">Vincule sua conta para conversar com a Judite via Telegram.</p>
+          <h3 className="text-lg font-semibold text-white">Mensageiros e Dispositivos</h3>
+          <p className="text-sm text-slate-400">Gerencie por onde a Judite vai responder aos seus comandos.</p>
         </div>
       </div>
 
-      {hasPinActive ? (
-        <div className="p-5 rounded-2xl border border-blue-500/30 bg-blue-900/20 space-y-4">
-          <p className="text-sm text-slate-300">Escolha uma das opções abaixo para vincular sua conta:</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Slot Telegram */}
+        {profile.telegram_id ? renderLinkedChannel('telegram') : hasPinActive ? renderLinkOptions('telegram') : null}
+        
+        {/* Slot WhatsApp */}
+        {profile.whatsapp_id ? renderLinkedChannel('whatsapp') : hasPinActive ? renderLinkOptions('whatsapp') : null}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Opção A: Automática */}
-            <div className="p-4 rounded-xl border border-blue-500/20 bg-slate-900/50 flex flex-col space-y-4">
-              <div>
-                <h4 className="text-sm font-semibold text-white mb-1">Opção A: Link Direto</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed mb-2">A mensagem já vai pronta para envio.</p>
-                <div className="text-[10px] text-amber-500/90 leading-relaxed bg-amber-500/10 px-2 py-1.5 rounded border border-amber-500/20">
-                  ⚠️ <b>Aviso:</b> O botão "App" exige que você <a href="https://telegram.org/" target="_blank" rel="noreferrer" className="underline hover:text-amber-400">tenha o Telegram instalado</a>. Se estiver no PC sem o app, use a opção Web.
-                </div>
-              </div>
-              <div className="flex flex-col gap-2 mt-auto">
-                <a 
-                  href={`https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}?start=vincular_${profile.telegram_pin}`} 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="flex justify-center items-center gap-2 rounded-lg bg-[#2AABEE] hover:bg-[#228cbd] px-4 py-2.5 text-white font-medium transition-all shadow-md text-xs"
-                >
-                  📱 Abrir no App (Celular/PC)
-                </a>
-                <a 
-                  href={`https://web.telegram.org/a/#?tgaddr=${encodeURIComponent(`tg://resolve?domain=${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}&start=vincular_${profile.telegram_pin}`)}`} 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="flex justify-center items-center gap-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 px-4 py-2.5 text-slate-300 hover:text-white transition-all shadow-md text-xs"
-                >
-                  🌐 Abrir via Telegram Web
-                </a>
-              </div>
-            </div>
-
-            {/* Opção B: Manual */}
-            <div className="p-4 rounded-xl border border-blue-500/20 bg-slate-900/50 flex flex-col justify-between space-y-4">
-              <div>
-                <h4 className="text-sm font-semibold text-white mb-1">Opção B: PIN Manual</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">No aplicativo do Telegram, pesquise por <b className="text-blue-400 select-all">@{process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot'}</b> e mande o código abaixo na conversa:</p>
-              </div>
-              <div className="flex gap-2">
-                <code className="flex-1 flex justify-center items-center font-mono font-bold text-white tracking-widest bg-slate-800 rounded-xl border border-slate-700">
-                  {profile.telegram_pin}
-                </code>
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(profile.telegram_pin || '');
-                    const btn = document.getElementById('copy-pin-btn');
-                    if (btn) { btn.textContent = '✅'; setTimeout(() => { btn.textContent = '📋'; }, 2000); }
-                  }}
-                  id="copy-pin-btn"
-                  className="px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-sm transition-all"
-                  title="Copiar PIN"
-                >
-                  📋
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-            <div className="flex items-center gap-2">
-              <Timer className="w-4 h-4 text-blue-400" />
-              <span className="text-sm font-mono text-blue-300">
-                Expira em <span className="font-bold">{countdown}</span>
-              </span>
-            </div>
-            
-            <button
+        {/* Empty States / Generation */}
+        {!hasPinActive && !profile.telegram_id && !profile.whatsapp_id && (
+          <div className="col-span-full border-t border-indigo-500/10 pt-4 flex flex-col items-center justify-center text-center space-y-3">
+             <p className="text-sm text-slate-400">Nenhum mensageiro conectado. Para utilizar a Judite, gere um Magic Code e escolha um canal.</p>
+             <button
               onClick={handleGeneratePin}
               disabled={generating}
-              className="text-xs flex items-center justify-center sm:justify-start gap-1.5 text-slate-400 hover:text-white transition-colors py-2 px-3 rounded-lg hover:bg-white/5"
+              className="rounded-xl bg-indigo-600 hover:bg-indigo-700 px-5 py-2.5 text-sm text-white font-medium transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/20"
             >
-              <RefreshCw className={`w-3 h-3 ${generating ? 'animate-spin' : ''}`} />
-              Gerar novo PIN
+              {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />}
+              Gerar Código de Vínculo
             </button>
           </div>
+        )}
+      </div>
+
+      {hasPinActive && (
+        <div className="col-span-full bg-slate-900/50 border border-slate-800 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-2">
+           <div className="flex flex-col gap-1 w-full text-center sm:text-left">
+             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Seu Magic Code (PIN)</span>
+             <p className="text-[11px] text-slate-500 mb-1">Pesquise pela Judite no celular e envie esse código, ou clique nos botões acima.</p>
+             <code className="text-xl font-mono text-white tracking-widest">{profile.telegram_pin}</code>
+           </div>
+           
+           <div className="flex items-center gap-4 w-full sm:w-auto justify-end">
+              <div className="flex items-center gap-2 bg-indigo-500/10 px-3 py-1.5 rounded-lg border border-indigo-500/20">
+                <Timer className="w-4 h-4 text-indigo-400" />
+                <span className="text-sm font-mono text-indigo-300 font-bold">{countdown}</span>
+              </div>
+              <button
+                onClick={handleGeneratePin}
+                disabled={generating}
+                className="text-xs flex items-center justify-center gap-1.5 text-slate-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5"
+                title="Regerar código"
+              >
+                <RefreshCw className={`w-4 h-4 ${generating ? 'animate-spin' : ''}`} />
+              </button>
+           </div>
         </div>
-      ) : isExpired ? (
-        // ── Estado: PIN EXPIROU ──
-        <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 space-y-3">
+      )}
+
+      {isExpired && !profile.telegram_id && !profile.whatsapp_id && (
+        <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-amber-400 text-sm flex items-center gap-2">
             <Timer className="w-4 h-4" />
-            O PIN anterior expirou. Gere um novo para continuar.
+            O código expirou.
           </p>
           <button
             onClick={handleGeneratePin}
             disabled={generating}
-            className="rounded-xl bg-blue-600 hover:bg-blue-700 px-4 py-2 text-sm text-white font-medium transition-all flex items-center gap-2"
+            className="rounded-xl bg-indigo-600 hover:bg-indigo-700 px-4 py-2 text-sm text-white font-medium transition-all flex items-center gap-2"
           >
             {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-            Gerar Novo Magic Code
+            Gerar Novo
           </button>
         </div>
-      ) : (
-        // ── Estado: NENHUM PIN GERADO ──
-        <button
-          onClick={handleGeneratePin}
-          disabled={generating}
-          className="rounded-xl bg-blue-600 hover:bg-blue-700 px-4 py-2.5 text-sm text-white font-medium transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20"
-        >
-          {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />}
-          Gerar Magic Code (PIN)
-        </button>
       )}
     </div>
   );

@@ -32,14 +32,14 @@ export function OnboardingChecklist() {
         return;
       }
 
-      // Checar Telegram vinculado
+      // Checar se algum mensageiro foi vinculado
       const { data: profile } = await supabase
         .from('profiles')
-        .select('telegram_id')
+        .select('telegram_id, whatsapp_id')
         .eq('id', user.id)
         .single();
 
-      const hasTelegram = !!profile?.telegram_id;
+      const hasMessenger = !!profile?.telegram_id || !!profile?.whatsapp_id;
 
       // Checar se tem pelo menos 1 documento
       const { count } = await supabase
@@ -50,7 +50,7 @@ export function OnboardingChecklist() {
       const hasDocument = (count || 0) > 0;
 
       const newSteps: OnboardingStep[] = [
-        { id: 'telegram', label: 'Vincule seu Telegram', href: '/dashboard/settings#telegram-link', done: hasTelegram },
+        { id: 'messenger', label: 'Vincule seu Aparelho (Telegram ou WhatsApp)', href: '/dashboard/settings#telegram-link', done: hasMessenger },
         { id: 'document', label: 'Envie seu primeiro documento', href: '/dashboard/upload', done: hasDocument },
       ];
 
