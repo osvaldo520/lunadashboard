@@ -566,23 +566,34 @@ function LinkChannelsCard({
       : `https://wa.me/${numWa}?text=vincular_${profile.telegram_pin}`;
 
     return (
-      <div className="p-4 rounded-xl border border-blue-500/20 bg-slate-900/50 flex flex-col space-y-4 h-full">
+      <div className="p-4 rounded-xl border border-indigo-500/20 bg-slate-900/50 flex flex-col space-y-4 h-full">
         <div>
           <h4 className="text-sm font-semibold text-white mb-1">Vincular {isTelegram ? 'Telegram' : 'WhatsApp'}</h4>
           <p className="text-[11px] text-slate-400 leading-relaxed mb-3">
-            {isTelegram ? 'O aplicativo mais fluido e rápido para lidar com arquivos grandes.' : 'O mensageiro líder de mercado. Praticidade extrema, recomendável arquivos menores.'}
+            {isTelegram ? 'O aplicativo mais fluido e rápido para lidar com arquivos grandes.' : 'O mensageiro líder de mercado. Praticidade extrema para consultas rápidas.'}
           </p>
         </div>
         
         <div className="flex flex-col gap-2 mt-auto">
-          <a 
-            href={linkHref} 
-            target="_blank" 
-            rel="noreferrer"
-            className={`flex justify-center items-center gap-2 rounded-lg ${isTelegram ? 'bg-[#2AABEE] hover:bg-[#228cbd]' : 'bg-[#25D366] hover:bg-[#1DA851]'} px-4 py-2.5 text-white font-medium transition-all shadow-md text-xs`}
-          >
-            {isTelegram ? '📱 Enviar no Telegram' : '📱 Enviar no WhatsApp'}
-          </a>
+          {!hasPinActive ? (
+            <button
+               onClick={handleGeneratePin}
+               disabled={generating}
+               className="flex justify-center items-center gap-2 rounded-lg bg-slate-800 hover:bg-slate-700 px-4 py-2.5 text-white font-medium transition-all shadow-sm text-xs border border-slate-700"
+             >
+               {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />}
+               Gerar Código de Vínculo
+            </button>
+          ) : (
+            <a 
+              href={linkHref} 
+              target="_blank" 
+              rel="noreferrer"
+              className={`flex justify-center items-center gap-2 rounded-lg ${isTelegram ? 'bg-[#2AABEE] hover:bg-[#228cbd]' : 'bg-[#25D366] hover:bg-[#1DA851]'} px-4 py-2.5 text-white font-medium transition-all shadow-md text-xs`}
+            >
+              {isTelegram ? '📱 Enviar no Telegram' : '📱 Enviar no WhatsApp'}
+            </a>
+          )}
         </div>
       </div>
     );
@@ -602,29 +613,10 @@ function LinkChannelsCard({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Slot Telegram */}
-        {profile.telegram_id ? renderLinkedChannel('telegram') : hasPinActive ? renderLinkOptions('telegram') : null}
+        {profile.telegram_id ? renderLinkedChannel('telegram') : renderLinkOptions('telegram')}
         
         {/* Slot WhatsApp */}
-        {profile.whatsapp_id ? renderLinkedChannel('whatsapp') : hasPinActive ? renderLinkOptions('whatsapp') : null}
-
-        {/* Empty States / Generation */}
-        {!hasPinActive && (!profile.telegram_id || !profile.whatsapp_id) && (
-          <div className="col-span-full border-t border-indigo-500/10 pt-4 flex flex-col items-center justify-center text-center space-y-3">
-             <p className="text-sm text-slate-400">
-               {profile.telegram_id || profile.whatsapp_id 
-                 ? 'A Judite pode te atender em vários lugares ao mesmo tempo. Conecte também o seu segundo aplicativo.'
-                 : 'Nenhum mensageiro conectado. Para utilizar a Judite, gere um Magic Code e escolha um canal.'}
-             </p>
-             <button
-              onClick={handleGeneratePin}
-              disabled={generating}
-              className="rounded-xl bg-indigo-600 hover:bg-indigo-700 px-5 py-2.5 text-sm text-white font-medium transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/20"
-            >
-              {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />}
-              Gerar Código de Vínculo
-            </button>
-          </div>
-        )}
+        {profile.whatsapp_id ? renderLinkedChannel('whatsapp') : renderLinkOptions('whatsapp')}
       </div>
 
       {hasPinActive && (
