@@ -608,9 +608,13 @@ function LinkChannelsCard({
         {profile.whatsapp_id ? renderLinkedChannel('whatsapp') : hasPinActive ? renderLinkOptions('whatsapp') : null}
 
         {/* Empty States / Generation */}
-        {!hasPinActive && !profile.telegram_id && !profile.whatsapp_id && (
+        {!hasPinActive && (!profile.telegram_id || !profile.whatsapp_id) && (
           <div className="col-span-full border-t border-indigo-500/10 pt-4 flex flex-col items-center justify-center text-center space-y-3">
-             <p className="text-sm text-slate-400">Nenhum mensageiro conectado. Para utilizar a Judite, gere um Magic Code e escolha um canal.</p>
+             <p className="text-sm text-slate-400">
+               {profile.telegram_id || profile.whatsapp_id 
+                 ? 'A Judite pode te atender em vários lugares ao mesmo tempo. Conecte também o seu segundo aplicativo.'
+                 : 'Nenhum mensageiro conectado. Para utilizar a Judite, gere um Magic Code e escolha um canal.'}
+             </p>
              <button
               onClick={handleGeneratePin}
               disabled={generating}
@@ -648,7 +652,7 @@ function LinkChannelsCard({
         </div>
       )}
 
-      {isExpired && !profile.telegram_id && !profile.whatsapp_id && (
+      {isExpired && (!profile.telegram_id || !profile.whatsapp_id) && (
         <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-amber-400 text-sm flex items-center gap-2">
             <Timer className="w-4 h-4" />

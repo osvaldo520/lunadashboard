@@ -63,15 +63,15 @@ export function WelcomeModal() {
             </div>
           </div>
 
-          {/* Card Telegram */}
+          {/* Card Mensageiros */}
           <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 p-4 mb-4">
             <div className="flex items-start gap-3">
               <span className="text-xl mt-0.5">📱</span>
               <div>
-                <h3 className="text-sm font-semibold text-white mb-1">Telegram</h3>
+                <h3 className="text-sm font-semibold text-white mb-1">Telegram & WhatsApp</h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Tire dúvidas por áudio, envie documentos e consulte de qualquer lugar. 
-                  Ela também acessa seus arquivos salvos no Painel.
+                  Tire dúvidas por áudio, envie documentos e consulte de qualquer lugar no seu app favorito. 
+                  Mensageiros também acessam seus arquivos salvos no Painel.
                 </p>
               </div>
             </div>
@@ -79,7 +79,7 @@ export function WelcomeModal() {
 
           {/* Nota unificadora */}
           <p className="text-center text-xs text-slate-500 mb-5 italic">
-            São a mesma Judite. Use o Painel para organizar, e o Telegram para agir rápido.
+            São a mesma Judite. Use o Painel para organizar, e o WhatsApp/Telegram para agir rápido.
           </p>
 
           {/* CTAs */}
@@ -89,7 +89,7 @@ export function WelcomeModal() {
               onClick={handleClose}
               className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold text-center transition-all shadow-lg shadow-indigo-500/25 active:scale-[0.98]"
             >
-              Conectar meu Telegram →
+              Conectar meu Aparelho →
             </a>
             <button
               onClick={handleClose}
