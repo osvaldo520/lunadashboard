@@ -18,6 +18,9 @@ interface Profile {
   telegram_pin: string | null;
   telegram_pin_expires_at: string | null;
   expert_mode: boolean;
+  credits_plan: number | null;
+  credits_bonus: number | null;
+  credits_reset_at: string | null;
 }
 
 export default function SettingsPage() {
@@ -46,6 +49,27 @@ export default function SettingsPage() {
 
     if (data) setProfile(data);
     setLoading(false);
+  };
+
+  const handleBuyBooster = async (priceId: string) => {
+    setUpgrading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('stripe-checkout', {
+        method: 'POST',
+        body: { priceId }
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        alert('Erro ao iniciar checkout de pacotes extras. Tente novamente.');
+      }
+    } catch (err) {
+      console.error('[Checkout Booster]', err);
+      alert('Erro ao conectar com Stripe.');
+    } finally {
+      setUpgrading(false);
+    }
   };
 
   const handleSave = async () => {
@@ -268,6 +292,101 @@ export default function SettingsPage() {
       </div> */}
 
 
+      {/* Credits Bar Section */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20">
+              <Zap className="h-5 w-5 text-blue-400" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-white">Seus Créditos</h3>
+              <p className="text-xs text-slate-500">
+                {profile?.plan_type === 'pro' 
+                  ? profile?.credits_reset_at 
+                    ? `Franquia de 10.000 (Renova em ${new Date(profile.credits_reset_at).toLocaleDateString('pt-BR')})`
+                    : 'Franquia de 10.000/mês'
+                  : 'Avaliação Inicial (Não renovável)'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Barra de Progresso */}
+        <div className="pt-2 pb-1">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-medium text-slate-300">
+              <strong className="text-white text-sm">{(profile?.credits_plan || 0) + (profile?.credits_bonus || 0)}</strong> créditos restantes
+            </span>
+            <span className="text-xs text-slate-500 font-mono">
+              {profile?.plan_type === 'pro' ? 'Lim: 10.000' : 'Lim: 300'}
+            </span>
+          </div>
+          
+          <div className="h-3 w-full bg-slate-800/80 rounded-full overflow-hidden border border-slate-700/50">
+            {/* Limit max visual fill to 100% just in case of bonus */}
+            <div 
+              className={`h-full rounded-full transition-all duration-1000 ease-out bg-gradient-to-r shadow-[0_0_10px_rgba(59,130,246,0.3)] ${
+                profile?.plan_type === 'pro'
+                  ? (((profile?.credits_plan || 0) + (profile?.credits_bonus || 0)) / 10000) * 100 < 10 ? 'from-red-600 to-red-400' 
+                    : 'from-blue-600 to-indigo-400'
+                  : (((profile?.credits_plan || 0) + (profile?.credits_bonus || 0)) / 300) * 100 < 10 ? 'from-red-600 to-red-400' 
+                    : 'from-blue-600 to-indigo-400'
+              }`}
+              style={{ width: `${Math.min(100, Math.max(1, (profile?.plan_type === 'pro' ? (((profile?.credits_plan || 0) + (profile?.credits_bonus || 0)) / 10000) * 100 : (((profile?.credits_plan || 0) + (profile?.credits_bonus || 0)) / 300) * 100)))}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Booster Packs */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 space-y-4">
+        <h3 className="text-sm font-semibold text-white">Comprar Pacotes Extras (Boosters)</h3>
+        <p className="text-xs text-slate-400 mb-4">Créditos de bônus não expiram e só são consumidos após o esgotamento da franquia principal.</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="flex flex-col border border-slate-700/50 rounded-xl p-4 bg-slate-800/30">
+            <h4 className="text-white font-bold text-sm">Pacote Emergência</h4>
+            <p className="text-indigo-400 text-lg font-black my-1">+1.000 <span className="text-xs font-normal">créditos</span></p>
+            <p className="text-slate-500 text-xs mb-3">R$ 29,90</p>
+            <button
+              onClick={() => handleBuyBooster('price_1TMBynDQroLP2zVYU4Qskc74')}
+              disabled={upgrading}
+              className="mt-auto w-full rounded-lg bg-slate-700 hover:bg-slate-600 px-3 py-2 text-xs font-semibold text-white transition-colors"
+            >
+              Comprar
+            </button>
+          </div>
+          
+          <div className="flex flex-col border border-amber-500/30 rounded-xl p-4 bg-amber-500/5">
+            <h4 className="text-white font-bold text-sm">Pacote Ouro</h4>
+            <p className="text-amber-400 text-lg font-black my-1">+4.000 <span className="text-xs font-normal">créditos</span></p>
+            <p className="text-slate-500 text-xs mb-3">R$ 79,90</p>
+            <button
+              onClick={() => handleBuyBooster('price_1TMC1hDQroLP2zVYpufMf58s')}
+              disabled={upgrading}
+              className="mt-auto w-full rounded-lg bg-amber-500 hover:bg-amber-400 px-3 py-2 text-xs font-semibold text-slate-900 transition-colors"
+            >
+              Comprar
+            </button>
+          </div>
+
+          <div className="flex flex-col border border-purple-500/30 rounded-xl p-4 bg-purple-500/5 relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-purple-500 text-[9px] font-bold px-2 py-0.5 rounded-bl-lg text-white">Melhor Valor</div>
+            <h4 className="text-white font-bold text-sm">Pacote Black</h4>
+            <p className="text-purple-400 text-lg font-black my-1">+10.000 <span className="text-xs font-normal">créditos</span></p>
+            <p className="text-slate-500 text-xs mb-3">R$ 149,90</p>
+            <button
+              onClick={() => handleBuyBooster('price_1TMC3bDQroLP2zVYlMVUU5Oj')}
+              disabled={upgrading}
+              className="mt-auto w-full rounded-lg bg-purple-600 hover:bg-purple-500 px-3 py-2 text-xs font-semibold text-white transition-colors"
+            >
+              Comprar
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Plan & Upgrade */}
       <div className={`rounded-2xl border p-6 ${
         (profile?.plan_type || profile?.plan || 'free') === 'pro' 
@@ -292,10 +411,10 @@ export default function SettingsPage() {
                   profile?.plan_expires_at ? (
                     <span className="text-amber-400 font-bold">PRO — Cancelado, acesso até {new Date(profile.plan_expires_at).toLocaleDateString('pt-BR')}</span>
                   ) : (
-                    <span className="text-emerald-400 font-bold">PRO — Limites renovam diariamente</span>
+                    <span className="text-emerald-400 font-bold">PRO — Franquia de 10.000 créditos mensais</span>
                   )
                 ) : (
-                  <span>Plano <span className="font-bold text-indigo-400 uppercase">gratuito</span> — 50 mensagens totais</span>
+                  <span>Plano <span className="font-bold text-indigo-400 uppercase">gratuito</span> — 300 créditos de avaliação</span>
                 )}
               </p>
             </div>
@@ -558,7 +677,7 @@ function LinkChannelsCard({
 
   const renderLinkOptions = (channel: 'telegram' | 'whatsapp') => {
     const isTelegram = channel === 'telegram';
-    const numWa = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '';
+    const numWa = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5511955506969';
     const botTg = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'JuditeAI_bot';
 
     const linkHref = isTelegram 

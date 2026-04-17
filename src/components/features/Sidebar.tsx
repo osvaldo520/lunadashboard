@@ -23,6 +23,8 @@ interface SidebarProps {
   userName: string;
   userEmail: string;
   userPlan: string;
+  userCreditsPlan: number;
+  userCreditsBonus: number;
 }
 
 const navItems = [
@@ -45,7 +47,7 @@ const planColors: Record<string, string> = {
   enterprise: 'bg-amber-600/20 text-amber-400 border border-amber-500/30',
 };
 
-export function Sidebar({ userName, userEmail, userPlan }: SidebarProps) {
+export function Sidebar({ userName, userEmail, userPlan, userCreditsPlan, userCreditsBonus }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
@@ -182,8 +184,8 @@ export function Sidebar({ userName, userEmail, userPlan }: SidebarProps) {
         </div>
 
         {/* User section (Bottom Pinned) */}
-        <div className="border-t border-slate-800 p-4 shrink-0 bg-slate-900/80">
-          <div className="flex items-center gap-3 mb-3">
+        <div className="border-t border-slate-800 p-4 shrink-0 bg-slate-900/80 space-y-3">
+          <div className="flex items-center gap-3">
             {/* Avatar */}
             <div className="flex justify-center items-center w-9 h-9 shrink-0 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-xs font-bold border border-white/5 shadow-sm">
               {userName.charAt(0).toUpperCase()}
@@ -192,18 +194,39 @@ export function Sidebar({ userName, userEmail, userPlan }: SidebarProps) {
               <p className="text-sm font-medium text-white truncate pr-1">{userName}</p>
               <p className="text-xs text-slate-500 truncate pr-1">{userEmail}</p>
             </div>
-            <span className={`shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full ${planColors[userPlan] || planColors.free}`}>
-              {planLabels[userPlan] || 'Free'}
-            </span>
+          </div>
+          
+          {/* Mini Credit Bar */}
+          <div className="px-1">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[10px] font-medium text-slate-400">
+                <span className={`px-1 py-0.5 rounded-[4px] mr-1.5 ${planColors[userPlan] || planColors.free}`}>{planLabels[userPlan] || 'Free'}</span>
+                Créditos
+              </span>
+              <span className="text-[10px] font-bold text-white">
+                {(userCreditsPlan + userCreditsBonus).toLocaleString('pt-BR')} 
+                <span className="text-slate-500 font-normal"> / {userPlan === 'pro' ? '10k' : '300'}</span>
+              </span>
+            </div>
+            <div className="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+              <div 
+                className={`h-full rounded-full transition-all duration-1000 ease-out bg-gradient-to-r shadow-[0_0_10px_rgba(59,130,246,0.2)] ${
+                  userPlan === 'pro'
+                    ? (((userCreditsPlan + userCreditsBonus) / 10000) * 100 < 10 ? 'from-red-600 to-red-400' : 'from-indigo-500 to-indigo-400')
+                    : (((userCreditsPlan + userCreditsBonus) / 300) * 100 < 10 ? 'from-red-600 to-red-400' : 'from-indigo-500 to-indigo-400')
+                }`}
+                style={{ width: `${Math.min(100, Math.max(1, userPlan === 'pro' ? (((userCreditsPlan + userCreditsBonus) / 10000) * 100) : (((userCreditsPlan + userCreditsBonus) / 300) * 100)))}%` }}
+              />
+            </div>
           </div>
           
           <button
             onClick={handleLogout}
-            className="flex items-center justify-center gap-2 w-full px-3 py-2 rounded-xl text-sm font-medium text-slate-400 
+            className="flex items-center justify-center gap-2 w-full px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 
               border border-transparent hover:border-red-500/20 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200 active:bg-red-500/20"
           >
-            <LogOut className="h-4 w-4" />
-            Sair e Deslogar
+            <LogOut className="h-3.5 w-3.5" />
+            Sair
           </button>
         </div>
       </aside>

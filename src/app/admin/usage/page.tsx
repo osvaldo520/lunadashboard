@@ -33,15 +33,18 @@ export default async function AdminUsagePage() {
     { data: todayStats },
     { count: totalCount }
   ] = await Promise.all([
-    supabase.from('usage_logs').select('tokens_input, tokens_output, cost_brl'),
-    supabase.from('usage_logs').select('tokens_input, tokens_output, cost_brl').gte('created_at', today.toISOString()),
+    supabase.from('usage_logs').select('tokens_input, tokens_output, cost_brl, credits_spent'),
+    supabase.from('usage_logs').select('tokens_input, tokens_output, cost_brl, credits_spent').gte('created_at', today.toISOString()),
     supabase.from('usage_logs').select('*', { count: 'exact', head: true })
   ]);
 
   const totalTokens = (totalStats || []).reduce((acc, curr) => acc + (curr.tokens_input || 0) + (curr.tokens_output || 0), 0);
   const totalCost = (totalStats || []).reduce((acc, curr) => acc + (Number(curr.cost_brl) || 0), 0);
+  const totalCredits = (totalStats || []).reduce((acc, curr) => acc + (curr.credits_spent || 0), 0);
+  
   const todayTokens = (todayStats || []).reduce((acc, curr) => acc + (curr.tokens_input || 0) + (curr.tokens_output || 0), 0);
   const todayCost = (todayStats || []).reduce((acc, curr) => acc + (Number(curr.cost_brl) || 0), 0);
+  const todayCredits = (todayStats || []).reduce((acc, curr) => acc + (curr.credits_spent || 0), 0);
 
   if (error) {
     return (
@@ -64,7 +67,14 @@ export default async function AdminUsagePage() {
       </div>
 
       {/* Cards de Resumo */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div className="bg-slate-900/50 border border-slate-800 p-5 rounded-2xl flex flex-col justify-center">
+          <p className="text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-1">Créditos - Hoje</p>
+          <div className="flex items-end gap-2">
+            <span className="text-2xl font-black text-blue-400">{todayCredits.toLocaleString()}</span>
+          </div>
+        </div>
+        
         <div className="bg-slate-900/50 border border-slate-800 p-5 rounded-2xl flex flex-col justify-center">
           <p className="text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-1">Tokens - Hoje</p>
           <div className="flex items-end gap-2">
@@ -77,6 +87,13 @@ export default async function AdminUsagePage() {
           <div className="flex items-end gap-1">
             <span className="text-xs text-slate-400 mb-1">R$</span>
             <span className="text-2xl font-black text-white">{todayCost.toFixed(4)}</span>
+          </div>
+        </div>
+
+        <div className="bg-slate-900/50 border border-slate-800 p-5 rounded-2xl flex flex-col justify-center">
+          <p className="text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-1">Créditos Globais</p>
+          <div className="flex items-end gap-2">
+            <span className="text-2xl font-black text-indigo-400">{totalCredits.toLocaleString()}</span>
           </div>
         </div>
 
@@ -106,6 +123,7 @@ export default async function AdminUsagePage() {
                 <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Usuário</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Motor/Provider</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Tokens (E/S)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Créditos</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-right">Custo BRL</th>
               </tr>
             </thead>
@@ -144,6 +162,12 @@ export default async function AdminUsagePage() {
                           <span className="text-blue-400">{log.tokens_output || 0}</span>
                        </div>
                        <p className="text-[9px] text-slate-500 uppercase font-bold">In/Out</p>
+                    </td>
+
+                    <td className="px-6 py-4 text-center">
+                       <span className="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-2 py-1 rounded">
+                          {log.credits_spent || 0}
+                       </span>
                     </td>
 
                     <td className="px-6 py-4 text-right">

@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { FileText, ArrowLeft, Calendar, FileQuestion, AlertTriangle } from 'lucide-react';
+import { FileText, ArrowLeft, Calendar, FileQuestion, AlertTriangle, Landmark, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { DocumentPreviewModal } from '@/components/DocumentPreviewModal';
@@ -127,11 +127,33 @@ export default async function DocumentDetailsPage({
             </div>
             
             {doc.analysis_summary ? (
-              <div className="prose prose-invert max-w-none prose-p:text-slate-300 prose-headings:text-white prose-a:text-indigo-400 prose-strong:text-white prose-table:w-full prose-table:border-collapse prose-th:bg-slate-800/50 prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:text-sm prose-th:font-semibold prose-th:text-white prose-td:border-t prose-td:border-slate-800 prose-td:px-4 prose-td:py-3 prose-td:text-sm prose-td:text-slate-300">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {doc.analysis_summary}
-                </ReactMarkdown>
-              </div>
+              <>
+                {/* Badge Gov — Aparece quando a análise cruzou dados oficiais (Pro) */}
+                {(doc.analysis_summary.includes('Fontes Oficiais') || 
+                  doc.analysis_summary.includes('consulta_gov') ||
+                  doc.analysis_summary.includes('DataJud') ||
+                  doc.analysis_summary.includes('BACEN') ||
+                  doc.analysis_summary.includes('Portal da Transparência')) && (
+                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20 mb-6">
+                    <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-emerald-500/10">
+                      <Landmark className="w-5 h-5 text-emerald-400" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-emerald-400">Cruzamento Governamental</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded">Pro</span>
+                      </div>
+                      <p className="text-xs text-slate-400 mt-0.5">Esta análise cruzou dados com bases oficiais do governo brasileiro.</p>
+                    </div>
+                    <ShieldCheck className="w-5 h-5 text-emerald-500/40 ml-auto flex-shrink-0" />
+                  </div>
+                )}
+                <div className="prose prose-invert max-w-none prose-p:text-slate-300 prose-headings:text-white prose-a:text-indigo-400 prose-strong:text-white prose-table:w-full prose-table:border-collapse prose-th:bg-slate-800/50 prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:text-sm prose-th:font-semibold prose-th:text-white prose-td:border-t prose-td:border-slate-800 prose-td:px-4 prose-td:py-3 prose-td:text-sm prose-td:text-slate-300">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {doc.analysis_summary}
+                  </ReactMarkdown>
+                </div>
+              </>
             ) : (
               <div className="text-center py-12">
                 <p className="text-slate-400">Nenhuma análise disponível para este documento ainda.</p>

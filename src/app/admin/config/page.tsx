@@ -53,6 +53,8 @@ const VOICE_OPTIONS = [
   { value: 'openai', label: '🤖 OpenAI Nova (pago)' },
   { value: 'openai-hd', label: '🤖 OpenAI Nova HD (pago)' },
   { value: 'elevenlabs', label: '✨ ElevenLabs Premium (pago)' },
+  { value: 'qwen-tts', label: '🚀 Qwen3 Cherry (Alibaba/Pura)' },
+  { value: 'qwen-tts-bella', label: '🚀 Qwen3 Bella (Alibaba/Pura)' },
 ];
 
 export default function AdminConfigPage() {
@@ -195,10 +197,66 @@ export default function AdminConfigPage() {
                     ))}
                  </select>
                  <p className="mt-2 text-[10px] text-slate-500 italic">Afeta todos os usuários que não escolheram uma voz via comando /voz.</p>
-              </div>
-           </div>
-        </div>
+               </div>
+            </div>
 
+            {/* CADEIA EXPERT MULTI-API */}
+            <div className="mt-8 pt-6 border-t border-indigo-500/10 space-y-4">
+               <div className="flex items-center gap-2 mb-4">
+                 <div className="p-1.5 rounded bg-amber-500/10 text-amber-500">
+                    <ShieldCheck className="w-4 h-4" />
+                 </div>
+                 <h3 className="text-sm font-bold text-white uppercase tracking-wider">Cadeia Multi-API (Modo Expert)</h3>
+               </div>
+               
+               {/* Primary */}
+               <div>
+                  <label className="block text-[10px] font-bold text-emerald-400 uppercase mb-1 tracking-widest">Cérebro Primário</label>
+                  <select 
+                     value={config.expert_provider_primary || 'openrouter_minimax'}
+                     onChange={(e) => handleUpdate('expert_provider_primary', e.target.value)}
+                     className="w-full px-4 py-2 rounded-lg bg-slate-950/50 border border-slate-800 text-sm text-white focus:border-indigo-500/50 outline-none appearance-none"
+                  >
+                     <option value="openrouter_minimax">MiniMax M2.7 Autônomo (via OpenRouter)</option>
+                     <option value="dashscope_qwen">Qwen Max/Plus (via Alibaba Direto)</option>
+                     <option value="anthropic">Claude Haiku 4.5 (via Anthropic)</option>
+                  </select>
+               </div>
+
+               {/* Fallback */}
+               <div>
+                  <label className="block text-[10px] font-bold text-amber-400 uppercase mb-1 tracking-widest">Plano B (Fallback)</label>
+                  <select 
+                     value={config.expert_provider_fallback || 'dashscope_qwen'}
+                     onChange={(e) => handleUpdate('expert_provider_fallback', e.target.value)}
+                     className="w-full px-4 py-2 rounded-lg bg-slate-950/50 border border-slate-800 text-sm text-white focus:border-indigo-500/50 outline-none appearance-none"
+                  >
+                     <option value="dashscope_qwen">Qwen Max/Plus (via Alibaba Direto)</option>
+                     <option value="openrouter_minimax">MiniMax M2.7 Autônomo (via OpenRouter)</option>
+                     <option value="anthropic">Claude Haiku 4.5 (via Anthropic)</option>
+                     <option value="none">Desativar Plano B</option>
+                  </select>
+               </div>
+
+               {/* Tertiary */}
+               <div>
+                  <label className="block text-[10px] font-bold text-rose-400 uppercase mb-1 tracking-widest">Plano C (Segurança Final)</label>
+                  <select 
+                     value={config.expert_provider_tertiary || 'anthropic'}
+                     onChange={(e) => handleUpdate('expert_provider_tertiary', e.target.value)}
+                     className="w-full px-4 py-2 rounded-lg bg-slate-950/50 border border-slate-800 text-sm text-white focus:border-indigo-500/50 outline-none appearance-none"
+                  >
+                     <option value="anthropic">Claude Haiku 4.5 (via Anthropic)</option>
+                     <option value="dashscope_qwen">Qwen Max/Plus (via Alibaba Direto)</option>
+                     <option value="openrouter_minimax">MiniMax M2.7 Autônomo (via OpenRouter)</option>
+                     <option value="none">Desativar Plano C</option>
+                  </select>
+               </div>
+               
+               <p className="mt-2 text-[10px] text-slate-500 italic">Transição invisível para o usuário caso a API Primária caia fora do ar.</p>
+            </div>
+         {/* -- UI BLOCK INJECTED END -- */}
+        </div>
         {/* Recursos do Sistema */}
         <div className="rounded-2xl border border-indigo-500/10 bg-slate-900/40 p-6 space-y-6">
            <div className="flex items-center gap-3 pb-4 border-b border-indigo-500/5">

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 /* ====================================
    Judite Dashboard — Design System
@@ -63,6 +64,145 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+}
+
+/* ====================================
+   Blog Article — Premium Typography
+   ==================================== */
+
+.article-content {
+  color: #cbd5e1; /* slate-300 */
+  font-size: 1.0625rem;
+  line-height: 1.85;
+}
+
+.article-content h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-top: 2rem;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.025em;
+}
+
+.article-content h2 {
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+.article-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.article-content p {
+  margin-bottom: 1.25rem;
+}
+
+.article-content strong {
+  color: #f1f5f9;
+  font-weight: 600;
+}
+
+.article-content a {
+  color: #818cf8;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.article-content a:hover {
+  color: #a5b4fc;
+  text-decoration: underline;
+}
+
+.article-content ul,
+.article-content ol {
+  margin: 1rem 0 1.5rem 1.5rem;
+}
+
+.article-content li {
+  margin-bottom: 0.5rem;
+}
+
+.article-content ul li::marker {
+  color: #6366f1;
+}
+
+.article-content ol li::marker {
+  color: #6366f1;
+  font-weight: 600;
+}
+
+.article-content blockquote {
+  border-left: 4px solid #6366f1;
+  background: rgba(99, 102, 241, 0.06);
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  border-radius: 0 0.75rem 0.75rem 0;
+  color: #94a3b8;
+  font-style: normal;
+}
+
+.article-content blockquote p {
+  margin: 0;
+}
+
+.article-content code {
+  background: rgba(99, 102, 241, 0.1);
+  color: #a5b4fc;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.35rem;
+  font-size: 0.9em;
+}
+
+.article-content pre {
+  background: #0f172a;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.article-content pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.article-content hr {
+  border: none;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  margin: 2.5rem 0;
+}
+
+.article-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.article-content th {
+  background: rgba(15, 23, 42, 0.8);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  border-bottom: 2px solid rgba(99, 102, 241, 0.2);
+}
+
+.article-content td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+  font-size: 0.875rem;
 }
 
 /* ====================================

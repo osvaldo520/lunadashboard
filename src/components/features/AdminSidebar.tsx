@@ -25,6 +25,7 @@ interface AdminSidebarProps {
 
 const adminNavItems = [
   { href: '/admin', label: 'Estatísticas', icon: BarChart3 },
+  { href: '/admin/social-approval', label: 'Cofre Social', icon: Sparkles },
   { href: '/admin/users', label: 'Usuários', icon: Users },
   { href: '/admin/plans', label: 'Planos & Cotas', icon: Sparkles },
   { href: '/admin/usage', label: 'Consumo (Logs)', icon: History },

@@ -45,6 +45,8 @@ export default async function DashboardLayout({
         userName={profile?.full_name || user.email || 'Usuário'} 
         userEmail={user.email || ''}
         userPlan={profile?.plan_type || 'free'}
+        userCreditsPlan={profile?.credits_plan || 0}
+        userCreditsBonus={profile?.credits_bonus || 0}
       />
 
       {/* Main Content */}
