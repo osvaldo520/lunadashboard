@@ -337,6 +337,19 @@ export default function SettingsPage() {
             />
           </div>
         </div>
+
+        {/* Informação de Armazenamento */}
+        <div className="pt-3 mt-1 border-t border-slate-800/50 flex items-center justify-between">
+          <p className="text-[11px] text-slate-500 flex items-center gap-1.5">
+            <svg className="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+            </svg>
+            Armazenamento em nuvem
+          </p>
+          <span className="text-[11px] font-medium text-slate-400">
+            Capacidade padrão: {profile?.plan_type === 'pro' ? '200 MB' : '10 MB'}
+          </span>
+        </div>
       </div>
 
       {/* Booster Packs */}

@@ -69,11 +69,11 @@ export default async function GuidePage() {
               <GuideCard title="Via Painel Web (Recomendado)" items={[
                 'Acesse usejudite.com.br',
                 'Clique em Comece Grátis e crie sua conta',
-                'No painel, clique em Vincular Telegram — abre o bot e conecta em 1 clique',
+                'No painel, vá em Configurações → Gerar Código de Vínculo e conecte o Telegram ou WhatsApp em 1 clique',
               ]} />
-              <GuideCard title="Via Telegram (Direto)" items={[
-                'Se já tem conta, acesse @JuditeAI_bot no Telegram',
-                'Use /vincular + o PIN de 6 dígitos do painel',
+              <GuideCard title="Via Mensageiro (Direto)" items={[
+                'Se já tem conta, acesse @JuditeAI_bot no Telegram ou envie mensagem no WhatsApp',
+                'Envie vincular_ seguido do PIN de 6 dígitos do painel',
                 'A Judite confirma a vinculação automaticamente',
               ]} />
             </div>
@@ -82,23 +82,37 @@ export default async function GuidePage() {
           {/* Dashboard vs Telegram */}
           <GuideSection icon="🔄" title="Sua Assistente de Bolso">
             <p className="text-sm text-slate-400 mb-5">
-              A Judite funciona em dois ambientes complementares. Use cada um para o que ele faz melhor:
+              A Judite funciona em três ambientes complementares. Use cada um para o que ele faz melhor:
             </p>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5 space-y-3">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-emerald-400 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                  <h3 className="text-sm font-bold text-white">WhatsApp</h3>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  O <strong className="text-emerald-300">canal mais prático</strong>. Converse por texto ou voz,
+                  envie documentos, receba PDFs e consulte dados oficiais — tudo pelo app que você já usa.
+                </p>
+                <ul className="text-[11px] text-slate-500 space-y-1">
+                  <li>✅ Conversa por texto e voz</li>
+                  <li>✅ Envio de documentos pelo celular</li>
+                  <li>✅ Recebe PDFs diretamente no chat</li>
+                </ul>
+              </div>
+
               <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 space-y-3">
                 <div className="flex items-center gap-2">
                   <svg className="w-5 h-5 text-blue-400 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.94z"/></svg>
                   <h3 className="text-sm font-bold text-white">Telegram</h3>
                 </div>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Sua <strong className="text-blue-300">assistente de bolso</strong>. Converse em texto ou voz,
+                  <strong className="text-blue-300">Mais fluido para arquivos grandes.</strong> Converse em texto ou voz,
                   envie documentos direto do celular, tire fotos de contratos e receba PDFs no chat.
-                  Ideal para consultas rápidas no corredor do fórum, entre audiências ou no trânsito.
                 </p>
                 <ul className="text-[11px] text-slate-500 space-y-1">
-                  <li>✅ Conversa por texto e voz</li>
-                  <li>✅ Envio de documentos pelo celular</li>
-                  <li>✅ Recebe PDFs diretamente no chat</li>
+                  <li>✅ Suporte a arquivos maiores</li>
+                  <li>✅ Comandos especiais (/clear, /help)</li>
                   <li>✅ Consultas governamentais em tempo real</li>
                 </ul>
               </div>
@@ -110,21 +124,19 @@ export default async function GuidePage() {
                 </div>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   Seu <strong className="text-indigo-300">escritório digital</strong>. Gerencie documentos organizados,
-                  acompanhe seu uso, configure o Modo Expert, vincule o Telegram e acesse seu
-                  acervo de análises a qualquer momento.
+                  acompanhe créditos, configure o Modo Expert e acesse seu acervo a qualquer momento.
                 </p>
                 <ul className="text-[11px] text-slate-500 space-y-1">
                   <li>✅ Biblioteca de documentos organizada</li>
                   <li>✅ Upload por arrastar e soltar</li>
-                  <li>✅ Histórico de análises e pareceres</li>
                   <li>✅ Configurações e gestão de plano</li>
                 </ul>
               </div>
             </div>
             <div className="mt-4 p-4 rounded-xl bg-slate-800/30 border border-slate-700/30">
               <p className="text-xs text-slate-400 leading-relaxed">
-                💡 <strong className="text-slate-300">Tudo sincronizado:</strong> Documentos salvos pelo Telegram
-                aparecem no painel. Documentos enviados pelo painel podem ser analisados pela Judite no Telegram.
+                💡 <strong className="text-slate-300">Tudo sincronizado:</strong> Documentos salvos pelo WhatsApp ou Telegram
+                aparecem no painel. Documentos enviados pelo painel podem ser analisados pela Judite nos mensageiros.
                 Sua conta é única — acesse de onde quiser.
               </p>
             </div>
@@ -144,7 +156,7 @@ export default async function GuidePage() {
             </div>
             <div className="mt-4 p-4 rounded-xl bg-indigo-500/5 border border-indigo-500/20">
               <p className="text-sm text-indigo-300">
-                🎤 <strong>Voz:</strong> Envie áudios pelo Telegram! A Judite transcreve, entende e pode responder por voz.
+              🎤 Envie áudios pelo WhatsApp ou Telegram — a Judite entende e pode responder por voz! (Plano Pro)
               </p>
             </div>
           </GuideSection>
@@ -175,7 +187,7 @@ export default async function GuidePage() {
           {/* Gov */}
           <GuideSection icon="🏛️" title="Investigadora Governamental">
             <p className="text-sm text-slate-400 mb-4">
-              Acesso direto a 41 APIs públicas brasileiras. Dados reais, gratuitos e em tempo real.
+              Acesso direto a dezenas de APIs públicas brasileiras. Dados reais, gratuitos e em tempo real.
             </p>
             <div className="space-y-2">
               <ExampleQuery query="Qual a taxa Selic hoje?" tag="BACEN" />
@@ -237,19 +249,20 @@ export default async function GuidePage() {
                 </thead>
                 <tbody className="text-slate-300">
                   {[
-                    { resource: 'Mensagens', free: '50 (total)', pro: '100/dia' },
-                    { resource: 'Análises', free: '5 (total)', pro: '20/dia' },
-                    { resource: 'Geração PDF/DOCX', free: '2 (total)', pro: '10/dia' },
-                    { resource: 'Foto (OCR)', free: '❌', pro: '10/dia' },
-                    { resource: 'Documentos', free: '5', pro: '500' },
-                    { resource: 'Expert', free: '❌', pro: '✅' },
-                    { resource: 'Dados Gov', free: '✅', pro: '✅' },
-                    { resource: 'Voz', free: '✅', pro: '✅' },
-                  ].map((row) => (
-                    <tr key={row.resource} className="border-b border-slate-800/50">
-                      <td className="py-2">{row.resource}</td>
-                      <td className="py-2 text-center">{row.free}</td>
-                      <td className="py-2 text-center">{row.pro}</td>
+                    ['Créditos', '300 (trial)', '10.000/mês'],
+                    ['Texto', '~100 msgs', '~3.000 msgs'],
+                    ['Análise de Docs', '✅ (7 créd.)', '✅ (7 créd.)'],
+                    ['Geração PDF/DOCX', '✅ (10 créd.)', '✅ (10 créd.)'],
+                    ['OCR (foto)', '❌', '✅'],
+                    ['Modo Expert', '❌', '✅'],
+                    ['Dados Gov', '❌', '✅'],
+                    ['Voz', '❌', '✅'],
+                    ['Armazenamento', '10 MB', '200 MB'],
+                  ].map(([resource, free, pro]) => (
+                    <tr key={resource} className="border-b border-slate-800/50">
+                      <td className="py-2">{resource}</td>
+                      <td className="py-2 text-center">{free}</td>
+                      <td className="py-2 text-center">{pro}</td>
                     </tr>
                   ))}
                 </tbody>
