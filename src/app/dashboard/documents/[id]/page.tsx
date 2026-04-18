@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { FileText, ArrowLeft, Calendar, FileQuestion, AlertTriangle, Landmark, ShieldCheck } from 'lucide-react';
+import { FileText, ArrowLeft, Calendar, FileQuestion, AlertTriangle, Landmark, ShieldCheck, Link as LinkIcon } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { DocumentPreviewModal } from '@/components/DocumentPreviewModal';
@@ -148,6 +148,28 @@ export default async function DocumentDetailsPage({
                     <ShieldCheck className="w-5 h-5 text-emerald-500/40 ml-auto flex-shrink-0" />
                   </div>
                 )}
+                {doc.blockchain_tx && (
+                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-violet-500/5 border border-violet-500/20 mb-6">
+                    <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-violet-500/10">
+                      <LinkIcon className="w-5 h-5 text-violet-400" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-violet-400">Selo Blockchain</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider bg-violet-500/10 text-violet-400 px-1.5 py-0.5 rounded">Solana</span>
+                      </div>
+                      <a 
+                        href={`https://solscan.io/tx/${doc.blockchain_tx}${doc.blockchain_network === 'solana-mainnet' ? '' : '?cluster=devnet'}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-slate-400 hover:text-violet-300 transition-colors mt-0.5 underline inline-block"
+                      >
+                        Verificar integridade on-chain →
+                      </a>
+                    </div>
+                    <ShieldCheck className="w-5 h-5 text-violet-500/40 ml-auto flex-shrink-0" />
+                  </div>
+                )}
                 <div className="prose prose-invert max-w-none prose-p:text-slate-300 prose-headings:text-white prose-a:text-indigo-400 prose-strong:text-white prose-table:w-full prose-table:border-collapse prose-th:bg-slate-800/50 prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:text-sm prose-th:font-semibold prose-th:text-white prose-td:border-t prose-td:border-slate-800 prose-td:px-4 prose-td:py-3 prose-td:text-sm prose-td:text-slate-300">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {doc.analysis_summary}
@@ -204,6 +226,25 @@ export default async function DocumentDetailsPage({
                     </p>
                   </div>
                 ))}
+                {doc.blockchain_tx && (
+                  <div>
+                    <span className="text-xs text-slate-500">Selo Blockchain (Solana)</span>
+                    <a 
+                      href={`https://solscan.io/tx/${doc.blockchain_tx}${doc.blockchain_network === 'solana-mainnet' ? '' : '?cluster=devnet'}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-violet-400 hover:text-violet-300 transition-colors font-mono break-all mt-0.5 block"
+                    >
+                      {doc.blockchain_tx.substring(0, 24)}...
+                    </a>
+                  </div>
+                )}
+                {doc.blockchain_hash && (
+                  <div>
+                    <span className="text-xs text-slate-500">Hash SHA-256</span>
+                    <p className="text-sm text-slate-300 font-mono break-all mt-0.5">{doc.blockchain_hash}</p>
+                  </div>
+                )}
               </div>
             </div>
           )}
