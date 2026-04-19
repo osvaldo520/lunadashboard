@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
 import { ShieldCheck, ExternalLink, FileText, AlertTriangle, CheckCircle, XCircle, Loader2, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -29,24 +28,27 @@ export default function VerifyPage() {
   }, [tx]);
 
   const loadDocument = async () => {
-    const supabase = createClient();
-    // Buscar documento incluindo analysis_summary para verificação automática
-    const { data } = await supabase
-      .from('documents')
-      .select('id, title, doc_type, risk_score, analysis_summary, blockchain_tx, blockchain_hash, blockchain_network, created_at, updated_at, status')
-      .eq('blockchain_tx', tx)
-      .single();
+    try {
+      // Usa API route com service role (bypassa RLS para verificação pública)
+      const res = await fetch(`/api/verify?tx=${encodeURIComponent(tx)}`);
+      
+      if (!res.ok) {
+        setNotFound(true);
+        setLoading(false);
+        return;
+      }
 
-    if (!data) {
-      setNotFound(true);
-    } else {
+      const data = await res.json();
       setDoc(data);
+
       // Disparar verificação automática se tiver conteúdo
       if (data.analysis_summary && data.blockchain_hash) {
         autoVerify(data.analysis_summary, data.blockchain_hash);
       } else {
         setAutoVerifyResult('no_content');
       }
+    } catch {
+      setNotFound(true);
     }
     setLoading(false);
   };
