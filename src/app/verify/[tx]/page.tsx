@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { ShieldCheck, ExternalLink, FileText, AlertTriangle, CheckCircle, XCircle, Upload, Loader2 } from 'lucide-react';
+import { ShieldCheck, ExternalLink, FileText, AlertTriangle, CheckCircle, XCircle, Loader2, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
@@ -13,11 +13,16 @@ export default function VerifyPage() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
-  // Verificação de integridade
+  // Verificação automática
+  const [autoVerifyResult, setAutoVerifyResult] = useState<'match' | 'mismatch' | 'no_content' | null>(null);
+  const [autoVerifying, setAutoVerifying] = useState(false);
+  const [autoComputedHash, setAutoComputedHash] = useState('');
+
+  // Verificação manual
   const [verifyText, setVerifyText] = useState('');
-  const [verifyResult, setVerifyResult] = useState<'match' | 'mismatch' | null>(null);
-  const [verifying, setVerifying] = useState(false);
-  const [computedHash, setComputedHash] = useState('');
+  const [manualResult, setManualResult] = useState<'match' | 'mismatch' | null>(null);
+  const [manualVerifying, setManualVerifying] = useState(false);
+  const [manualHash, setManualHash] = useState('');
 
   useEffect(() => {
     loadDocument();
@@ -25,9 +30,10 @@ export default function VerifyPage() {
 
   const loadDocument = async () => {
     const supabase = createClient();
+    // Buscar documento incluindo analysis_summary para verificação automática
     const { data } = await supabase
       .from('documents')
-      .select('id, title, doc_type, risk_score, blockchain_tx, blockchain_hash, blockchain_network, created_at, updated_at, status')
+      .select('id, title, doc_type, risk_score, analysis_summary, blockchain_tx, blockchain_hash, blockchain_network, created_at, updated_at, status')
       .eq('blockchain_tx', tx)
       .single();
 
@@ -35,42 +41,58 @@ export default function VerifyPage() {
       setNotFound(true);
     } else {
       setDoc(data);
+      // Disparar verificação automática se tiver conteúdo
+      if (data.analysis_summary && data.blockchain_hash) {
+        autoVerify(data.analysis_summary, data.blockchain_hash);
+      } else {
+        setAutoVerifyResult('no_content');
+      }
     }
     setLoading(false);
   };
 
   /**
-   * Calcula SHA-256 do texto colado e compara com o hash on-chain.
-   * Usa Web Crypto API disponível no browser.
+   * Verificação AUTOMÁTICA: Lê o conteúdo do banco e compara com o hash on-chain.
+   * Prova que o conteúdo armazenado não foi alterado.
    */
-  const verifyIntegrity = async () => {
-    if (!verifyText.trim() || !doc?.blockchain_hash) return;
-
-    setVerifying(true);
-    setVerifyResult(null);
-
+  const autoVerify = async (content: string, expectedHash: string) => {
+    setAutoVerifying(true);
     try {
-      // Calcular SHA-256 via Web Crypto API
-      const encoder = new TextEncoder();
-      const data = encoder.encode(verifyText);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
-      setComputedHash(hashHex);
-
-      // Comparar com o hash on-chain
-      if (hashHex === doc.blockchain_hash) {
-        setVerifyResult('match');
-      } else {
-        setVerifyResult('mismatch');
-      }
-    } catch (error) {
-      console.error('Erro ao calcular hash:', error);
-      setVerifyResult('mismatch');
+      const hash = await computeSHA256(content);
+      setAutoComputedHash(hash);
+      setAutoVerifyResult(hash === expectedHash ? 'match' : 'mismatch');
+    } catch {
+      setAutoVerifyResult('mismatch');
     }
+    setAutoVerifying(false);
+  };
 
-    setVerifying(false);
+  /**
+   * Verificação MANUAL: Usuário cola o texto original (Markdown) para checar.
+   */
+  const manualVerify = async () => {
+    if (!verifyText.trim() || !doc?.blockchain_hash) return;
+    setManualVerifying(true);
+    setManualResult(null);
+    try {
+      const hash = await computeSHA256(verifyText);
+      setManualHash(hash);
+      setManualResult(hash === doc.blockchain_hash ? 'match' : 'mismatch');
+    } catch {
+      setManualResult('mismatch');
+    }
+    setManualVerifying(false);
+  };
+
+  /**
+   * Calcula SHA-256 via Web Crypto API.
+   */
+  const computeSHA256 = async (text: string): Promise<string> => {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   };
 
   if (loading) {
@@ -126,14 +148,34 @@ export default function VerifyPage() {
           </p>
         </div>
 
-        {/* Verification Card */}
-        <div className="rounded-2xl border border-violet-500/20 bg-slate-900/50 p-6 space-y-5">
-          {/* Status Badge */}
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20">
-            <ShieldCheck className="w-5 h-5 text-emerald-400" />
-            <span className="text-sm font-semibold text-emerald-400">✓ Análise Registrada On-Chain</span>
+        {/* Auto-Verification Result */}
+        {autoVerifyResult === 'match' && (
+          <div className="flex items-center gap-3 px-4 py-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 animate-in fade-in duration-500">
+            <CheckCircle className="w-7 h-7 text-emerald-400 shrink-0" />
+            <div>
+              <p className="text-sm font-bold text-emerald-400">✓ Documento Íntegro e Verificado</p>
+              <p className="text-xs text-emerald-400/70">O conteúdo armazenado confere perfeitamente com o hash registrado na blockchain Solana.</p>
+            </div>
           </div>
+        )}
+        {autoVerifyResult === 'mismatch' && (
+          <div className="flex items-center gap-3 px-4 py-4 rounded-2xl bg-red-500/5 border border-red-500/20 animate-in fade-in duration-500">
+            <XCircle className="w-7 h-7 text-red-400 shrink-0" />
+            <div>
+              <p className="text-sm font-bold text-red-400">⚠ Inconsistência Detectada</p>
+              <p className="text-xs text-red-400/70">O conteúdo armazenado no banco de dados não confere com o hash registrado na blockchain.</p>
+            </div>
+          </div>
+        )}
+        {autoVerifying && (
+          <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-violet-500/5 border border-violet-500/20">
+            <Loader2 className="w-5 h-5 text-violet-400 animate-spin shrink-0" />
+            <p className="text-sm text-violet-400">Verificando integridade automaticamente...</p>
+          </div>
+        )}
 
+        {/* Document Info Card */}
+        <div className="rounded-2xl border border-violet-500/20 bg-slate-900/50 p-6 space-y-5">
           {/* Document Info */}
           <div className="space-y-4">
             <div>
@@ -196,82 +238,108 @@ export default function VerifyPage() {
             <ExternalLink className="w-4 h-4" />
             Verificar no Solscan Explorer
           </a>
+
+          {/* Download Original Document */}
+          {doc.analysis_summary && (
+            <button
+              onClick={() => {
+                const blob = new Blob([doc.analysis_summary], { type: 'text/markdown;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${doc.title || 'analise'}_original.md`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300 transition-all text-sm font-medium"
+            >
+              <FileText className="w-4 h-4" />
+              Baixar Documento Original (.md)
+            </button>
+          )}
         </div>
 
-        {/* Integrity Verification Tool */}
-        <div className="rounded-2xl border border-amber-500/20 bg-slate-900/50 p-6 space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-amber-500/10">
-              <Upload className="w-5 h-5 text-amber-400" />
-            </div>
+        {/* External Verification Guide */}
+        <div className="rounded-2xl border border-slate-700/30 bg-slate-900/30 p-5 space-y-3">
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Como verificar de forma independente</p>
+          <ol className="text-xs text-slate-500 space-y-2 list-decimal list-inside">
+            <li>Clique em <strong className="text-slate-300">&quot;Baixar Documento Original&quot;</strong> para obter o texto exato que foi notarizado.</li>
+            <li>Calcule o <strong className="text-slate-300">SHA-256</strong> do arquivo baixado usando qualquer ferramenta:
+              <code className="block mt-1 mb-1 px-2 py-1 bg-slate-800/80 rounded text-[11px] text-emerald-400/70 font-mono">
+                certutil -hashfile analise_original.md SHA256
+              </code>
+              <span className="text-slate-600">(ou sha256sum no Linux/Mac)</span>
+            </li>
+            <li>Compare o hash calculado com o <strong className="text-slate-300">Hash On-Chain</strong> exibido acima.</li>
+            <li>Verifique no <strong className="text-slate-300">Solscan Explorer</strong> que a transação contém o mesmo hash.</li>
+          </ol>
+          <p className="text-[11px] text-slate-600 mt-2">
+            Se os hashes forem idênticos, o documento é autêntico e não foi alterado desde a data de registro na blockchain. Qualquer modificação, por menor que seja, gera um hash completamente diferente.
+          </p>
+        </div>
+        <details className="rounded-2xl border border-slate-700/50 bg-slate-900/30 overflow-hidden group">
+          <summary className="flex items-center gap-3 p-5 cursor-pointer select-none hover:bg-slate-800/30 transition-colors">
+            <RefreshCw className="w-5 h-5 text-slate-400 group-open:text-amber-400 transition-colors" />
             <div>
-              <h2 className="text-sm font-bold text-white">Verificar Integridade do Documento</h2>
-              <p className="text-xs text-slate-500">Cole o conteúdo da análise para verificar se foi alterado após a notarização.</p>
+              <p className="text-sm font-medium text-white">Verificação Manual Avançada</p>
+              <p className="text-xs text-slate-500">Cole o texto Markdown original para comparar manualmente.</p>
             </div>
-          </div>
+          </summary>
+          
+          <div className="px-5 pb-5 space-y-4 border-t border-slate-800/50 pt-4">
+            <div className="px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/10">
+              <p className="text-[11px] text-amber-400/80">
+                ⚠️ <strong>Importante:</strong> Cole o texto Markdown original (como está no banco de dados), não o texto copiado de um PDF renderizado. A formatação do PDF é diferente do Markdown e produzirá um hash diferente.
+              </p>
+            </div>
+            
+            <textarea
+              value={verifyText}
+              onChange={(e) => {
+                setVerifyText(e.target.value);
+                setManualResult(null);
+              }}
+              placeholder="Cole aqui o texto Markdown original da análise..."
+              className="w-full h-32 px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white placeholder-slate-600 focus:border-amber-500/50 outline-none resize-none font-mono"
+            />
 
-          <textarea
-            value={verifyText}
-            onChange={(e) => {
-              setVerifyText(e.target.value);
-              setVerifyResult(null);
-            }}
-            placeholder="Cole aqui o texto completo da análise (Markdown) para verificar..."
-            className="w-full h-32 px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white placeholder-slate-600 focus:border-amber-500/50 outline-none resize-none font-mono"
-          />
+            <button
+              onClick={manualVerify}
+              disabled={!verifyText.trim() || manualVerifying}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/20 transition-all text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {manualVerifying ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <ShieldCheck className="w-4 h-4" />
+              )}
+              {manualVerifying ? 'Calculando Hash...' : 'Verificar Manualmente'}
+            </button>
 
-          <button
-            onClick={verifyIntegrity}
-            disabled={!verifyText.trim() || verifying}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/20 transition-all text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {verifying ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <ShieldCheck className="w-4 h-4" />
+            {/* Manual Result */}
+            {manualResult === 'match' && (
+              <div className="flex flex-col gap-2 px-4 py-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20 animate-in fade-in duration-300">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-emerald-400" />
+                  <p className="text-sm font-bold text-emerald-400">✓ Hash confere</p>
+                </div>
+                <p className="text-xs font-mono text-emerald-300/80 break-all">{manualHash}</p>
+              </div>
             )}
-            {verifying ? 'Calculando Hash...' : 'Verificar Integridade'}
-          </button>
-
-          {/* Result */}
-          {verifyResult === 'match' && (
-            <div className="flex flex-col gap-3 px-4 py-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 animate-in fade-in duration-300">
-              <div className="flex items-center gap-3">
-                <CheckCircle className="w-6 h-6 text-emerald-400 shrink-0" />
-                <div>
-                  <p className="text-sm font-bold text-emerald-400">✓ Documento Íntegro</p>
-                  <p className="text-xs text-emerald-400/70">O conteúdo é idêntico ao que foi registrado na blockchain. Nenhuma alteração detectada.</p>
+            {manualResult === 'mismatch' && (
+              <div className="flex flex-col gap-2 px-4 py-3 rounded-xl bg-red-500/5 border border-red-500/20 animate-in fade-in duration-300">
+                <div className="flex items-center gap-2">
+                  <XCircle className="w-5 h-5 text-red-400" />
+                  <p className="text-sm font-bold text-red-400">✕ Hash não confere</p>
+                </div>
+                <div className="grid grid-cols-1 gap-1 mt-1">
+                  <p className="text-[10px] text-slate-500">On-Chain: <span className="text-emerald-300/70 font-mono">{doc.blockchain_hash}</span></p>
+                  <p className="text-[10px] text-slate-500">Calculado: <span className="text-red-300/70 font-mono">{manualHash}</span></p>
                 </div>
               </div>
-              <div className="mt-1">
-                <span className="text-[10px] text-slate-500 uppercase">Hash Calculado</span>
-                <p className="text-xs font-mono text-emerald-300/80 break-all">{computedHash}</p>
-              </div>
-            </div>
-          )}
-
-          {verifyResult === 'mismatch' && (
-            <div className="flex flex-col gap-3 px-4 py-4 rounded-xl bg-red-500/5 border border-red-500/20 animate-in fade-in duration-300">
-              <div className="flex items-center gap-3">
-                <XCircle className="w-6 h-6 text-red-400 shrink-0" />
-                <div>
-                  <p className="text-sm font-bold text-red-400">✕ Documento Alterado</p>
-                  <p className="text-xs text-red-400/70">O conteúdo NÃO confere com o hash registrado na blockchain. O documento pode ter sido modificado após a notarização.</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 gap-2 mt-1">
-                <div>
-                  <span className="text-[10px] text-slate-500 uppercase">Hash On-Chain (Original)</span>
-                  <p className="text-xs font-mono text-emerald-300/80 break-all">{doc.blockchain_hash}</p>
-                </div>
-                <div>
-                  <span className="text-[10px] text-slate-500 uppercase">Hash Calculado (Atual)</span>
-                  <p className="text-xs font-mono text-red-300/80 break-all">{computedHash}</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        </details>
 
         {/* Footer */}
         <div className="text-center space-y-2">
