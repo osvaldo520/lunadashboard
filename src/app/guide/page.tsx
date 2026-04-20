@@ -214,7 +214,7 @@ export default async function GuidePage() {
             </p>
             <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
               <p className="text-sm text-amber-300">
-                ⚠️ O Modo Expert consome 5x mais créditos. Disponível no plano Pro.
+                ⚠️ O Modo Expert consome mais créditos por interação. Disponível no plano Pro.
               </p>
             </div>
           </GuideSection>

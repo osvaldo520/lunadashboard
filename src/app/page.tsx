@@ -174,6 +174,7 @@ export default async function LandingPage() {
               { icon: '🧠', value: '360+', label: 'Capacidades de IA' },
               { icon: '🛡️', value: 'LGPD', label: 'Compliant' },
               { icon: '🔒', value: '100%', label: 'Dados nunca treinam IA' },
+              { icon: '🔗', value: 'Solana', label: 'Validação On-Chain' },
               { icon: '📡', value: 'Dezenas', label: 'de APIs + IA Proprietária' },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-2.5 text-center">
@@ -376,8 +377,8 @@ export default async function LandingPage() {
             {/* Feature 6 */}
             <FeatureCard
               icon={<ShieldIcon />}
-              title="Silo de Dados Privado"
-              description="A Judite usa Row Level Security (RLS) governamental: seus arquivos rodam em silos criptografados intransponíveis. NENHUM contrato seu é usado para treinar a IA."
+              title="Silo Privado & Validação Blockchain"
+              description="Arquivos rodam em silos criptografados com RLS governamental. Além de não usar dados para treinar a IA, a Judite cria selos de integridade on-chain de cada análise na rede blockchain Solana."
             />
           </div>
 

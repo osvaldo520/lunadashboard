@@ -125,7 +125,7 @@ export function ExpertBadge() {
               <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
                 <span className="text-amber-400 text-sm">⚠️</span>
                 <p className="text-xs text-amber-300/90">
-                  Consome <strong>5x mais</strong> do seu limite diário por interação.
+                  Tem um custo reajustado que consome mais do seu limite diário por interação.
                 </p>
               </div>
             </div>

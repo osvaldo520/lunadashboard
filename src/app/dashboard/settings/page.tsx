@@ -186,7 +186,7 @@ export default function SettingsPage() {
           <div className="mt-4 px-4 py-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
             <p className="text-xs text-amber-300/90 leading-relaxed">
               ⚡ O Modo Expert utiliza o motor de IA mais preciso da Judite para análises jurídicas de alta complexidade. 
-              Cada interação consome <strong>5x mais</strong> do seu limite diário.
+              Cada interação tem um custo reajustado e consome mais do seu limite diário de créditos.
             </p>
           </div>
         )}

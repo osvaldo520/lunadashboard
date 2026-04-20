@@ -150,7 +150,7 @@ export default function GuideModal() {
           <Section icon="⚡" title="Modo Expert">
             <p className="text-[11px] text-slate-400">
               Motor de IA premium exclusivo da Judite. Fundamentação legal detalhada, checklist LGPD/CDC aprofundado.
-              Disponível no plano Pro — consome 5x mais créditos.
+              Disponível no plano Pro — consome mais créditos devido à alta precisão.
             </p>
           </Section>
 
