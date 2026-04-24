@@ -102,6 +102,26 @@ export async function POST(request: Request) {
   }
 }
 
+// Função auxiliar para truncar o texto sem quebrar as URLs (que valem 23 chars no Twitter)
+function smartTruncateTwitter(text: string): string {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const urls = text.match(urlRegex) || [];
+  
+  // Remove URLs do texto para medir o tamanho real
+  let textWithoutUrls = text.replace(urlRegex, '').trim();
+  
+  // Twitter limite = 280. Cada URL consome 23 chars. 
+  // Reservamos 24 chars por URL (23 + 1 espaço).
+  const maxTextLength = 280 - (urls.length * 24);
+  
+  if (textWithoutUrls.length > maxTextLength) {
+    textWithoutUrls = textWithoutUrls.substring(0, maxTextLength - 3) + '...';
+  }
+  
+  // Se não tem URL, retorna o texto truncado. Se tem, anexa as URLs no final.
+  return urls.length > 0 ? `${textWithoutUrls}\n\n${urls.join('\n')}` : textWithoutUrls;
+}
+
 // ─── Twitter/X API v2 (OAuth 1.0a User Context) ───
 async function publishToTwitter(text: string): Promise<{ success: boolean; url?: string; error?: string }> {
   const appKey = process.env.TWITTER_APP_KEY;
@@ -121,9 +141,26 @@ async function publishToTwitter(text: string): Promise<{ success: boolean; url?:
       accessSecret,
     });
 
-    const tweet = await client.v2.tweet(text.substring(0, 280));
-    const tweetId = tweet.data?.id;
-    const url = tweetId ? `https://x.com/i/web/status/${tweetId}` : undefined;
+    // Detecta se é uma Thread (dividida pela tag [TWEET_2])
+    const parts = text.split('[TWEET_2]');
+    let url: string | undefined;
+
+    if (parts.length > 1) {
+      // É uma thread
+      const tweet1 = smartTruncateTwitter(parts[0].trim());
+      const tweet2 = smartTruncateTwitter(parts[1].trim());
+      
+      const thread = await client.v2.tweetThread([tweet1, tweet2]);
+      // A resposta do tweetThread é um array com os tweets postados. O primeiro é a cabeça da thread.
+      const headTweetId = thread[0]?.data?.id;
+      url = headTweetId ? `https://x.com/i/web/status/${headTweetId}` : undefined;
+    } else {
+      // É um tweet simples
+      const safeText = smartTruncateTwitter(text.trim());
+      const tweet = await client.v2.tweet(safeText);
+      const tweetId = tweet.data?.id;
+      url = tweetId ? `https://x.com/i/web/status/${tweetId}` : undefined;
+    }
 
     return { success: true, url };
   } catch (error: any) {
