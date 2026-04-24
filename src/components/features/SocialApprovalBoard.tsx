@@ -16,6 +16,9 @@ interface SocialDraft {
   published_url?: string;
   media_url?: string;
   created_at: string;
+  viral_score?: number | null;
+  compliance_score?: number | null;
+  audit_justification?: string | null;
 }
 
 const platformIcons: Record<string, React.ReactNode> = {
@@ -131,6 +134,23 @@ export function SocialApprovalBoard({ initialDrafts }: { initialDrafts: SocialDr
               {draft.status === 'approved' && (
                 <span className="text-xs font-medium uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full">
                   ✅ Aprovado
+                </span>
+              )}
+              {draft.compliance_score !== null && draft.compliance_score !== undefined && (
+                <span 
+                  title={draft.audit_justification || "Auditado pelo Tribunal de Ética"}
+                  className={`cursor-help text-xs font-medium uppercase tracking-wider px-3 py-1 rounded-full ${
+                    draft.compliance_score >= 80 ? 'text-emerald-400 bg-emerald-500/10' : 'text-amber-400 bg-amber-500/10'
+                  }`}
+                >
+                  🛡️ OAB: {draft.compliance_score}
+                </span>
+              )}
+              {draft.viral_score !== null && draft.viral_score !== undefined && (
+                <span className={`text-xs font-medium uppercase tracking-wider px-3 py-1 rounded-full ${
+                  draft.viral_score >= 70 ? 'text-rose-400 bg-rose-500/10' : 'text-slate-400 bg-slate-500/10'
+                }`}>
+                  🔥 Viral: {draft.viral_score}
                 </span>
               )}
               <span className="text-sm font-medium text-white truncate max-w-[200px] sm:max-w-xs block">
