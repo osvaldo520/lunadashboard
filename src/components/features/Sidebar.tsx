@@ -18,6 +18,7 @@ import {
   X,
   BookOpen
 } from 'lucide-react';
+import { useLocale, LocaleToggle } from '@/lib/i18n';
 
 interface SidebarProps {
   userName: string;
@@ -27,13 +28,6 @@ interface SidebarProps {
   userCreditsBonus: number;
 }
 
-const navItems = [
-  { href: '/dashboard', label: 'Visão Geral', icon: LayoutDashboard },
-  { href: '/dashboard/documents', label: 'Documentos', icon: FileText },
-  { href: '/dashboard/upload', label: 'Upload', icon: Upload },
-  { href: '/guide', label: 'Guia de Uso', icon: BookOpen },
-  { href: '/dashboard/settings', label: 'Configurações', icon: Settings },
-];
 
 const planLabels: Record<string, string> = {
   free: 'Free',
@@ -53,6 +47,15 @@ export function Sidebar({ userName, userEmail, userPlan, userCreditsPlan, userCr
   const supabase = createClient();
   const [isUpgrading, setIsUpgrading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useLocale();
+
+  const navItems = [
+    { href: '/dashboard', label: t('dashboard.overview'), icon: LayoutDashboard },
+    { href: '/dashboard/documents', label: t('dashboard.documents'), icon: FileText },
+    { href: '/dashboard/upload', label: 'Upload', icon: Upload },
+    { href: '/guide', label: t('nav.guide'), icon: BookOpen },
+    { href: '/dashboard/settings', label: t('dashboard.settings'), icon: Settings },
+  ];
 
   // Fecha o menu Mobile sempre que navegar para outra rota
   useEffect(() => {
@@ -159,10 +162,10 @@ export function Sidebar({ userName, userEmail, userPlan, userCreditsPlan, userCr
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 opacity-50 group-hover:opacity-100 transition-opacity pointer-events-none" />
                 <h3 className="text-sm font-bold text-white mb-1 flex items-center gap-2 relative z-10">
                   <Sparkles className="w-4 h-4 text-indigo-400" />
-                  Evolua para o Pro
+                  {t('dashboard.upgradePro')}
                 </h3>
                 <p className="text-xs text-slate-400 mb-3 relative z-10">
-                  Análises e gerações ilimitadas com a Judite.
+                  {t('dashboard.upgradeDesc')}
                 </p>
                 <button
                   onClick={handleUpgrade}
@@ -172,10 +175,10 @@ export function Sidebar({ userName, userEmail, userPlan, userCreditsPlan, userCr
                   {isUpgrading ? (
                     <>
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      Redirecionando...
+                      {t('dashboard.redirecting')}
                     </>
                   ) : (
-                    'Assinar agora'
+                    t('dashboard.subscribeNow')
                   )}
                 </button>
               </div>
@@ -201,7 +204,7 @@ export function Sidebar({ userName, userEmail, userPlan, userCreditsPlan, userCr
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[10px] font-medium text-slate-400">
                 <span className={`px-1 py-0.5 rounded-[4px] mr-1.5 ${planColors[userPlan] || planColors.free}`}>{planLabels[userPlan] || 'Free'}</span>
-                Créditos
+                {t('dashboard.credits')}
               </span>
               <span className="text-[10px] font-bold text-white">
                 {(userCreditsPlan + userCreditsBonus).toLocaleString('pt-BR')} 
@@ -219,15 +222,17 @@ export function Sidebar({ userName, userEmail, userPlan, userCreditsPlan, userCr
               />
             </div>
           </div>
-          
-          <button
-            onClick={handleLogout}
-            className="flex items-center justify-center gap-2 w-full px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 
-              border border-transparent hover:border-red-500/20 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200 active:bg-red-500/20"
-          >
-            <LogOut className="h-3.5 w-3.5" />
-            Sair
-          </button>
+          <div className="flex items-center justify-between gap-2">
+            <button
+              onClick={handleLogout}
+              className="flex items-center justify-center gap-2 flex-1 px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 
+                border border-transparent hover:border-red-500/20 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200 active:bg-red-500/20"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              {t('dashboard.logout')}
+            </button>
+            <LocaleToggle />
+          </div>
         </div>
       </aside>
     </>

@@ -10,6 +10,7 @@ import { AnalyzeButton } from '@/components/AnalyzeButton';
 import { DeleteButton } from '@/components/DeleteButton';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { getServerLocale, createT } from '@/lib/i18n/server';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -21,6 +22,8 @@ export default async function DocumentDetailsPage({
 }) {
   const { id } = await params;
   const supabase = await createClient();
+  const locale = await getServerLocale();
+  const t = createT(locale);
 
   const { data: doc } = await supabase
     .from('documents')
@@ -57,7 +60,7 @@ export default async function DocumentDetailsPage({
           className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors mb-6"
         >
           <ArrowLeft className="h-4 w-4" />
-          Voltar para Documentos
+          {t('dashboard.documentDetails.back')}
         </Link>
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
           <div className="w-full md:w-auto">
@@ -66,18 +69,23 @@ export default async function DocumentDetailsPage({
             </h1>
             <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-sm text-slate-400">
               {fileUrl ? (
-                <DocumentPreviewModal fileUrl={fileUrl} docType={doc.doc_type} filePath={doc.file_path} />
+                <DocumentPreviewModal 
+                  fileUrl={fileUrl} 
+                  docType={doc.doc_type} 
+                  filePath={doc.file_path} 
+                  previewLabel={t('dashboard.documentDetails.preview')}
+                />
               ) : (
                 <span className="flex items-center gap-1.5 capitalize text-slate-400">
                   <FileQuestion className="h-4 w-4" />
-                  {doc.doc_type || 'Documento'}
+                  {doc.doc_type || t('dashboard.documentDetails.defaultType')}
                 </span>
               )}
               <span className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4" />
-                {new Date(doc.created_at).toLocaleDateString('pt-BR')}
+                {new Date(doc.created_at).toLocaleDateString(t('dashboard.pagination.itemsPerPage') === 'Items per page:' ? 'en-US' : 'pt-BR')}
               </span>
-              <StatusBadge status={doc.status} />
+              <StatusBadge status={doc.status} t={t} />
             </div>
           </div>
           
@@ -89,7 +97,7 @@ export default async function DocumentDetailsPage({
             
             {doc.risk_score != null && (
               <div className="text-left md:text-right mt-2 md:mt-0">
-                <div className="text-sm font-medium text-slate-400 mb-1">Score de Risco</div>
+                <div className="text-sm font-medium text-slate-400 mb-1">{t('dashboard.documentDetails.riskScore')}</div>
                 <RiskBadge score={doc.risk_score} />
               </div>
             )}
@@ -104,7 +112,7 @@ export default async function DocumentDetailsPage({
             <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-6">
               <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-indigo-400" />
-                Resumo da Análise
+                {t('dashboard.documentDetails.analysisSummary')}
               </h2>
               {doc.analysis_summary && (
                 <div className="flex flex-wrap items-center gap-2 w-full xl:w-auto">
@@ -112,15 +120,18 @@ export default async function DocumentDetailsPage({
                     documentId={doc.id}
                     format="pdf"
                     contentType="analysis"
+                    label={t('dashboard.documentDetails.generatePdf')}
                   />
                   <ExportDocumentButton 
                     documentId={doc.id}
                     format="docx"
                     contentType="analysis"
+                    label={t('dashboard.documentDetails.generateDocx')}
                   />
                   <DownloadAnalysisButton 
                     content={doc.analysis_summary} 
                     documentTitle={doc.title} 
+                    label={t('dashboard.documentDetails.downloadAnalysis')}
                   />
                 </div>
               )}
@@ -140,10 +151,10 @@ export default async function DocumentDetailsPage({
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-emerald-400">Cruzamento Governamental</span>
+                        <span className="text-sm font-semibold text-emerald-400">{t('dashboard.documentDetails.govCross')}</span>
                         <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded">Pro</span>
                       </div>
-                      <p className="text-xs text-slate-400 mt-0.5">Esta análise cruzou dados com bases oficiais do governo brasileiro.</p>
+                      <p className="text-xs text-slate-400 mt-0.5">{t('dashboard.documentDetails.govCrossDesc')}</p>
                     </div>
                     <ShieldCheck className="w-5 h-5 text-emerald-500/40 ml-auto flex-shrink-0" />
                   </div>
@@ -155,7 +166,7 @@ export default async function DocumentDetailsPage({
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-violet-400">Selo Blockchain</span>
+                        <span className="text-sm font-semibold text-violet-400">{t('dashboard.documentDetails.blockchainSeal')}</span>
                         <span className="text-[10px] font-bold uppercase tracking-wider bg-violet-500/10 text-violet-400 px-1.5 py-0.5 rounded">Solana</span>
                       </div>
                       <a 
@@ -164,7 +175,7 @@ export default async function DocumentDetailsPage({
                         rel="noopener noreferrer"
                         className="text-xs text-slate-400 hover:text-violet-300 transition-colors mt-0.5 underline inline-block"
                       >
-                        Verificar integridade on-chain →
+                        {t('dashboard.documentDetails.verifyOnchain')}
                       </a>
                     </div>
                     <ShieldCheck className="w-5 h-5 text-violet-500/40 ml-auto flex-shrink-0" />
@@ -178,8 +189,8 @@ export default async function DocumentDetailsPage({
               </>
             ) : (
               <div className="text-center py-12">
-                <p className="text-slate-400">Nenhuma análise disponível para este documento ainda.</p>
-                <p className="text-sm text-slate-500 mt-2">Clique em &quot;Analisar&quot; acima para iniciar a avaliação jurídica com a Judite.</p>
+                <p className="text-slate-400">{t('dashboard.documentDetails.noAnalysis')}</p>
+                <p className="text-sm text-slate-500 mt-2">{t('dashboard.documentDetails.clickAnalyze')}</p>
               </div>
             )}
           </div>
@@ -189,15 +200,15 @@ export default async function DocumentDetailsPage({
         <div className="space-y-6">
           {/* File Details */}
           <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
-            <h3 className="text-sm font-medium text-white mb-4">Detalhes do Arquivo</h3>
+            <h3 className="text-sm font-medium text-white mb-4">{t('dashboard.documentDetails.fileDetails')}</h3>
             <div className="space-y-3">
               <div>
-                <span className="text-xs text-slate-500">ID do Documento</span>
+                <span className="text-xs text-slate-500">{t('dashboard.documentDetails.docId')}</span>
                 <p className="text-sm text-slate-300 font-mono break-all mt-0.5">{doc.id}</p>
               </div>
               {doc.tags && doc.tags.length > 0 && (
                 <div>
-                  <span className="text-xs text-slate-500">Tags</span>
+                  <span className="text-xs text-slate-500">{t('dashboard.documentDetails.tags')}</span>
                   <div className="flex flex-wrap gap-2 mt-1.5">
                     {doc.tags.map((tag: string) => (
                       <span key={tag} className="px-2 py-1 rounded bg-slate-800 text-xs text-slate-300">
@@ -213,22 +224,22 @@ export default async function DocumentDetailsPage({
           {/* Analysis History */}
           {logs && logs.length > 0 && (
             <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
-              <h3 className="text-sm font-medium text-white mb-4">Histórico de Análises</h3>
+              <h3 className="text-sm font-medium text-white mb-4">{t('dashboard.documentDetails.history')}</h3>
               <div className="space-y-4">
                 {logs.map((log) => (
                   <div key={log.id} className="relative pl-4 border-l-2 border-slate-800">
                     <div className="absolute -left-1.5 top-1.5 w-2.5 h-2.5 rounded-full bg-slate-700 ring-4 ring-slate-900" />
                     <p className="text-xs text-slate-400 mb-1">
-                      {new Date(log.created_at).toLocaleString('pt-BR')}
+                      {new Date(log.created_at).toLocaleString(t('dashboard.pagination.itemsPerPage') === 'Items per page:' ? 'en-US' : 'pt-BR')}
                     </p>
                     <p className="text-sm text-white font-medium">
-                      Análise concluída (Judite)
+                      {t('dashboard.documentDetails.analysisDone')}
                     </p>
                   </div>
                 ))}
                 {doc.blockchain_tx && (
                   <div>
-                    <span className="text-xs text-slate-500">Selo Blockchain (Solana)</span>
+                    <span className="text-xs text-slate-500">{t('dashboard.documentDetails.blockchainSealSolana')}</span>
                     <a 
                       href={`https://solscan.io/tx/${doc.blockchain_tx}${doc.blockchain_network === 'solana-mainnet' ? '' : '?cluster=devnet'}`}
                       target="_blank"
@@ -241,7 +252,7 @@ export default async function DocumentDetailsPage({
                 )}
                 {doc.blockchain_hash && (
                   <div>
-                    <span className="text-xs text-slate-500">Hash SHA-256</span>
+                    <span className="text-xs text-slate-500">{t('dashboard.documentDetails.hash')}</span>
                     <p className="text-sm text-slate-300 font-mono break-all mt-0.5">{doc.blockchain_hash}</p>
                   </div>
                 )}
@@ -254,7 +265,7 @@ export default async function DocumentDetailsPage({
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status, t }: { status: string, t: any }) {
   const styles: Record<string, string> = {
     uploaded: 'bg-slate-500/10 text-slate-400 ring-1 ring-slate-500/20',
     pending: 'bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/20',
@@ -264,11 +275,11 @@ function StatusBadge({ status }: { status: string }) {
   };
 
   const labels: Record<string, string> = {
-    uploaded: 'Enviado',
-    pending: 'Pendente',
-    analyzing: 'Analisando',
-    completed: 'Concluído',
-    error: 'Erro',
+    uploaded: t('dashboard.status.uploaded'),
+    pending: t('dashboard.status.pending'),
+    analyzing: t('dashboard.status.analyzing'),
+    completed: t('dashboard.status.completed'),
+    error: t('dashboard.status.error'),
   };
 
   return (

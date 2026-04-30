@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useLocale } from '@/lib/i18n';
 
 export function WelcomeModal() {
   const [show, setShow] = useState(false);
+  const { t } = useLocale();
 
   useEffect(() => {
     // Só mostra se nunca viu o modal
@@ -42,8 +44,8 @@ export function WelcomeModal() {
           <div className="flex items-center gap-3 mb-3">
             <span className="text-4xl">⚖️</span>
             <div>
-              <h2 className="text-xl font-bold text-white">Bem-vindo à Judite</h2>
-              <p className="text-sm text-indigo-200">Sua inteligência jurídica em dois cliques.</p>
+              <h2 className="text-xl font-bold text-white">{t('welcome.title')}</h2>
+              <p className="text-sm text-indigo-200">{t('welcome.subtitle')}</p>
             </div>
           </div>
         </div>
@@ -55,9 +57,9 @@ export function WelcomeModal() {
             <div className="flex items-start gap-3">
               <span className="text-xl mt-0.5">📂</span>
               <div>
-                <h3 className="text-sm font-semibold text-white mb-1">Painel</h3>
+                <h3 className="text-sm font-semibold text-white mb-1">{t('welcome.panelTitle')}</h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Analise contratos, salve pareceres e acompanhe riscos. Tudo organizado na sua biblioteca.
+                  {t('welcome.panelDesc')}
                 </p>
               </div>
             </div>
@@ -68,10 +70,9 @@ export function WelcomeModal() {
             <div className="flex items-start gap-3">
               <span className="text-xl mt-0.5">📱</span>
               <div>
-                <h3 className="text-sm font-semibold text-white mb-1">Telegram & WhatsApp</h3>
+                <h3 className="text-sm font-semibold text-white mb-1">{t('welcome.messengerTitle')}</h3>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Tire dúvidas por áudio, envie documentos e consulte de qualquer lugar no seu app favorito. 
-                  Mensageiros também acessam seus arquivos salvos no Painel.
+                  {t('welcome.messengerDesc')}
                 </p>
               </div>
             </div>
@@ -79,7 +80,7 @@ export function WelcomeModal() {
 
           {/* Nota unificadora */}
           <p className="text-center text-xs text-slate-500 mb-5 italic">
-            São a mesma Judite. Use o Painel para organizar, e o WhatsApp/Telegram para agir rápido.
+            {t('welcome.note')}
           </p>
 
           {/* CTAs */}
@@ -89,13 +90,13 @@ export function WelcomeModal() {
               onClick={handleClose}
               className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold text-center transition-all shadow-lg shadow-indigo-500/25 active:scale-[0.98]"
             >
-              Conectar meu Aparelho →
+              {t('welcome.connectCta')}
             </a>
             <button
               onClick={handleClose}
               className="w-full py-2.5 rounded-xl border border-slate-700 text-sm font-medium text-slate-400 hover:text-white hover:border-slate-600 transition-all"
             >
-              Explorar o Painel primeiro
+              {t('welcome.exploreCta')}
             </button>
           </div>
         </div>

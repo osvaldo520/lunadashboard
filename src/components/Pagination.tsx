@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTransition } from 'react';
+import { useLocale } from '@/lib/i18n';
 
 interface PaginationProps {
   totalPages: number;
@@ -13,6 +14,7 @@ export function Pagination({ totalPages, totalItems }: PaginationProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const { t } = useLocale();
 
   const currentPage = Number(searchParams.get('page')) || 1;
   const currentPerPage = Number(searchParams.get('per_page')) || 10;
@@ -52,27 +54,29 @@ export function Pagination({ totalPages, totalItems }: PaginationProps) {
           disabled={currentPage <= 1 || isPending}
           className="relative inline-flex items-center rounded-md border border-slate-700 bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Previous
+          {t('pages.backHome') === 'Back to Home' ? 'Previous' : 'Anterior'}
         </button>
         <button
           onClick={() => navigateToPage(currentPage + 1)}
           disabled={currentPage >= totalPages || isPending}
           className="relative ml-3 inline-flex items-center rounded-md border border-slate-700 bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Next
+          {t('pages.backHome') === 'Back to Home' ? 'Next' : 'Próxima'}
         </button>
       </div>
       <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           <p className="text-sm text-slate-400">
-            Mostrando página <span className="font-medium text-white">{currentPage}</span> de{' '}
+            {t('dashboard.pagination.showing').split('{{page}}')[0]}
+            <span className="font-medium text-white">{currentPage}</span>
+            {t('dashboard.pagination.showing').split('{{page}}')[1].split('{{total}}')[0]}
             <span className="font-medium text-white">{totalPages || 1}</span>
             {' '}(<span className="font-medium text-white">{totalItems}</span> total)
           </p>
           
           <div className="flex items-center gap-2">
             <label htmlFor="per_page" className="text-sm text-slate-400">
-              Itens por página:
+              {t('dashboard.pagination.itemsPerPage')}
             </label>
             <select
               id="per_page"

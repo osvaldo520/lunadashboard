@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import GuideModal from '@/components/GuideModal';
+import { getServerLocale, createT } from '@/lib/i18n/server';
+import { LocaleToggle } from '@/lib/i18n';
 
 export const metadata: Metadata = {
   title: 'Judite — Análise e Geração de Contratos com IA',
@@ -20,6 +22,9 @@ export default async function LandingPage() {
   const { data: { session } } = await supabase.auth.getSession();
   if (session) redirect('/dashboard');
 
+  const locale = await getServerLocale();
+  const t = createT(locale);
+
   return (
     <div className="min-h-screen bg-[#06070a] text-white bg-grid-pattern">
       {/* ═══════════════════════════════════════
@@ -34,21 +39,23 @@ export default async function LandingPage() {
 
           {/* Oculta em tablet pequeno e celular, mostra só em PC (lg) */}
           <div className="hidden lg:flex items-center gap-8 text-sm text-slate-400">
-            <a href="#como-a-judite-analisa" className="hover:text-white transition-colors">Veja em Ação</a>
-            <a href="#recursos" className="hover:text-white transition-colors">Recursos</a>
-            <a href="#precos" className="hover:text-white transition-colors">Preços</a>
+            <a href="#como-a-judite-analisa" className="hover:text-white transition-colors">{t('nav.seeInAction')}</a>
+            <a href="#recursos" className="hover:text-white transition-colors">{t('nav.features')}</a>
+            <a href="#precos" className="hover:text-white transition-colors">{t('nav.pricing')}</a>
             <GuideModal />
+            <LocaleToggle />
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <LocaleToggle className="lg:hidden" />
             <Link href="/login" className="hidden sm:block text-sm text-slate-400 hover:text-white transition-colors px-3 py-2">
-              Entrar
+              {t('nav.login')}
             </Link>
             <Link 
               href="/register"
               className="text-[11px] sm:text-sm font-medium bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-all hover:shadow-lg hover:shadow-indigo-500/25 shrink-0"
             >
-              Teste Grátis
+              {t('nav.tryFree')}
             </Link>
           </div>
         </div>
@@ -75,20 +82,19 @@ export default async function LandingPage() {
             {/* Badge */}
             <div className="animate-fade-in-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold tracking-wide uppercase mb-8 backdrop-blur-sm shadow-[0_0_20px_rgba(99,102,241,0.15)]">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              A 1ª Bancada Multi-Agente Jurídica do Brasil
+              {t('hero.badge')}
             </div>
 
             {/* H1 — Dor imediata do advogado */}
             <h1 className="animate-fade-in-up-delay-1 text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] mb-6">
-              Pare de perder horas<br />em contratos.
+              {t('hero.title1')}<br />{t('hero.title2')}
               <br />
-              <span className="text-gradient">Ganhe um escritório inteiro de IA.</span>
+              <span className="text-gradient">{t('hero.title3')}</span>
             </h1>
 
             {/* Subtitle — Concreto, menciona WhatsApp + Telegram */}
             <p className="animate-fade-in-up-delay-2 text-lg md:text-xl text-slate-300 max-w-3xl mx-auto mb-10 leading-relaxed font-light">
-              Envie qualquer contrato — PDF, Word ou foto — pelo <strong className="text-white font-medium">WhatsApp</strong>, <strong className="text-white font-medium">Telegram</strong> ou direto na plataforma. 
-              A Judite identifica cláusulas abusivas, verifica compliance LGPD/CDC, cruza dados no <strong className="text-white font-medium">STF e BACEN</strong> e entrega recomendações de negociação em minutos.
+              {t('hero.subtitle1')} <strong className="text-white font-medium">WhatsApp</strong>, <strong className="text-white font-medium">Telegram</strong> {t('hero.subtitle2')} <strong className="text-white font-medium">{t('hero.govHighlight')}</strong> {t('hero.subtitle3')}
             </p>
 
             {/* CTAs */}
@@ -97,13 +103,13 @@ export default async function LandingPage() {
                 href="/register"
                 className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-base transition-all hover:shadow-xl hover:shadow-indigo-500/25 hover:scale-[1.02] active:scale-[0.98]"
               >
-                Testar Grátis — Sem Cartão
+                {t('hero.ctaPrimary')}
               </Link>
               <a
                 href="#como-a-judite-analisa"
                 className="w-full sm:w-auto px-8 py-3.5 rounded-xl border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white font-medium text-base transition-all"
               >
-                Ver análise real →
+                {t('hero.ctaSecondary')}
               </a>
             </div>
           </div>
@@ -117,16 +123,16 @@ export default async function LandingPage() {
                   <div className="w-3 h-3 rounded-full bg-red-500/60" />
                   <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
                   <div className="w-3 h-3 rounded-full bg-green-500/60" />
-                  <span className="ml-3 text-xs text-slate-600">judite.app/pauta</span>
+                  <span className="ml-3 text-xs text-slate-600">{t('hero.urlBar')}</span>
                 </div>
 
                 {/* Fake KPI Row */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                   {[
-                    { label: 'Documentos', value: '47', color: 'text-white' },
-                    { label: 'Análises Prontas', value: '38', color: 'text-emerald-400' },
-                    { label: 'Alto Risco', value: '3', color: 'text-red-400' },
-                    { label: 'Score Médio', value: '32%', color: 'text-amber-400' },
+                    { label: t('kpi.documents'), value: '47', color: 'text-white' },
+                    { label: t('kpi.readyAnalyses'), value: '38', color: 'text-emerald-400' },
+                    { label: t('kpi.highRisk'), value: '3', color: 'text-red-400' },
+                    { label: t('kpi.avgScore'), value: '32%', color: 'text-amber-400' },
                   ].map((kpi) => (
                     <div key={kpi.label} className="rounded-xl bg-slate-800/50 border border-slate-700/50 p-4">
                       <div className="text-xs text-slate-500 mb-1">{kpi.label}</div>
@@ -138,9 +144,9 @@ export default async function LandingPage() {
                 {/* Fake Document Row */}
                 <div className="space-y-2">
                   {[
-                    { title: 'Contrato de Locação – Apt 302', status: 'Concluído', risk: 28, statusColor: 'text-emerald-400 bg-emerald-500/10' },
-                    { title: 'Termo de Prestação de Serviços', status: 'Concluído', risk: 65, statusColor: 'text-emerald-400 bg-emerald-500/10' },
-                    { title: 'NDA — Fornecedor Internacional', status: 'Analisando', risk: null, statusColor: 'text-blue-400 bg-blue-500/10' },
+                    { title: t('kpi.doc1'), status: t('kpi.completed'), risk: 28, statusColor: 'text-emerald-400 bg-emerald-500/10' },
+                    { title: t('kpi.doc2'), status: t('kpi.completed'), risk: 65, statusColor: 'text-emerald-400 bg-emerald-500/10' },
+                    { title: t('kpi.doc3'), status: t('kpi.analyzing'), risk: null, statusColor: 'text-blue-400 bg-blue-500/10' },
                   ].map((doc) => (
                     <div key={doc.title} className="flex items-center justify-between rounded-lg bg-slate-800/30 border border-slate-700/30 px-4 py-3">
                       <span className="text-sm text-slate-300 truncate">{doc.title}</span>
@@ -171,11 +177,11 @@ export default async function LandingPage() {
           {/* Métricas */}
           <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 mb-6">
             {[
-              { icon: '🧠', value: '360+', label: 'Capacidades de IA' },
-              { icon: '🛡️', value: 'LGPD', label: 'Compliant' },
-              { icon: '🔒', value: '100%', label: 'Dados nunca treinam IA' },
-              { icon: '🔗', value: 'Solana', label: 'Validação On-Chain' },
-              { icon: '📡', value: 'Dezenas', label: 'de APIs + IA Proprietária' },
+              { icon: '🧠', value: '360+', label: t('social.capabilities') },
+              { icon: '🛡️', value: 'LGPD', label: t('social.compliant') },
+              { icon: '🔒', value: '100%', label: t('social.neverTrain') },
+              { icon: '🔗', value: 'Solana', label: t('social.onChain') },
+              { icon: '📡', value: t('social.dozens'), label: t('social.proprietaryAI') },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-2.5 text-center">
                 <span className="text-lg">{item.icon}</span>
@@ -188,10 +194,10 @@ export default async function LandingPage() {
           </div>
           {/* Canais de acesso */}
           <p className="text-center text-xs text-slate-600 font-medium flex items-center justify-center gap-1.5 flex-wrap">
-            Funciona via{' '}
+            {t('social.channels')}{' '}
             <span className="inline-flex items-center gap-1 text-emerald-500/80"><svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>WhatsApp</span>{' · '}
             <span className="inline-flex items-center gap-1 text-sky-400/80"><svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.94z"/></svg>Telegram</span>{' · '}
-            <span className="text-indigo-400/80">Plataforma Web</span> — você escolhe onde prefere operar.
+            <span className="text-indigo-400/80">{t('social.webPlatform')}</span> {t('social.channelSuffix')}
           </p>
         </div>
       </section>
@@ -202,12 +208,12 @@ export default async function LandingPage() {
       <section id="como-a-judite-analisa" className="py-24 md:py-32 bg-slate-900/30 border-b border-white/5">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
-            <span className="inline-block py-1 px-3 rounded-full bg-emerald-500/10 text-emerald-400 text-sm font-semibold tracking-wider uppercase mb-3">Resultado real</span>
+            <span className="inline-block py-1 px-3 rounded-full bg-emerald-500/10 text-emerald-400 text-sm font-semibold tracking-wider uppercase mb-3">{t('demo.badge')}</span>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              O que você recebe em <span className="text-gradient">minutos.</span>
+              {t('demo.title1')} <span className="text-gradient">{t('demo.title2')}</span>
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
-              Envie um contrato e veja a Judite identificar cláusulas abusivas, verificar compliance e entregar recomendações de negociação prontas.
+              {t('demo.subtitle')}
             </p>
           </div>
               
@@ -216,15 +222,15 @@ export default async function LandingPage() {
             <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-6 hover:border-indigo-500/20 transition-all shadow-xl">
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-lg">⚠️</span>
-                <h3 className="text-base font-semibold text-white">Cláusulas Críticas Identificadas</h3>
+                <h3 className="text-base font-semibold text-white">{t('demo.criticalClauses')}</h3>
               </div>
               <div className="space-y-2">
                 {[
-                  { clause: 'Limitação de Responsabilidade', risk: 'Abusiva', color: 'text-red-400 bg-red-500/10' },
-                  { clause: 'Alteração Unilateral sem Prazo', risk: 'Importante', color: 'text-amber-400 bg-amber-500/10' },
-                  { clause: 'Encerramento Arbitrário', risk: 'Importante', color: 'text-amber-400 bg-amber-500/10' },
-                  { clause: 'Cessão de Direitos Autorais', risk: 'Abusiva', color: 'text-red-400 bg-red-500/10' },
-                  { clause: 'Multa Rescisória 50%', risk: 'Abusiva', color: 'text-red-400 bg-red-500/10' },
+                  { clause: t('demo.clause1'), risk: t('demo.abusive'), color: 'text-red-400 bg-red-500/10' },
+                  { clause: t('demo.clause2'), risk: t('demo.important'), color: 'text-amber-400 bg-amber-500/10' },
+                  { clause: t('demo.clause3'), risk: t('demo.important'), color: 'text-amber-400 bg-amber-500/10' },
+                  { clause: t('demo.clause4'), risk: t('demo.abusive'), color: 'text-red-400 bg-red-500/10' },
+                  { clause: t('demo.clause5'), risk: t('demo.abusive'), color: 'text-red-400 bg-red-500/10' },
                 ].map((item) => (
                   <div key={item.clause} className="flex items-center justify-between rounded-lg bg-slate-800/30 px-3 py-2 border border-slate-700/30">
                     <span className="text-xs text-slate-300 truncate mr-2">{item.clause}</span>
@@ -234,8 +240,8 @@ export default async function LandingPage() {
               </div>
               <div className="mt-4 pt-3 border-t border-slate-800/80">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-500">Placar de Risco Geral</span>
-                  <span className="text-sm font-bold text-red-400 drop-shadow-sm">ALTÍSSIMO — 92/100</span>
+                  <span className="text-xs text-slate-500">{t('demo.riskScore')}</span>
+                  <span className="text-sm font-bold text-red-400 drop-shadow-sm">{t('demo.riskValue')}</span>
                 </div>
               </div>
             </div>
@@ -244,15 +250,15 @@ export default async function LandingPage() {
             <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-6 hover:border-indigo-500/20 transition-all shadow-xl">
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-lg">🛡️</span>
-                <h3 className="text-base font-semibold text-white">Checklist de Compliance</h3>
+                <h3 className="text-base font-semibold text-white">{t('demo.complianceTitle')}</h3>
               </div>
               <div className="space-y-2">
                 {[
-                  { req: 'LGPD — Base Legal Explícita', status: '❌', statusText: 'Falhou', color: 'text-red-400' },
-                  { req: 'LGPD — Direitos do Titular', status: '❌', statusText: 'Falhou', color: 'text-red-400' },
-                  { req: 'CDC — Equilíbrio de Direitos', status: '❌', statusText: 'Falhou', color: 'text-red-400' },
-                  { req: 'CDC — Clareza de Termos', status: '⚠️', statusText: 'Parcial', color: 'text-amber-400' },
-                  { req: 'Código Civil — Boa-fé', status: '✅', statusText: 'OK', color: 'text-emerald-400' },
+                  { req: t('demo.req1'), status: '❌', statusText: t('demo.failed'), color: 'text-red-400' },
+                  { req: t('demo.req2'), status: '❌', statusText: t('demo.failed'), color: 'text-red-400' },
+                  { req: t('demo.req3'), status: '❌', statusText: t('demo.failed'), color: 'text-red-400' },
+                  { req: t('demo.req4'), status: '⚠️', statusText: t('demo.partial'), color: 'text-amber-400' },
+                  { req: t('demo.req5'), status: '✅', statusText: t('demo.ok'), color: 'text-emerald-400' },
                 ].map((item) => (
                   <div key={item.req} className="flex items-center justify-between rounded-lg bg-slate-800/30 px-3 py-2 border border-slate-700/30">
                     <span className="text-xs text-slate-300 truncate mr-2">{item.req}</span>
@@ -262,7 +268,7 @@ export default async function LandingPage() {
               </div>
               <div className="mt-4 pt-3 border-t border-slate-800/80">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-500">Fundamentação Estratégica</span>
+                  <span className="text-xs text-slate-500">{t('demo.legalBasis')}</span>
                   <span className="text-xs font-mono text-indigo-400">Lei 8.078/90 · Lei 13.709/18</span>
                 </div>
               </div>
@@ -272,29 +278,29 @@ export default async function LandingPage() {
             <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-6 hover:border-indigo-500/20 transition-all md:col-span-2 shadow-xl">
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-lg">📋</span>
-                <h3 className="text-base font-semibold text-white">Recomendações Finais e Próximos Passos</h3>
+                <h3 className="text-base font-semibold text-white">{t('demo.recommendations')}</h3>
               </div>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-red-500/5 p-4 rounded-xl border border-red-500/10">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
-                    <span className="text-sm font-bold text-red-400">Alerta: NÃO ASSINE neste momento</span>
+                    <span className="text-sm font-bold text-red-400">{t('demo.alertDoNotSign')}</span>
                   </div>
                   <ul className="space-y-2 text-xs text-slate-400">
-                    <li className="flex items-start gap-1.5"><span className="text-red-400 mt-0.5">•</span>Documento não preenchido (vários placeholders em aberto)</li>
-                    <li className="flex items-start gap-1.5"><span className="text-red-400 mt-0.5">•</span>Viola dispositivos obrigatórios do Código de Defesa do Consumidor</li>
-                    <li className="flex items-start gap-1.5"><span className="text-red-400 mt-0.5">•</span>Desatende exigências mínimas da LGPD no Art. 7º</li>
+                    <li className="flex items-start gap-1.5"><span className="text-red-400 mt-0.5">•</span>{t('demo.alertItem1')}</li>
+                    <li className="flex items-start gap-1.5"><span className="text-red-400 mt-0.5">•</span>{t('demo.alertItem2')}</li>
+                    <li className="flex items-start gap-1.5"><span className="text-red-400 mt-0.5">•</span>{t('demo.alertItem3')}</li>
                   </ul>
                 </div>
                 <div className="bg-emerald-500/5 p-4 rounded-xl border border-emerald-500/10">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                    <span className="text-sm font-bold text-emerald-400">Roadmap Sugerido de Negociação</span>
+                    <span className="text-sm font-bold text-emerald-400">{t('demo.roadmap')}</span>
                   </div>
                   <ul className="space-y-2 text-xs text-slate-400">
-                    <li className="flex items-start gap-1.5"><span className="text-emerald-400 mt-0.5 font-bold">1.</span>Solicite versão completa com escopo e valores financeiros pré-preenchidos.</li>
-                    <li className="flex items-start gap-1.5"><span className="text-emerald-400 mt-0.5 font-bold">2.</span>Renegocie imediatamente as cláusulas 5, 6 e 7 de Terminação Unilateral.</li>
-                    <li className="flex items-start gap-1.5"><span className="text-emerald-400 mt-0.5 font-bold">3.</span>Valide o aditivo com sua equipe e solicite nova auditoria (Score alvo: 20/100).</li>
+                    <li className="flex items-start gap-1.5"><span className="text-emerald-400 mt-0.5 font-bold">1.</span>{t('demo.roadmapItem1')}</li>
+                    <li className="flex items-start gap-1.5"><span className="text-emerald-400 mt-0.5 font-bold">2.</span>{t('demo.roadmapItem2')}</li>
+                    <li className="flex items-start gap-1.5"><span className="text-emerald-400 mt-0.5 font-bold">3.</span>{t('demo.roadmapItem3')}</li>
                   </ul>
                 </div>
               </div>
@@ -310,11 +316,11 @@ export default async function LandingPage() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Tudo que um escritório inteiro<br className="hidden md:block" /> 
-              <span className="text-gradient">faria por você.</span>
+              {t('features.sectionTitle1')}<br className="hidden md:block" /> 
+              <span className="text-gradient">{t('features.sectionTitle2')}</span>
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto leading-relaxed">
-              Análise de riscos, geração de documentos, pesquisa em tribunais — tudo integrado pelo WhatsApp, Telegram ou plataforma web. A Judite trabalha em silêncio para que você foque na estratégia.
+              {t('features.sectionSubtitle')}
             </p>
           </div>
 
@@ -322,43 +328,44 @@ export default async function LandingPage() {
             {/* Feature 1 */}
             <FeatureCard
               icon={<BrainIcon />}
-              title="Análise de Risco Inteligente"
-              description="Envie qualquer contrato — PDF, Word ou tire uma foto direto pelo celular. A Judite identifica cláusulas abusivas, multas ocultas e riscos invisíveis em segundos."
+              title={t('features.riskAnalysis')}
+              description={t('features.riskAnalysisDesc')}
             />
             {/* Feature 2 — Expert Mode */}
             <FeatureCard
               icon={<BoltIcon />}
-              title="⚡ Modo Avançado (Expert)"
-              description="Ative o motor de IA premium para análises mais profundas — com fundamentação legal detalhada, checklist LGPD/CDC e recomendações de negociação. Seu modo padrão continua funcionando normalmente."
+              title={t('features.expertMode')}
+              description={t('features.expertModeDesc')}
               highlighted
+              badgeLabel={t('features.proPlan')}
             />
             {/* Feature 3 */}
             <FeatureCard
               icon={<CameraIcon />}
-              title="Leitura de Documentos por Foto"
-              description="Tire uma foto do contrato na mesa e envie pelo WhatsApp ou Telegram. A Judite extrai o texto automaticamente e analisa na hora — sem scanner, sem digitalização manual."
+              title={t('features.photoReading')}
+              description={t('features.photoReadingDesc')}
             />
             {/* Feature 4 */}
             <FeatureCard
               icon={<PencilIcon />}
-              title="Geração de Documentos"
-              description="Peça à Judite para criar contratos, termos, procurações ou qualquer documento jurídico do zero. Ela redige com linguagem técnica precisa e entrega em PDF ou Word editável."
+              title={t('features.docGeneration')}
+              description={t('features.docGenerationDesc')}
             />
             {/* Feature 5 — Voz (com áudio demo) */}
             <div className="group rounded-2xl border border-slate-800 bg-slate-900/30 hover:border-indigo-500/30 hover:bg-slate-900/60 p-6 transition-all duration-300">
               <div className="w-10 h-10 rounded-xl border bg-indigo-500/10 border-indigo-500/20 text-indigo-400 group-hover:bg-indigo-500/20 flex items-center justify-center mb-4 transition-colors">
                 <MicIcon />
               </div>
-              <h3 className="text-base font-semibold text-white mb-2">Converse por Voz ou Texto</h3>
-              <p className="text-sm text-slate-400 leading-relaxed mb-4">Mande um áudio no WhatsApp ou Telegram e a Judite responde por voz. Peça análises, ajustes e ela te envia o PDF formatado direto no chat — sem abrir nenhum site.</p>
+              <h3 className="text-base font-semibold text-white mb-2">{t('features.voiceChat')}</h3>
+              <p className="text-sm text-slate-400 leading-relaxed mb-4">{t('features.voiceChatDesc')}</p>
               {/* Mini Audio Player — Demo da voz da Judite */}
               <div className="space-y-2">
                 <div className="rounded-xl bg-indigo-500/10 border border-indigo-500/20 p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-[11px] text-indigo-300 font-semibold tracking-wide uppercase">🎧 Ouça a Judite em ação</p>
-                    <span className="text-[9px] px-2 py-0.5 rounded-sm bg-indigo-500/20 text-indigo-400 font-bold uppercase tracking-widest">Exemplo</span>
+                    <p className="text-[11px] text-indigo-300 font-semibold tracking-wide uppercase">{t('features.listenDemo')}</p>
+                    <span className="text-[9px] px-2 py-0.5 rounded-sm bg-indigo-500/20 text-indigo-400 font-bold uppercase tracking-widest">{t('features.example')}</span>
                   </div>
-                  <p className="text-xs text-slate-400 mb-3">Auditoria de riscos contratuais entregue diretamente no WhatsApp.</p>
+                  <p className="text-xs text-slate-400 mb-3">{t('features.audioDesc')}</p>
                   <audio controls preload="none" className="w-full h-8 [&::-webkit-media-controls-panel]:bg-slate-900 [&::-webkit-media-controls-current-time-display]:text-slate-400 [&::-webkit-media-controls-time-remaining-display]:text-slate-400">
                     <source src="/demo-analise.mp3" type="audio/mpeg" />
                   </audio>
@@ -377,8 +384,8 @@ export default async function LandingPage() {
             {/* Feature 6 */}
             <FeatureCard
               icon={<ShieldIcon />}
-              title="Silo Privado & Validação Blockchain"
-              description="Arquivos rodam em silos criptografados com RLS governamental. Além de não usar dados para treinar a IA, a Judite cria selos de integridade on-chain de cada análise na rede blockchain Solana."
+              title={t('features.silo')}
+              description={t('features.siloDesc')}
             />
           </div>
 
@@ -391,15 +398,14 @@ export default async function LandingPage() {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-white mb-2">🏛️ Investigadora Governamental</h3>
+                <h3 className="text-lg font-semibold text-white mb-2">{t('features.govTitle')}</h3>
                 <p className="text-sm text-slate-400 leading-relaxed">
-                  Acesso direto ao STF, Câmara dos Deputados, Diário Oficial, Banco Central, DataJud e mais 36 APIs públicas brasileiras. 
-                  Pesquise processos judiciais, compare indicadores econômicos, investigue editais de licitação e monitore publicações oficiais — tudo por conversa natural, sem sair do chat.
+                  {t('features.govDesc')}
                 </p>
               </div>
               <div className="flex-shrink-0">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-medium text-indigo-400 whitespace-nowrap">
-                  Disponível no plano Pro
+                  {t('features.proPlan')}
                 </div>
               </div>
             </div>
@@ -414,17 +420,17 @@ export default async function LandingPage() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16 relative z-10">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Por trás dos bastidores.<br className="hidden md:block" />
-              <span className="text-gradient">O Ecossistema Multi-Agente em Ação.</span>
+              {t('ecosystem.title1')}<br className="hidden md:block" />
+              <span className="text-gradient">{t('ecosystem.title2')}</span>
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto text-lg">
-              A Judite não é um chat genérico. Ela é uma bancada de IAs especializadas que se coordenam para resolver problemas jurídicos complexos.
+              {t('ecosystem.subtitle')}
             </p>
           </div>
 
           {/* ECOSSISTEMA HOTSPOTS */}
           <div className="mb-10 text-center">
-            <span className="inline-block py-1 px-3 rounded-full bg-indigo-500/10 text-indigo-400 text-sm font-semibold tracking-wider uppercase mb-3 text-shadow-sm">Infraestrutura Autônoma</span>
+            <span className="inline-block py-1 px-3 rounded-full bg-indigo-500/10 text-indigo-400 text-sm font-semibold tracking-wider uppercase mb-3 text-shadow-sm">{t('ecosystem.infrastructure')}</span>
           </div>
           
           {/* O container Pai dita o tamanho 4:3 */}
@@ -448,11 +454,11 @@ export default async function LandingPage() {
                <path d="M 50 50 L 20 70 M 50 50 L 80 70 M 50 50 L 30 30 M 50 50 L 70 30" className="stroke-indigo-400 stroke-[0.5px]" fill="none" style={{ strokeDasharray: '2 2' }} />
             </svg>
 
-            <HotspotBubble x="50" y="50" title="Orquestradora Multi-Agente" desc="A Judite atua como Mestre de Obras. Ela não opera de forma isolada, distribuindo autonomamente a carga de processamento para os outros agentes e recrutando o modelo LLM mais qualificado sob demanda para cada tarefa." isCenter={true} align="center" />
-            <HotspotBubble x="20" y="70" title="Sonda Governamental" desc="A IA cruza infrações com dezenas de APIs públicas simultâneas — varrendo STF, Banco Central e Diário Oficial em tempo real." align="left" />
-            <HotspotBubble x="80" y="70" title="Arsenal Operacional" desc="Armada com centenas de ferramentas, ela navega na internet, empacota PDFs jurídicos e despacha documentos formatados direto no portal." align="right" />
-            <HotspotBubble x="30" y="30" title="Silo Isolado RLS" desc="O banco de dados tranca cada arquivo de forma assimétrica. A Judite tem acesso cego: nenhum contrato corporativo é utilizado para treinar os LLMs." align="left" />
-            <HotspotBubble x="70" y="30" title="Bancada de Compliance" desc="Uma comissão autônoma de agentes especializados audita cada documento antes da entrega. Aderência ética à OAB, conformidade LGPD/CDC e checklist de cláusulas problemáticas." align="right" />
+            <HotspotBubble x="50" y="50" title={t('ecosystem.orchestrator')} desc={t('ecosystem.orchestratorDesc')} isCenter={true} align="center" />
+            <HotspotBubble x="20" y="70" title={t('ecosystem.probe')} desc={t('ecosystem.probeDesc')} align="left" />
+            <HotspotBubble x="80" y="70" title={t('ecosystem.arsenal')} desc={t('ecosystem.arsenalDesc')} align="right" />
+            <HotspotBubble x="30" y="30" title={t('ecosystem.siloTitle')} desc={t('ecosystem.siloDesc')} align="left" />
+            <HotspotBubble x="70" y="30" title={t('ecosystem.complianceBench')} desc={t('ecosystem.complianceBenchDesc')} align="right" />
           </div>
         </div>
       </section>
@@ -464,63 +470,121 @@ export default async function LandingPage() {
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Escolha o plano certo para você.
+              {t('pricing.title')}
             </h2>
-            <p className="text-slate-400">Ative seu ambiente de avaliação. Assine quando estiver pronto.</p>
+            <p className="text-slate-400">{t('pricing.subtitle')}</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
             {/* Avaliação */}
             <PricingCard
-              name="Avaliação"
-              price="R$ 0"
+              name={t('pricing.evaluation')}
+              price={t('pricing.evaluationPrice')}
               period=""
-              description="Para testar o ecossistema."
+              description={t('pricing.evaluationDesc')}
               features={[
-                '300 créditos de avaliação',
-                'Analise 2 documentos',
-                'Gere 1 arquivo PDF/DOCX',
-                'Limitação: arquivos padrão',
-                'Score de risco básico',
-                'Interação por texto',
+                t('pricing.evalFeature1'),
+                t('pricing.evalFeature2'),
+                t('pricing.evalFeature3'),
+                t('pricing.evalFeature4'),
+                t('pricing.evalFeature5'),
+                t('pricing.evalFeature6'),
               ]}
-              cta="Criar Conta de Avaliação"
+              cta={t('pricing.evalCta')}
               ctaHref="/register"
               highlighted={false}
             />
             {/* Pro */}
-            <PricingCard
-              name="Pro"
-              price="R$ 197"
-              period="/mês"
-              description="Para profissionais e escritórios."
-              features={[
-                'Franquia 10.000 Créditos/mês',
-                '~ 3.000 mensagens texto/mês',
-                '⚡ Modo Avançado (Expert)',
-                '🎙️ Interação por voz rica',
-                '📸 Leitura por foto (OCR)',
-                'Análises ilimitadas na franquia',
-                'Exportação avançada (PDF & Word)',
-                '🏛️ Consulta oficial do governo',
-                'Suporte prioritário',
-              ]}
-              cta="Assinar Pro"
-              ctaHref="/register?plan=pro"
-              highlighted={true}
-              disabled={false}
-            />
+            <div className={`relative rounded-2xl border p-6 flex flex-col border-indigo-500/50 bg-indigo-500/5 shadow-lg shadow-indigo-500/10`}>
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-indigo-600 text-xs font-semibold text-white">
+                {t('pricing.popular')}
+              </div>
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="text-lg font-semibold text-white">{t('pricing.pro')}</h3>
+                  {locale === 'en' && (
+                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
+                      {t('pricing.proCryptoBadge')}
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-slate-500 mb-4">{t('pricing.proDesc')}</p>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-bold text-white">{t('pricing.proPrice')}</span>
+                  <span className="text-sm text-slate-500">{t('pricing.proPeriod')}</span>
+                </div>
+                {locale === 'en' && (
+                  <p className="text-[11px] text-emerald-400 mt-1 font-medium">{t('pricing.proCryptoBonus')}</p>
+                )}
+              </div>
+
+              <ul className="space-y-3 mb-8 flex-1">
+                {[
+                  t('pricing.proFeature1'),
+                  t('pricing.proFeature2'),
+                  t('pricing.proFeature3'),
+                  t('pricing.proFeature4'),
+                  t('pricing.proFeature5'),
+                  t('pricing.proFeature6'),
+                  t('pricing.proFeature7'),
+                  t('pricing.proFeature8'),
+                  t('pricing.proFeature9'),
+                ].map((feature) => (
+                  <li key={feature} className="flex items-start gap-2 text-sm text-slate-300">
+                    <svg className="w-4 h-4 text-indigo-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+
+              {locale === 'en' ? (
+                <Link
+                  href="/crypto-pass"
+                  className="block text-center py-2.5 rounded-xl text-sm font-semibold transition-all bg-gradient-to-r from-indigo-600 to-emerald-600 hover:from-indigo-500 hover:to-emerald-500 text-white hover:shadow-lg hover:shadow-indigo-500/25"
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.07-9.07l4.5-4.5a4.5 4.5 0 016.364 6.364l-1.757 1.757" /></svg>
+                    {t('pricing.proCryptoCta')}
+                  </span>
+                </Link>
+              ) : (
+                <Link
+                  href="/register?plan=pro"
+                  className="block text-center py-2.5 rounded-xl text-sm font-semibold transition-all bg-indigo-600 hover:bg-indigo-500 text-white hover:shadow-lg hover:shadow-indigo-500/25"
+                >
+                  {t('pricing.proCta')}
+                </Link>
+              )}
+            </div>
           </div>
 
           {/* Banner Enterprise Horizontal */}
           <div className="mt-12 p-6 rounded-xl border border-white/5 bg-slate-900/30 flex flex-col md:flex-row items-center justify-between max-w-2xl mx-auto text-left gap-6">
             <div>
-              <h4 className="text-white tracking-tight font-semibold text-sm mb-1">Opera em grande escala?</h4>
-              <p className="text-slate-400 text-xs">Fale com a nossa equipe para desenhar um plano corporativo adequado ao volume e às necessidades estruturais do seu escritório.</p>
+              <h4 className="text-white tracking-tight font-semibold text-sm mb-1">{t('pricing.enterprise')}</h4>
+              <p className="text-slate-400 text-xs">{t('pricing.enterpriseDesc')}</p>
             </div>
             <a href="https://tally.so/r/obdLPb" target="_blank" rel="noopener noreferrer" className="flex-shrink-0 px-5 py-2.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-indigo-300 hover:text-indigo-200 text-xs font-semibold transition-all">
-              Consultar Assinatura Corporativa
+              {t('pricing.enterpriseCta')}
             </a>
+          </div>
+
+          {/* Banner Pay & Analyze (Web3 — Sem cadastro) */}
+          <div className="mt-4 p-5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex flex-col md:flex-row items-center justify-between max-w-2xl mx-auto text-left gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center text-emerald-400 flex-shrink-0">
+                <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.07-9.07l4.5-4.5a4.5 4.5 0 016.364 6.364l-1.757 1.757" /></svg>
+              </div>
+              <div>
+                <h4 className="text-white tracking-tight font-semibold text-sm mb-0.5">{t('pricing.analyzeBanner')}</h4>
+                <p className="text-slate-400 text-xs">{t('pricing.analyzeBannerDesc')}</p>
+              </div>
+            </div>
+            <Link href="/analyze" className="flex-shrink-0 px-5 py-2.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/25 text-emerald-300 hover:text-emerald-200 text-xs font-semibold transition-all whitespace-nowrap">
+              {t('pricing.analyzeBannerCta')}
+            </Link>
           </div>
         </div>
       </section>
@@ -532,16 +596,16 @@ export default async function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-indigo-600/5 to-transparent pointer-events-none" />
         <div className="max-w-3xl mx-auto px-6 text-center relative">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-            Pronto para blindar sua operação<br className="hidden md:block" /> com inteligência autônoma?
+            {t('cta.title1')}<br className="hidden md:block" /> {t('cta.title2')}
           </h2>
           <p className="text-slate-400 mb-10 text-lg">
-            Crie sua conta em 30 segundos. Envie seu primeiro contrato pelo WhatsApp, Telegram ou direto na plataforma.
+            {t('cta.subtitle')}
           </p>
           <Link
             href="/register"
             className="inline-flex px-10 py-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-lg transition-all hover:shadow-xl hover:shadow-indigo-500/25 hover:scale-[1.02] active:scale-[0.98]"
           >
-            Testar Grátis — Sem Cartão
+            {t('hero.ctaPrimary')}
           </Link>
         </div>
       </section>
@@ -559,29 +623,29 @@ export default async function LandingPage() {
                 <span className="text-lg font-bold text-white tracking-tight">Judite IA</span>
               </div>
               <p className="text-sm text-slate-400">
-                A primeira bancada multi-agente autônoma para auditoria legal no Brasil.
+                {t('footer.tagline')}
               </p>
               <p className="text-xs text-slate-500 pt-2">
-                © {new Date().getFullYear()} Judite IA.<br />Todos os direitos reservados.
+                © {new Date().getFullYear()} Judite IA.<br />{t('footer.rights')}
               </p>
               <p className="text-xs font-medium text-slate-600 pt-2 flex items-center gap-1">
-                Feito com <span className="text-indigo-400">💜</span> por Osvaldo Junior
+                {t('footer.madeBy')} <span className="text-indigo-400">💜</span> {t('footer.by')}
               </p>
             </div>
 
             {/* Legal Links Column */}
             <div>
-              <h4 className="text-white font-semibold mb-4 text-sm tracking-wider uppercase">Legal</h4>
+              <h4 className="text-white font-semibold mb-4 text-sm tracking-wider uppercase">{t('footer.legal')}</h4>
               <ul className="space-y-3 text-sm text-slate-400">
-                <li><Link href="/privacy" className="hover:text-indigo-400 transition-colors">Privacidade</Link></li>
-                <li><Link href="/terms" className="hover:text-indigo-400 transition-colors">Termos de Uso</Link></li>
-                <li><Link href="/about" className="hover:text-indigo-400 transition-colors">Sobre Nós</Link></li>
+                <li><Link href="/privacy" className="hover:text-indigo-400 transition-colors">{t('footer.privacy')}</Link></li>
+                <li><Link href="/terms" className="hover:text-indigo-400 transition-colors">{t('footer.terms')}</Link></li>
+                <li><Link href="/about" className="hover:text-indigo-400 transition-colors">{t('footer.about')}</Link></li>
               </ul>
             </div>
 
             {/* Contact Column */}
             <div>
-              <h4 className="text-white font-semibold mb-4 text-sm tracking-wider uppercase">Contato</h4>
+              <h4 className="text-white font-semibold mb-4 text-sm tracking-wider uppercase">{t('footer.contact')}</h4>
               <ul className="space-y-4 text-sm text-slate-400">
                 <li>
                   <a href="mailto:contato@usejudite.com.br" className="flex items-center gap-2 hover:text-indigo-400 transition-colors">
@@ -596,7 +660,7 @@ export default async function LandingPage() {
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                     </svg>
-                    WhatsApp: (11) 95550-6969
+                    WhatsApp: +55 (11) 95550-6969
                   </a>
                 </li>
                 <li>
@@ -614,10 +678,7 @@ export default async function LandingPage() {
           {/* Disclaimer Único Consolidado */}
           <div className="pt-8 border-t border-slate-800/60 text-center">
             <p className="text-[11px] text-slate-500 max-w-3xl mx-auto leading-relaxed">
-              ⚖️ A Judite é uma ferramenta de apoio à elaboração e análise jurídica baseada em Inteligência Artificial, projetada para otimizar o fluxo de trabalho. 
-              Ela <strong className="font-semibold text-slate-400">não substitui a atuação de um advogado(a)</strong> regularmente inscrito(a) na OAB, nem constitui prestação de serviço de consultoria ou assessoria jurídica. 
-              Todos os relatórios, peças e documentos gerados na plataforma devem ser obrigatoriamente lidos, validados e sob responsabilidade integral do profissional do Direito antes de qualquer peticionamento ou uso final.
-              Os resultados podem variar conforme o tipo de documento, complexidade da solicitação e modo de análise (Fast ou Expert).
+              {t('footer.disclaimer')}
             </p>
           </div>
         </div>
@@ -630,7 +691,7 @@ export default async function LandingPage() {
    COMPONENTES INLINE
 ═══════════════════════════════════════ */
 
-function FeatureCard({ icon, title, description, highlighted }: { icon: React.ReactNode; title: string; description: string; highlighted?: boolean }) {
+function FeatureCard({ icon, title, description, highlighted, badgeLabel }: { icon: React.ReactNode; title: string; description: string; highlighted?: boolean; badgeLabel?: string }) {
   return (
     <div className={`group rounded-2xl border p-6 transition-all duration-300 ${
       highlighted 
@@ -646,9 +707,9 @@ function FeatureCard({ icon, title, description, highlighted }: { icon: React.Re
       </div>
       <h3 className="text-base font-semibold text-white mb-2">{title}</h3>
       <p className="text-sm text-slate-400 leading-relaxed">{description}</p>
-      {highlighted && (
+      {highlighted && badgeLabel && (
         <div className="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-medium text-indigo-400">
-          Disponível no plano Pro
+          {badgeLabel}
         </div>
       )}
     </div>
@@ -686,9 +747,9 @@ function HotspotBubble({ x, y, title, desc, isCenter, align = "center" }: { x: s
   );
 }
 
-function PricingCard({ name, price, period, description, features, cta, ctaHref, highlighted, disabled }: {
+function PricingCard({ name, price, period, description, features, cta, ctaHref, highlighted, disabled, badge }: {
   name: string; price: string; period: string; description: string;
-  features: string[]; cta: string; ctaHref: string; highlighted: boolean; disabled?: boolean;
+  features: string[]; cta: string; ctaHref: string; highlighted: boolean; disabled?: boolean; badge?: string;
 }) {
   return (
     <div className={`relative rounded-2xl border p-6 flex flex-col ${
@@ -698,7 +759,7 @@ function PricingCard({ name, price, period, description, features, cta, ctaHref,
     }`}>
       {highlighted && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-indigo-600 text-xs font-semibold text-white">
-          Mais Popular
+          {badge || 'Most Popular'}
         </div>
       )}
       <div className="mb-6">

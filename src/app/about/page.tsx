@@ -1,11 +1,19 @@
 import Link from 'next/link';
+import { getServerLocale, createT } from '@/lib/i18n/server';
+import { LocaleToggle } from '@/lib/i18n';
 
-export const metadata = {
-  title: 'Sobre a Judite IA',
-  description: 'Conheça a história e o propósito por trás da Judite IA.',
-};
+export async function generateMetadata() {
+  const locale = await getServerLocale();
+  const t = createT(locale);
+  return {
+    title: t('about.title'),
+    description: t('about.description'),
+  };
+}
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const locale = await getServerLocale();
+  const t = createT(locale);
   return (
     <div className="min-h-screen bg-slate-950 text-slate-300">
       <header className="border-b border-white/5 bg-slate-900/50 pt-8 pb-6">
@@ -17,56 +25,45 @@ export default function AboutPage() {
             <span className="text-lg font-bold text-white tracking-tight">Judite IA</span>
           </Link>
           <span className="text-slate-600 select-none">/</span>
-          <span className="text-slate-400 font-medium">Sobre Nós</span>
+          <span className="text-slate-400 font-medium">{t('pages.aboutBreadcrumb')}</span>
+          <div className="ml-auto">
+            <LocaleToggle />
+          </div>
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-6 py-16 space-y-12">
+      <main className="max-w-3xl mx-auto px-6 py-16 space-y-10">
         <section className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-white tracking-tight">Sobre a Judite IA</h1>
+          <h1 className="text-4xl font-bold text-white tracking-tight">{t('about.h1')}</h1>
           <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-            Democratizando e acelerando análises complexas no Direito através da Inteligência Artificial.
+            {t('about.subtitle')}
           </p>
         </section>
 
         <section className="space-y-6">
           <div className="bg-slate-900 p-8 rounded-3xl border border-slate-800">
-            <h2 className="text-2xl font-semibold text-white mb-4">A Nossa Missão</h2>
+            <h2 className="text-2xl font-semibold text-white mb-4">{t('about.missionTitle')}</h2>
             <div className="space-y-4 text-slate-300 leading-relaxed">
-              <p>
-                A advocacia moderna exige velocidade, mas o rigor técnico nunca pode ser deixado de lado. 
-                Sabemos o quão exaustivo é passar horas lendo contratos extensos, triando jurisprudência 
-                ou formulando o mesmo padrão de peças sucessivas vezes.
-              </p>
-              <p>
-                Foi por isso que criamos a <strong>Judite IA</strong>.
-              </p>
-              <p>
-                Nossa missão não é substituir o advogado — afinal, o raciocínio crítico, a estratégia e 
-                a empatia humana são insubstituíveis e inerentes à profissão. Construímos a Judite para  
-                <strong> ampliar suas capacidades</strong>, servindo como uma assistente virtual dedicada
-                que extrai informações, aponta fragilidades em contratos e tira dúvidas instantaneamente 
-                pelo WhatsApp e Telegram.
-              </p>
+              <p>{t('about.missionP1')}</p>
+              <p dangerouslySetInnerHTML={{ __html: t('about.missionP2') }} />
+              <p dangerouslySetInnerHTML={{ __html: t('about.missionP3') }} />
             </div>
           </div>
         </section>
 
         <section className="space-y-6 pt-6">
-          <h2 className="text-2xl font-semibold text-white">Por que a Judite?</h2>
+          <h2 className="text-2xl font-semibold text-white">{t('about.whyTitle')}</h2>
           <div className="grid sm:grid-cols-2 gap-6">
             <div className="bg-indigo-500/5 border border-indigo-500/20 rounded-2xl p-6">
-              <h3 className="text-indigo-400 font-semibold mb-2">Segurança em Primeiro Lugar</h3>
+              <h3 className="text-indigo-400 font-semibold mb-2">{t('about.why1Title')}</h3>
               <p className="text-sm text-slate-400">
-                Seus PDFs e documentos são processados temporariamente com rígido sigilo. 
-                Não usamos os dados dos clientes para treinar IAs (opt-out padrão de modelos LLM).
+                {t('about.why1Text')}
               </p>
             </div>
             <div className="bg-violet-500/5 border border-violet-500/20 rounded-2xl p-6">
-              <h3 className="text-violet-400 font-semibold mb-2">Comunicação Sem Fricção</h3>
+              <h3 className="text-violet-400 font-semibold mb-2">{t('about.why2Title')}</h3>
               <p className="text-sm text-slate-400">
-                A IA não deve exigir que você aprenda a usar dezenas de prompts confusos. 
-                Com a Judite, basta enviar um áudio ou foto no celular e ela responde contextualmente.
+                {t('about.why2Text')}
               </p>
             </div>
           </div>
@@ -78,11 +75,11 @@ export default function AboutPage() {
               <span className="text-2xl">👨🏻‍💻</span>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-white">Criado por Osvaldo Junior</h3>
-              <p className="text-slate-400 mt-1 pb-2">Desenvolvedor & Empreendedor</p>
+              <h3 className="text-lg font-semibold text-white">{t('about.creatorTitle')}</h3>
+              <p className="text-slate-400 mt-1 pb-2">{t('about.creatorSubtitle')}</p>
               <div className="flex items-center gap-4 text-sm mt-1">
-                <a href="https://instagram.com/osvaldodavidjr" target="_blank" rel="noopener noreferrer" className="text-pink-500 hover:text-pink-400 transition-colors">Instagram</a>
-                <a href="mailto:contato@usejudite.com.br" className="text-indigo-400 hover:text-indigo-300 transition-colors">E-mail</a>
+                <a href="https://instagram.com/osvaldodavidjr" target="_blank" rel="noopener noreferrer" className="text-pink-500 hover:text-pink-400 transition-colors">{t('about.instagram')}</a>
+                <a href="mailto:contato@usejudite.com.br" className="text-indigo-400 hover:text-indigo-300 transition-colors">{t('about.email')}</a>
               </div>
             </div>
           </div>
@@ -91,7 +88,7 @@ export default function AboutPage() {
         <div className="pt-10 border-t border-slate-800">
           <Link href="/" className="text-sm text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-            Voltar para a página inicial
+            {t('pages.backHome')}
           </Link>
         </div>
       </main>

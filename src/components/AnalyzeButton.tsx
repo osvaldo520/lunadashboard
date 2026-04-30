@@ -4,6 +4,7 @@ import { Play, RotateCw } from 'lucide-react';
 import { useTransition } from 'react';
 import { requestAnalysis } from '@/app/actions/documents';
 import { useRouter } from 'next/navigation';
+import { useLocale } from '@/lib/i18n';
 
 interface AnalyzeButtonProps {
   documentId: string;
@@ -13,6 +14,7 @@ interface AnalyzeButtonProps {
 export function AnalyzeButton({ documentId, status }: AnalyzeButtonProps) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const { t } = useLocale();
 
   const handleAnalyze = () => {
     startTransition(async () => {
@@ -20,7 +22,7 @@ export function AnalyzeButton({ documentId, status }: AnalyzeButtonProps) {
       if (result?.success) {
         router.refresh();
       } else {
-        alert(result?.error || 'Erro ao iniciar análise');
+        alert(result?.error || t('dashboard.documentDetails.errorAnalyze'));
       }
     });
   };
@@ -51,14 +53,14 @@ export function AnalyzeButton({ documentId, status }: AnalyzeButtonProps) {
       )}
       
       {isPending || isPendingQueue
-        ? 'Aguarde...' 
+        ? t('dashboard.documentDetails.btnWait') 
         : isAnalyzing 
-          ? 'Analisando...' 
+          ? t('dashboard.documentDetails.btnAnalyzing') 
           : isFirstAnalysis
-            ? 'Analisar'
+            ? t('dashboard.documentDetails.btnAnalyze')
             : isRetry 
-              ? 'Analisar Novamente'
-              : 'Analisar'}
+              ? t('dashboard.documentDetails.btnAnalyzeAgain')
+              : t('dashboard.documentDetails.btnAnalyze')}
     </button>
   );
 }

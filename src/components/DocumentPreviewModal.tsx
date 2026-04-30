@@ -7,9 +7,11 @@ interface DocumentPreviewModalProps {
   fileUrl: string;
   docType: string;
   filePath: string;
+  previewLabel?: string;
+  defaultType?: string;
 }
 
-export function DocumentPreviewModal({ fileUrl, docType, filePath }: DocumentPreviewModalProps) {
+export function DocumentPreviewModal({ fileUrl, docType, filePath, previewLabel, defaultType }: DocumentPreviewModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [textContent, setTextContent] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,10 +54,10 @@ export function DocumentPreviewModal({ fileUrl, docType, filePath }: DocumentPre
       >
         <FileQuestion className="h-4 w-4 group-hover:scale-110 transition-transform" />
         <span className="text-sm font-medium capitalize border-r border-slate-700/50 pr-2 mr-1">
-          {docType || 'Documento'}
+          {docType || defaultType || 'Documento'}
         </span>
         <span className="text-xs uppercase tracking-wider font-semibold">
-          Visualizar
+          {previewLabel || 'Visualizar'}
         </span>
       </button>
 

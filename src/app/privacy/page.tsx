@@ -1,11 +1,19 @@
 import Link from 'next/link';
+import { getServerLocale, createT } from '@/lib/i18n/server';
+import { LocaleToggle } from '@/lib/i18n';
 
-export const metadata = {
-  title: 'Política de Privacidade | Judite IA',
-  description: 'Política de Privacidade e uso de dados da Judite IA.',
-};
+export async function generateMetadata() {
+  const locale = await getServerLocale();
+  const t = createT(locale);
+  return {
+    title: t('privacy.title'),
+    description: t('privacy.description'),
+  };
+}
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const locale = await getServerLocale();
+  const t = createT(locale);
   return (
     <div className="min-h-screen bg-slate-950 text-slate-300">
       {/* Header Simples */}
@@ -18,71 +26,69 @@ export default function PrivacyPage() {
             <span className="text-lg font-bold text-white tracking-tight">Judite IA</span>
           </Link>
           <span className="text-slate-600 select-none">/</span>
-          <span className="text-slate-400 font-medium">Privacidade</span>
+          <span className="text-slate-400 font-medium">{t('pages.privacyBreadcrumb')}</span>
+          <div className="ml-auto">
+            <LocaleToggle />
+          </div>
         </div>
       </header>
 
       {/* Conteúdo */}
       <main className="max-w-3xl mx-auto px-6 py-16 space-y-10">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-4">Política de Privacidade</h1>
-          <p className="text-sm text-slate-500">Última atualização: Março de 2026</p>
+          <h1 className="text-3xl font-bold text-white mb-4">{t('privacy.h1')}</h1>
+          <p className="text-sm text-slate-500">{t('privacy.lastUpdate')}</p>
         </div>
 
         <section className="space-y-4">
-          <h2 className="text-xl font-semibold text-white">1. Introdução</h2>
+          <h2 className="text-xl font-semibold text-white">{t('privacy.s1Title')}</h2>
           <p>
-            A Judite IA tem o compromisso de proteger a privacidade e a segurança dos dados de 
-            seus usuários, especialmente considerando a natureza sensível e confidencial das informações 
-            jurídicas. Esta política explica como coletamos, usamos, armazenamos e protegemos seus dados.
+            {t('privacy.s1Text')}
           </p>
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-xl font-semibold text-white">2. Dados Coletados</h2>
+          <h2 className="text-xl font-semibold text-white">{t('privacy.s2Title')}</h2>
           <ul className="list-disc pl-5 space-y-2 text-slate-400">
-            <li><strong className="text-slate-300">Dados de Cadastro:</strong> Nome, e-mail, telefone e nome da empresa/escritório (opcional).</li>
-            <li><strong className="text-slate-300">Dados de Acesso:</strong> IDs de integração via mensageiros (como Telegram) para vinculação da conta.</li>
-            <li><strong className="text-slate-300">Documentos e Arquivos:</strong> PDFs e imagens enviados para extração e análise.</li>
+            <li><strong className="text-slate-300">{t('privacy.s2Li1Title')}</strong>{t('privacy.s2Li1Text')}</li>
+            <li><strong className="text-slate-300">{t('privacy.s2Li2Title')}</strong>{t('privacy.s2Li2Text')}</li>
+            <li><strong className="text-slate-300">{t('privacy.s2Li3Title')}</strong>{t('privacy.s2Li3Text')}</li>
           </ul>
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-xl font-semibold text-white">3. Processamento de Documentos e IA</h2>
+          <h2 className="text-xl font-semibold text-white">{t('privacy.s3Title')}</h2>
           <p>
-            Os arquivos (como contratos e imagens) enviados para a Judite IA são processados utilizando provedores de infraestrutura de inteligência artificial (LLMaaS) atuando estritamente como processadores de dados (Data Processors), única e exclusivamente para realizar as análises solicitadas pelo usuário.
+            {t('privacy.s3Text')}
           </p>
           <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-4 text-sm mt-2">
-            <p className="font-semibold text-indigo-400 mb-1">Privacidade dos modelos de linguagem:</p>
-            Os dados extraídos dos seus documentos corporativos e jurídicos <strong>não são utilizados</strong> para treinar ou melhorar os modelos fundamentais públicos de IA. O processamento ocorre via APIs corporativas com acordos estritos de processamento de dados (DPA).
+            <p className="font-semibold text-indigo-400 mb-1">{t('privacy.s3BoxTitle')}</p>
+            <span dangerouslySetInnerHTML={{ __html: t('privacy.s3BoxText') }} />
           </div>
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-xl font-semibold text-white">4. Segurança e Retenção</h2>
+          <h2 className="text-xl font-semibold text-white">{t('privacy.s4Title')}</h2>
           <p>
-            Seus dados cadastrais são armazenados em infraestrutura segura gerida pela Supabase. 
-            Em relação aos documentos processados:
+            {t('privacy.s4Text')}
           </p>
           <ul className="list-disc pl-5 space-y-2 text-slate-400">
-            <li>Os arquivos temporários, como fotos enviadas via chat, não são armazenados permanentemente em nossos servidores de banco de dados; seu conteúdo fica temporariamente em memória para análise e é posteriormente descartado.</li>
-            <li>PDFs gerados ou analisados no Dashboard são vinculados à sua conta com rígidas regras de segurança (Row Level Security - RLS), acessíveis apenas por você.</li>
+            <li>{t('privacy.s4Li1')}</li>
+            <li>{t('privacy.s4Li2')}</li>
           </ul>
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-xl font-semibold text-white">5. Pagamentos</h2>
+          <h2 className="text-xl font-semibold text-white">{t('privacy.s5Title')}</h2>
           <p>
-            Não armazenamos dados completos de cartão de crédito. Nossos pagamentos são processados
-            pela <strong className="text-slate-300">Stripe</strong>, provedora líder global em infraestrutura de pagamentos, 
-            garantindo total conformidade com os padrões de segurança PCI.
+            {t('privacy.s5Text1')}<strong className="text-slate-300">{t('privacy.s5Text2')}</strong>{t('privacy.s5Text3')}
           </p>
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-xl font-semibold text-white">6. Contato</h2>
+          <h2 className="text-xl font-semibold text-white">{t('privacy.s6Title')}</h2>
           <p>
-            Em caso de dúvidas sobre essa política de privacidade ou sobre os dados armazenados em sua conta, você pode contatar nosso encarregado de dados através do e-mail:
+            {t('privacy.s6Text')}
           </p>
           <a href="mailto:contato@usejudite.com.br" className="text-indigo-400 hover:text-indigo-300 font-medium">contato@usejudite.com.br</a>
         </section>
@@ -90,7 +96,7 @@ export default function PrivacyPage() {
         <div className="pt-10 border-t border-slate-800">
           <Link href="/" className="text-sm text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-            Voltar para a página inicial
+            {t('pages.backHome')}
           </Link>
         </div>
       </main>

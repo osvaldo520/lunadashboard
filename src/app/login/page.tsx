@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { LogIn, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { useLocale, LocaleToggle } from '@/lib/i18n';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
+  const { t } = useLocale();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +29,7 @@ export default function LoginPage() {
 
     if (error) {
       setError(error.message === 'Invalid login credentials' 
-        ? 'Email ou senha incorretos.' 
+        ? t('login.invalidCredentials') 
         : error.message);
       setLoading(false);
     } else {
@@ -43,6 +45,7 @@ export default function LoginPage() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[600px] w-[800px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/30 via-transparent to-transparent" />
       </div>
 
+      <div className="absolute top-4 right-6"><LocaleToggle /></div>
       <div className="w-full max-w-md px-6">
         {/* Logo / Brand */}
         <div className="text-center mb-10">
@@ -50,10 +53,10 @@ export default function LoginPage() {
             <img src="/judite-logo.png" alt="Judite Logo" className="w-full h-full object-cover" />
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-white">
-            Judite Pauta
+            {t('login.title')}
           </h1>
           <p className="mt-2 text-sm text-slate-400">
-            Gestão inteligente de documentos
+            {t('login.subtitle')}
           </p>
         </div>
 
@@ -63,7 +66,7 @@ export default function LoginPage() {
             {/* Email */}
             <div className="space-y-1.5">
               <label htmlFor="email" className="text-sm font-medium text-slate-300">
-                Email profissional
+                {t('login.emailLabel')}
               </label>
               <input
                 id="email"
@@ -81,7 +84,7 @@ export default function LoginPage() {
             {/* Password */}
             <div className="space-y-1.5">
               <label htmlFor="password" className="text-sm font-medium text-slate-300">
-                Senha inteligente
+                {t('login.passwordLabel')}
               </label>
               <div className="relative">
                 <input
@@ -99,7 +102,7 @@ export default function LoginPage() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300 transition-colors"
-                  aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                  aria-label={showPassword ? t('login.hidePassword') : t('login.showPassword')}
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -127,7 +130,7 @@ export default function LoginPage() {
               ) : (
                 <>
                   <LogIn className="h-5 w-5" />
-                  Entrar
+                  {t('login.submit')}
                 </>
               )}
             </button>
@@ -135,9 +138,9 @@ export default function LoginPage() {
 
           {/* Register link */}
           <p className="mt-6 text-center text-sm text-slate-400">
-            Não tem conta?{' '}
+            {t('login.noAccount')}{' '}
             <Link href="/register" className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
-              Criar conta
+              {t('login.createAccount')}
             </Link>
           </p>
         </div>

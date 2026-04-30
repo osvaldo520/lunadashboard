@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Zap } from 'lucide-react';
+import { useLocale } from '@/lib/i18n';
 
 export function ExpertBadge() {
   const supabase = createClient();
+  const { t } = useLocale();
   const [isExpert, setIsExpert] = useState(false);
   const [planType, setPlanType] = useState('free');
   const [showConfirm, setShowConfirm] = useState(false);
@@ -46,7 +48,7 @@ export function ExpertBadge() {
 
   const handleToggle = async () => {
     if (planType === 'free') {
-      setShowToast('🔒 Modo Expert disponível no plano Pro');
+      setShowToast(t('dashboard.expertBadge.toastProOnly'));
       setTimeout(() => setShowToast(null), 3000);
       return;
     }
@@ -63,7 +65,7 @@ export function ExpertBadge() {
     await supabase.from('profiles').update({ expert_mode: false }).eq('id', user.id);
     setIsExpert(false);
     setToggling(false);
-    setShowToast('Motor padrão restaurado');
+    setShowToast(t('dashboard.expertBadge.toastRestored'));
     setTimeout(() => setShowToast(null), 3000);
   };
 
@@ -75,7 +77,7 @@ export function ExpertBadge() {
     await supabase.from('profiles').update({ expert_mode: true }).eq('id', user.id);
     setIsExpert(true);
     setToggling(false);
-    setShowToast('⚡ Modo Expert ativado');
+    setShowToast(t('dashboard.expertBadge.toastActivated'));
     setTimeout(() => setShowToast(null), 3000);
   };
 
@@ -85,7 +87,7 @@ export function ExpertBadge() {
       <button
         onClick={handleToggle}
         disabled={toggling}
-        title={isExpert ? 'Modo Expert ativo — Clique para desativar' : 'Ativar Modo Expert'}
+        title={isExpert ? t('dashboard.expertBadge.titleActive') : t('dashboard.expertBadge.titleInactive')}
         className={`relative p-2.5 rounded-xl border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 
           ${isExpert 
             ? 'bg-amber-500/20 border-amber-500/40 shadow-lg shadow-amber-500/20 hover:bg-amber-500/30' 
@@ -113,19 +115,19 @@ export function ExpertBadge() {
                 <Zap className="h-6 w-6 text-amber-400" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">Ativar Modo Expert?</h3>
-                <p className="text-xs text-slate-400">Judite IA — Precisão Máxima</p>
+                <h3 className="text-base font-bold text-white">{t('dashboard.expertBadge.modalTitle')}</h3>
+                <p className="text-xs text-slate-400">{t('dashboard.expertBadge.modalSubtitle')}</p>
               </div>
             </div>
 
             <div className="space-y-3 mb-6">
               <p className="text-sm text-slate-300">
-                O Modo Expert ativa o motor de IA mais avançado da Judite, projetado para análises jurídicas que exigem <strong className="text-amber-400">máxima precisão e profundidade</strong>.
+                {t('dashboard.expertBadge.modalDesc1')}<strong className="text-amber-400">{t('dashboard.expertBadge.modalDescHighlight')}</strong>.
               </p>
               <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
                 <span className="text-amber-400 text-sm">⚠️</span>
                 <p className="text-xs text-amber-300/90">
-                  Tem um custo reajustado que consome mais do seu limite diário por interação.
+                  {t('dashboard.expertBadge.modalWarning')}
                 </p>
               </div>
             </div>
@@ -135,13 +137,13 @@ export function ExpertBadge() {
                 onClick={() => setShowConfirm(false)}
                 className="flex-1 px-4 py-2.5 rounded-xl border border-slate-700 text-sm font-medium text-slate-300 hover:text-white hover:border-slate-600 transition-all"
               >
-                Cancelar
+                {t('dashboard.expertBadge.btnCancel')}
               </button>
               <button
                 onClick={confirmActivate}
                 className="flex-1 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-sm font-bold transition-all shadow-lg shadow-amber-500/25 active:scale-[0.98]"
               >
-                ⚡ Ativar Expert
+                {t('dashboard.expertBadge.btnActivate')}
               </button>
             </div>
           </div>

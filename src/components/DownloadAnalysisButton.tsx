@@ -5,9 +5,10 @@ import { Download } from 'lucide-react';
 interface DownloadAnalysisButtonProps {
   content: string;
   documentTitle: string;
+  label?: string;
 }
 
-export function DownloadAnalysisButton({ content, documentTitle }: DownloadAnalysisButtonProps) {
+export function DownloadAnalysisButton({ content, documentTitle, label }: DownloadAnalysisButtonProps) {
   const handleDownload = () => {
     // Cria um Blob com o conteúdo da análise em Markdown
     const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
@@ -41,7 +42,7 @@ export function DownloadAnalysisButton({ content, documentTitle }: DownloadAnaly
       title="Baixar a análise em formato Markdown"
     >
       <Download className="h-4 w-4" />
-      <span className="text-sm font-medium">Baixar Análise</span>
+      <span className="text-sm font-medium">{label || 'Baixar Análise'}</span>
     </button>
   );
 }

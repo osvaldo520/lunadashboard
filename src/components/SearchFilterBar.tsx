@@ -3,11 +3,13 @@
 import { Search, Filter } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useState, useTransition } from 'react';
+import { useLocale } from '@/lib/i18n';
 
 export function SearchFilterBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const { t } = useLocale();
 
   // Estados locais para digitação mais fluida (debounce visual)
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
@@ -55,7 +57,7 @@ export function SearchFilterBar() {
             }
           }}
           onBlur={() => handleSearchCommit(searchTerm)}
-          placeholder="Buscar documentos..."
+          placeholder={t('dashboard.searchPlaceholder')}
           className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200"
         />
       </div>
@@ -69,12 +71,12 @@ export function SearchFilterBar() {
           onChange={handleStatusChange}
           className="appearance-none rounded-xl border border-slate-700/50 bg-slate-800/50 pl-10 pr-8 py-2.5 text-sm text-slate-100 hover:text-white hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200 cursor-pointer"
         >
-          <option value="">Todos os status</option>
-          <option value="uploaded">Enviado</option>
-          <option value="pending">Pendente</option>
-          <option value="analyzing">Analisando</option>
-          <option value="completed">Concluído</option>
-          <option value="error">Erro</option>
+          <option value="">{t('dashboard.status.all') || 'Todos os status'}</option>
+          <option value="uploaded">{t('dashboard.status.uploaded')}</option>
+          <option value="pending">{t('dashboard.status.pending')}</option>
+          <option value="analyzing">{t('dashboard.status.analyzing')}</option>
+          <option value="completed">{t('dashboard.status.completed')}</option>
+          <option value="error">{t('dashboard.status.error')}</option>
         </select>
         {/* Seta customizada do select */}
         <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">

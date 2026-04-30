@@ -6,6 +6,7 @@ import { ExpertBadge } from '@/components/features/ExpertBadge';
 import { WelcomeModal } from '@/components/features/WelcomeModal';
 import { OnboardingChecklist } from '@/components/features/OnboardingChecklist';
 import { PaymentToast } from '@/components/features/PaymentToast';
+import { getServerLocale, createT } from '@/lib/i18n/server';
 
 export default async function DashboardLayout({
   children,
@@ -18,6 +19,9 @@ export default async function DashboardLayout({
   if (!user) {
     redirect('/login');
   }
+
+  const locale = await getServerLocale();
+  const t = createT(locale);
 
   // Buscar profile do usuário
   const { data: profile } = await supabase
@@ -42,7 +46,7 @@ export default async function DashboardLayout({
 
       {/* Sidebar */}
       <Sidebar 
-        userName={profile?.full_name || user.email || 'Usuário'} 
+        userName={profile?.full_name || user.email || t('dashboard.user')} 
         userEmail={user.email || ''}
         userPlan={profile?.plan_type || 'free'}
         userCreditsPlan={profile?.credits_plan || 0}
@@ -67,14 +71,14 @@ export default async function DashboardLayout({
                 📱
               </div>
               <p className="text-sm font-medium">
-                Sua assistente está te esperando! Para conversar com ela pelo celular, você precisa conectar seu aparelho.
+                {t('dashboard.messenger')}
               </p>
             </div>
             <a 
               href="/dashboard/settings#telegram-link" 
               className="whitespace-nowrap px-4 py-1.5 bg-white text-indigo-600 hover:bg-slate-50 text-xs font-bold uppercase tracking-wider rounded-lg shadow-sm transition-all"
             >
-              Conectar Agora
+              {t('dashboard.connectNow')}
             </a>
           </div>
         )}

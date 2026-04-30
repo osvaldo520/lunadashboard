@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { UserPlus, Eye, EyeOff, Loader2, Phone } from 'lucide-react';
+import { useLocale, LocaleToggle } from '@/lib/i18n';
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState('');
@@ -17,6 +18,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
+  const { t } = useLocale();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +29,7 @@ export default function RegisterPage() {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}[\];:,.?~-]).{8,}$/;
     
     if (!passwordRegex.test(password)) {
-      setError('A senha deve ter no mínimo 8 caracteres, com maiúscula, minúscula, número e símbolo.');
+      setError(t('register.passwordError'));
       setLoading(false);
       return;
     }
@@ -61,6 +63,7 @@ export default function RegisterPage() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[600px] w-[800px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/30 via-transparent to-transparent" />
       </div>
 
+      <div className="absolute top-4 right-6"><LocaleToggle /></div>
       <div className="w-full max-w-md px-6 py-12">
         {/* Logo */}
         <div className="text-center mb-10">
@@ -68,10 +71,10 @@ export default function RegisterPage() {
             <img src="/judite-logo.png" alt="Judite Logo" className="w-full h-full object-cover" />
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-white">
-            Criar Conta
+            {t('register.title')}
           </h1>
           <p className="mt-2 text-sm text-slate-400">
-            Comece a usar a Judite agora
+            {t('register.subtitle')}
           </p>
         </div>
 
@@ -81,7 +84,7 @@ export default function RegisterPage() {
             {/* Name */}
             <div className="space-y-1.5">
               <label htmlFor="full-name" className="text-sm font-medium text-slate-300">
-                Nome completo
+                {t('register.nameLabel')}
               </label>
               <input
                 id="full-name"
@@ -98,7 +101,7 @@ export default function RegisterPage() {
             {/* Email */}
             <div className="space-y-1.5">
               <label htmlFor="email" className="text-sm font-medium text-slate-300">
-                Email profissional
+                {t('register.emailLabel')}
               </label>
               <input
                 id="email"
@@ -115,7 +118,7 @@ export default function RegisterPage() {
             {/* WhatsApp — Opcional */}
             <div className="space-y-1.5">
               <label htmlFor="whatsapp" className="text-sm font-medium text-slate-300 flex justify-between">
-                <span>WhatsApp <span className="text-slate-600 font-normal">(opcional)</span></span>
+                <span>{t('register.whatsappLabel')} <span className="text-slate-600 font-normal">{t('register.whatsappOptional')}</span></span>
               </label>
               <div className="relative">
                 <input
@@ -130,13 +133,13 @@ export default function RegisterPage() {
                 />
                 <Phone className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-500/50" />
               </div>
-              <p className="text-[10px] text-slate-600">Adicione para receber análises por voz direto no WhatsApp.</p>
+              <p className="text-[10px] text-slate-600">{t('register.whatsappHint')}</p>
             </div>
 
             {/* Password */}
             <div className="space-y-1.5">
               <label htmlFor="password" className="text-sm font-medium text-slate-300 flex justify-between">
-                <span>Senha inteligente</span>
+                <span>{t('register.passwordLabel')}</span>
               </label>
               <div className="relative">
                 <input
@@ -153,7 +156,7 @@ export default function RegisterPage() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300 transition-colors"
-                  aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                  aria-label={showPassword ? t('login.hidePassword') : t('login.showPassword')}
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -165,10 +168,10 @@ export default function RegisterPage() {
                   <div className="flex flex-wrap gap-2">
                     {[
                       { ok: password.length >= 8, label: '8+ chars' },
-                      { ok: /[A-Z]/.test(password), label: 'Maiúscula' },
-                      { ok: /[a-z]/.test(password), label: 'Minúscula' },
-                      { ok: /\d/.test(password), label: 'Número' },
-                      { ok: /[!@#$%^&*()_+{}[\];:,.?~-]/.test(password), label: 'Símbolo' },
+                      { ok: /[A-Z]/.test(password), label: t('register.uppercase') },
+                      { ok: /[a-z]/.test(password), label: t('register.lowercase') },
+                      { ok: /\d/.test(password), label: t('register.number') },
+                      { ok: /[!@#$%^&*()_+{}[\];:,.?~-]/.test(password), label: t('register.symbol') },
                     ].map((rule) => (
                       <span key={rule.label} className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full ${
                         rule.ok ? 'text-emerald-400 bg-emerald-500/10' : 'text-slate-500 bg-slate-800/50'
@@ -202,16 +205,16 @@ export default function RegisterPage() {
               ) : (
                 <>
                   <UserPlus className="h-5 w-5" />
-                  Criar conta
+                  {t('register.submit')}
                 </>
               )}
             </button>
           </form>
 
           <p className="mt-6 text-center text-sm text-slate-400">
-            Já tem conta?{' '}
+            {t('register.hasAccount')}{' '}
             <Link href="/login" className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
-              Fazer login
+              {t('register.login')}
             </Link>
           </p>
         </div>

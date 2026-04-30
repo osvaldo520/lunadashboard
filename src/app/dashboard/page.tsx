@@ -1,12 +1,15 @@
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 import { FileText, TrendingUp, Clock, AlertTriangle } from 'lucide-react';
+import { getServerLocale, createT } from '@/lib/i18n/server';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function DashboardPage() {
   const supabase = await createClient();
+  const locale = await getServerLocale();
+  const t = createT(locale);
 
   // Buscar métricas
   const { count: totalDocs } = await supabase
@@ -31,28 +34,28 @@ export default async function DashboardPage() {
 
   const metrics = [
     {
-      label: 'Total de Documentos',
+      label: t('dashboard.totalDocs'),
       value: totalDocs || 0,
       icon: FileText,
       color: 'text-indigo-400',
       bgColor: 'bg-indigo-500/10',
     },
     {
-      label: 'Análises Concluídas',
+      label: t('dashboard.completedAnalyses'),
       value: completedDocs || 0,
       icon: TrendingUp,
       color: 'text-emerald-400',
       bgColor: 'bg-emerald-500/10',
     },
     {
-      label: 'Pendentes',
+      label: t('dashboard.pending'),
       value: pendingDocs || 0,
       icon: Clock,
       color: 'text-amber-400',
       bgColor: 'bg-amber-500/10',
     },
     {
-      label: 'Alto Risco',
+      label: t('dashboard.highRisk'),
       value: recentDocs?.filter(d => (d.risk_score || 0) >= 70).length || 0,
       icon: AlertTriangle,
       color: 'text-rose-400',
@@ -65,10 +68,10 @@ export default async function DashboardPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-white">
-          Visão Geral
+          {t('dashboard.overviewTitle')}
         </h1>
         <p className="mt-1 text-sm text-slate-400">
-          Acompanhe seus documentos e análises em tempo real.
+          {t('dashboard.overviewSubtitle')}
         </p>
       </div>
 
@@ -98,7 +101,7 @@ export default async function DashboardPage() {
       {/* Recent Documents */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/50">
         <div className="px-6 py-4 border-b border-slate-800">
-          <h2 className="text-lg font-semibold text-white">Documentos Recentes</h2>
+          <h2 className="text-lg font-semibold text-white">{t('dashboard.recentDocs')}</h2>
         </div>
 
         {recentDocs && recentDocs.length > 0 ? (
@@ -115,10 +118,10 @@ export default async function DashboardPage() {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate group-hover:text-indigo-400 transition-colors">{doc.title}</p>
                   <p className="text-xs text-slate-500">
-                    {doc.doc_type || 'documento'} • {new Date(doc.created_at).toLocaleDateString('pt-BR')}
+                    {doc.doc_type || t('dashboard.document')} • {new Date(doc.created_at).toLocaleDateString(locale)}
                   </p>
                 </div>
-                <StatusBadge status={doc.status} />
+                <StatusBadge status={doc.status} t={t} />
                 {doc.risk_score != null && <RiskBadge score={doc.risk_score} />}
               </Link>
             ))}
@@ -128,9 +131,9 @@ export default async function DashboardPage() {
             <div className="flex items-center justify-center w-16 h-16 rounded-full bg-indigo-500/10 mb-4">
               <FileText className="h-8 w-8 text-indigo-400" />
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">Nenhum documento ainda</h3>
+            <h3 className="text-lg font-semibold text-white mb-2">{t('dashboard.noDocsTitle')}</h3>
             <p className="text-sm text-slate-400 max-w-sm">
-              Comece enviando seu primeiro contrato para análise inteligente.
+              {t('dashboard.noDocsSubtitle')}
             </p>
           </div>
         )}
@@ -139,7 +142,7 @@ export default async function DashboardPage() {
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status, t }: { status: string; t: (k: string) => string }) {
   const styles: Record<string, string> = {
     uploaded: 'bg-slate-500/10 text-slate-400',
     pending: 'bg-amber-500/10 text-amber-400',
@@ -149,11 +152,11 @@ function StatusBadge({ status }: { status: string }) {
   };
 
   const labels: Record<string, string> = {
-    uploaded: 'Enviado',
-    pending: 'Pendente',
-    analyzing: 'Analisando',
-    completed: 'Concluído',
-    error: 'Erro',
+    uploaded: t('dashboard.status.uploaded'),
+    pending: t('dashboard.status.pending'),
+    analyzing: t('dashboard.status.analyzing'),
+    completed: t('dashboard.status.completed'),
+    error: t('dashboard.status.error'),
   };
 
   return (

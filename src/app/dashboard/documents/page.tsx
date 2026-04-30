@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { SearchFilterBar } from '@/components/SearchFilterBar';
 import { DocumentsTable } from '@/components/DocumentsTable';
 import { Pagination } from '@/components/Pagination';
+import { getServerLocale, createT } from '@/lib/i18n/server';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -11,6 +12,8 @@ type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 export default async function DocumentsPage(props: { searchParams: SearchParams }) {
   const supabase = await createClient();
   const searchParams = await props.searchParams;
+  const locale = await getServerLocale();
+  const t = createT(locale);
   
   const query = typeof searchParams.q === 'string' ? searchParams.q : '';
   const status = typeof searchParams.status === 'string' ? searchParams.status : '';
@@ -43,9 +46,9 @@ export default async function DocumentsPage(props: { searchParams: SearchParams 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">Documentos</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-white">{t('dashboard.documentsTitle')}</h1>
           <p className="mt-1 text-sm text-slate-400">
-            Gerencie e analise seus contratos e documentos.
+            {t('dashboard.documentsSubtitle')}
           </p>
         </div>
       </div>

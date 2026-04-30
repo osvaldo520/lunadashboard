@@ -4,6 +4,7 @@ import { Trash2 } from 'lucide-react';
 import { useTransition } from 'react';
 import { deleteDocument } from '@/app/actions/documents';
 import { useRouter } from 'next/navigation';
+import { useLocale } from '@/lib/i18n';
 
 interface DeleteButtonProps {
   documentId: string;
@@ -13,10 +14,11 @@ interface DeleteButtonProps {
 export function DeleteButton({ documentId, documentTitle }: DeleteButtonProps) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const { t } = useLocale();
 
   const handleDelete = () => {
     const confirmed = window.confirm(
-      `⚠️ Tem certeza que deseja excluir "${documentTitle}"?\n\nEsta ação é irreversível e removerá o documento do banco de dados e do armazenamento.`
+      t('dashboard.documentDetails.deleteConfirm').replace('{{title}}', documentTitle)
     );
 
     if (!confirmed) return;
@@ -27,7 +29,7 @@ export function DeleteButton({ documentId, documentTitle }: DeleteButtonProps) {
         router.push('/dashboard/documents');
         router.refresh();
       } else {
-        alert(result?.error || 'Erro ao excluir documento');
+        alert(result?.error || t('dashboard.documentDetails.errorDelete'));
       }
     });
   };
@@ -36,7 +38,7 @@ export function DeleteButton({ documentId, documentTitle }: DeleteButtonProps) {
     <button
       onClick={handleDelete}
       disabled={isPending}
-      title="Excluir documento permanentemente"
+      title={t('dashboard.documentDetails.deleteTooltip')}
       className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
         isPending
           ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
@@ -44,7 +46,7 @@ export function DeleteButton({ documentId, documentTitle }: DeleteButtonProps) {
       }`}
     >
       <Trash2 className={`h-4 w-4 ${isPending ? 'animate-spin' : ''}`} />
-      {isPending ? 'Excluindo...' : 'Excluir'}
+      {isPending ? t('dashboard.documentDetails.btnDeleting') : t('dashboard.documentDetails.btnDelete')}
     </button>
   );
 }

@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { Upload, FileText, X, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { useLocale } from '@/lib/i18n';
 
 const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
 
@@ -43,6 +44,7 @@ export default function UploadPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const supabase = createClient();
+  const { t } = useLocale();
 
   const handleFiles = (fileList: FileList) => {
     const validType = Array.from(fileList).filter(f => ACCEPTED_TYPES.includes(f.type) || f.name.endsWith('.md'));
@@ -50,10 +52,10 @@ export default function UploadPage() {
     const accepted = validType.filter(f => f.size <= MAX_FILE_SIZE);
 
     if (validType.length < fileList.length) {
-      alert('Alguns arquivos foram ignorados (tipo não suportado). Aceitos: PDF, JPEG, PNG, DOC, DOCX, TXT, MD.');
+      alert(t('upload.ignoredType'));
     }
     if (tooLarge.length > 0) {
-      alert(`${tooLarge.length} arquivo(s) excede(m) o limite de 1 MB e foi/foram ignorado(s):\n${tooLarge.map(f => `• ${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)`).join('\n')}`);
+      alert(`${tooLarge.length} ${t('upload.tooLarge')}\n${tooLarge.map(f => `• ${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)`).join('\n')}`);
     }
 
     const newFiles: UploadedFile[] = accepted.map(f => ({ file: f, status: 'idle' as const }));
@@ -162,29 +164,29 @@ export default function UploadPage() {
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-white">Upload de Documentos</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-white">{t('dashboard.uploadTitle')}</h1>
         <p className="mt-1 text-sm text-slate-400">
-          Envie contratos, termos ou políticas para análise inteligente.
+          {t('dashboard.uploadSubtitle')}
         </p>
       </div>
 
       {/* Tipo do documento */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-300">Tipo de documento</label>
+        <label className="text-sm font-medium text-slate-300">{t('upload.docType')}</label>
         <select
           value={docType}
           onChange={(e) => setDocType(e.target.value)}
           className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-3 text-white
             focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200"
         >
-          <option value="contrato">📄 Contrato</option>
-          <option value="termo">📋 Termo de Uso/Serviço</option>
-          <option value="politica">🔒 Política de Privacidade</option>
-          <option value="procuracao">✍️ Procuração</option>
-          <option value="peticao">⚖️ Petição</option>
-          <option value="prontuario">🩺 Prontuário</option>
-          <option value="analise">📊 Análise</option>
-          <option value="outro">📎 Outro</option>
+          <option value="contrato">{t('upload.types.contrato')}</option>
+          <option value="termo">{t('upload.types.termo')}</option>
+          <option value="politica">{t('upload.types.politica')}</option>
+          <option value="procuracao">{t('upload.types.procuracao')}</option>
+          <option value="peticao">{t('upload.types.peticao')}</option>
+          <option value="prontuario">{t('upload.types.prontuario')}</option>
+          <option value="analise">{t('upload.types.analise')}</option>
+          <option value="outro">{t('upload.types.outro')}</option>
         </select>
       </div>
 
@@ -213,10 +215,10 @@ export default function UploadPage() {
           <Upload className={`h-7 w-7 ${dragOver ? 'text-indigo-400' : 'text-slate-400'}`} />
         </div>
         <p className="text-sm font-medium text-white mb-1">
-          Arraste arquivos aqui ou <span className="text-indigo-400">clique para selecionar</span>
+          {t('upload.dragDrop')}<span className="text-indigo-400">{t('upload.clickToSelect')}</span>
         </p>
         <p className="text-xs text-slate-500">
-          PDF, JPEG, PNG, DOC, DOCX, TXT, MD • Máx. 1 MB por arquivo
+          {t('upload.fileTypes')}
         </p>
       </div>
 
@@ -224,7 +226,7 @@ export default function UploadPage() {
       {files.length > 0 && (
         <div className="space-y-3">
           <h3 className="text-sm font-medium text-slate-300">
-            {files.length} arquivo{files.length > 1 ? 's' : ''} selecionado{files.length > 1 ? 's' : ''}
+            {files.length} {t('upload.selectedFiles')}
           </h3>
           {files.map((f, i) => (
             <div
@@ -269,17 +271,17 @@ export default function UploadPage() {
           {uploading ? (
             <>
               <Loader2 className="h-5 w-5 animate-spin" />
-              Enviando...
+              {t('upload.btnSending')}
             </>
           ) : files.every(f => f.status === 'success') ? (
             <>
               <CheckCircle className="h-5 w-5" />
-              Enviado com sucesso!
+              {t('upload.btnSuccess')}
             </>
           ) : (
             <>
               <Upload className="h-5 w-5" />
-              Enviar {files.length} arquivo{files.length > 1 ? 's' : ''}
+              {t('upload.btnSend')} ({files.length})
             </>
           )}
         </button>

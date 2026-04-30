@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { User, Building2, Save, Loader2, CheckCircle, Moon, Sun, Zap, Crown } from 'lucide-react';
+import { useLocale } from '@/lib/i18n';
 
 interface Profile {
   id: string;
@@ -32,6 +33,7 @@ export default function SettingsPage() {
   const [upgrading, setUpgrading] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const supabase = createClient();
+  const { t } = useLocale();
 
   useEffect(() => {
     loadProfile();
@@ -113,9 +115,9 @@ export default function SettingsPage() {
     <div className="max-w-2xl mx-auto space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-white">Configurações</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-white">{t('dashboard.settingsTitle')}</h1>
         <p className="mt-1 text-sm text-slate-400">
-          Gerencie seu perfil e preferências.
+          {t('dashboard.settingsSubtitle')}
         </p>
       </div>
 
@@ -141,17 +143,17 @@ export default function SettingsPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-white">Modo Expert</h3>
+                <h3 className="text-sm font-bold text-white">{t('settings.expertMode')}</h3>
                 {profile?.expert_mode && (
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 uppercase tracking-wider animate-pulse">
-                    Ativo
+                    {t('settings.active')}
                   </span>
                 )}
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
                 {profile?.expert_mode 
-                  ? 'Precisão jurídica máxima — Motor premium da Judite IA' 
-                  : 'Ative para usar o motor de IA mais avançado da Judite'
+                  ? t('settings.expertActiveDesc')
+                  : t('settings.expertInactiveDesc')
                 }
               </p>
             </div>
@@ -185,8 +187,7 @@ export default function SettingsPage() {
         {profile?.expert_mode && (
           <div className="mt-4 px-4 py-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
             <p className="text-xs text-amber-300/90 leading-relaxed">
-              ⚡ O Modo Expert utiliza o motor de IA mais preciso da Judite para análises jurídicas de alta complexidade. 
-              Cada interação tem um custo reajustado e consome mais do seu limite diário de créditos.
+              {t('settings.expertWarning')}
             </p>
           </div>
         )}
@@ -199,14 +200,14 @@ export default function SettingsPage() {
             <User className="h-5 w-5 text-indigo-400" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-white">Perfil</h2>
-            <p className="text-xs text-slate-500">Informações pessoais e de contato</p>
+            <h2 className="text-lg font-semibold text-white">{t('settings.profile')}</h2>
+            <p className="text-xs text-slate-500">{t('settings.profileDesc')}</p>
           </div>
         </div>
 
         {/* Name */}
         <div className="space-y-2">
-          <label htmlFor="full-name" className="text-sm font-medium text-slate-300">Nome completo</label>
+          <label htmlFor="full-name" className="text-sm font-medium text-slate-300">{t('settings.fullName')}</label>
           <input
             id="full-name"
             type="text"
@@ -231,7 +232,7 @@ export default function SettingsPage() {
 
         {/* Phone */}
         <div className="space-y-2">
-          <label htmlFor="phone" className="text-sm font-medium text-slate-300">Telefone</label>
+          <label htmlFor="phone" className="text-sm font-medium text-slate-300">{t('settings.phone')}</label>
           <input
             id="phone"
             type="tel"
@@ -251,19 +252,19 @@ export default function SettingsPage() {
             <Building2 className="h-5 w-5 text-emerald-400" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-white">Empresa / Escritório</h2>
-            <p className="text-xs text-slate-500">Dados profissionais</p>
+            <h2 className="text-lg font-semibold text-white">{t('settings.company')}</h2>
+            <p className="text-xs text-slate-500">{t('settings.companyDesc')}</p>
           </div>
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="company" className="text-sm font-medium text-slate-300">Nome da empresa</label>
+          <label htmlFor="company" className="text-sm font-medium text-slate-300">{t('settings.company')}</label>
           <input
             id="company"
             type="text"
             value={profile?.company_name || ''}
             onChange={(e) => setProfile(prev => prev ? { ...prev, company_name: e.target.value } : null)}
-            placeholder="Ex: Escritório Silva Advocacia"
+            placeholder={t('settings.companyPlaceholder')}
             className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-3 text-white placeholder-slate-600
               focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200"
           />
@@ -300,13 +301,13 @@ export default function SettingsPage() {
               <Zap className="h-5 w-5 text-blue-400" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-white">Seus Créditos</h3>
+              <h3 className="text-sm font-semibold text-white">{t('settings.credits.title')}</h3>
               <p className="text-xs text-slate-500">
                 {profile?.plan_type === 'pro' 
                   ? profile?.credits_reset_at 
-                    ? `Franquia de 10.000 (Renova em ${new Date(profile.credits_reset_at).toLocaleDateString('pt-BR')})`
-                    : 'Franquia de 10.000/mês'
-                  : 'Avaliação Inicial (Não renovável)'}
+                    ? `${t('settings.credits.proSub1')}${new Date(profile.credits_reset_at).toLocaleDateString(t('dashboard.pagination.itemsPerPage') === 'Items per page:' ? 'en-US' : 'pt-BR')})`
+                    : t('settings.credits.proSub2')
+                  : t('settings.credits.eval')}
               </p>
             </div>
           </div>
@@ -316,10 +317,10 @@ export default function SettingsPage() {
         <div className="pt-2 pb-1">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-medium text-slate-300">
-              <strong className="text-white text-sm">{(profile?.credits_plan || 0) + (profile?.credits_bonus || 0)}</strong> créditos restantes
+              <strong className="text-white text-sm">{(profile?.credits_plan || 0) + (profile?.credits_bonus || 0)}</strong> {t('settings.credits.remaining')}
             </span>
             <span className="text-xs text-slate-500 font-mono">
-              {profile?.plan_type === 'pro' ? 'Lim: 10.000' : 'Lim: 300'}
+              {profile?.plan_type === 'pro' ? `${t('settings.credits.limit')}10.000` : `${t('settings.credits.limit')}300`}
             </span>
           </div>
           
@@ -344,57 +345,57 @@ export default function SettingsPage() {
             <svg className="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
             </svg>
-            Armazenamento em nuvem
+            {t('settings.credits.storage')}
           </p>
           <span className="text-[11px] font-medium text-slate-400">
-            Capacidade padrão: {profile?.plan_type === 'pro' ? '200 MB' : '10 MB'}
+            {t('settings.credits.storageCap')} {profile?.plan_type === 'pro' ? '200 MB' : '10 MB'}
           </span>
         </div>
       </div>
 
       {/* Booster Packs */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 space-y-4">
-        <h3 className="text-sm font-semibold text-white">Comprar Pacotes Extras (Boosters)</h3>
-        <p className="text-xs text-slate-400 mb-4">Créditos de bônus não expiram e só são consumidos após o esgotamento da franquia principal.</p>
+        <h3 className="text-sm font-semibold text-white">{t('settings.boosters.title')}</h3>
+        <p className="text-xs text-slate-400 mb-4">{t('settings.boosters.desc')}</p>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="flex flex-col border border-slate-700/50 rounded-xl p-4 bg-slate-800/30">
-            <h4 className="text-white font-bold text-sm">Pacote Emergência</h4>
-            <p className="text-indigo-400 text-lg font-black my-1">+1.000 <span className="text-xs font-normal">créditos</span></p>
+            <h4 className="text-white font-bold text-sm">{t('settings.boosters.emergency')}</h4>
+            <p className="text-indigo-400 text-lg font-black my-1">+1.000 <span className="text-xs font-normal">{t('settings.boosters.credits')}</span></p>
             <p className="text-slate-500 text-xs mb-3">R$ 29,90</p>
             <button
               onClick={() => handleBuyBooster('price_1TMBynDQroLP2zVYU4Qskc74')}
               disabled={upgrading}
               className="mt-auto w-full rounded-lg bg-slate-700 hover:bg-slate-600 px-3 py-2 text-xs font-semibold text-white transition-colors"
             >
-              Comprar
+              {t('settings.boosters.buy')}
             </button>
           </div>
           
           <div className="flex flex-col border border-amber-500/30 rounded-xl p-4 bg-amber-500/5">
-            <h4 className="text-white font-bold text-sm">Pacote Ouro</h4>
-            <p className="text-amber-400 text-lg font-black my-1">+4.000 <span className="text-xs font-normal">créditos</span></p>
+            <h4 className="text-white font-bold text-sm">{t('settings.boosters.gold')}</h4>
+            <p className="text-amber-400 text-lg font-black my-1">+4.000 <span className="text-xs font-normal">{t('settings.boosters.credits')}</span></p>
             <p className="text-slate-500 text-xs mb-3">R$ 79,90</p>
             <button
               onClick={() => handleBuyBooster('price_1TMC1hDQroLP2zVYpufMf58s')}
               disabled={upgrading}
               className="mt-auto w-full rounded-lg bg-amber-500 hover:bg-amber-400 px-3 py-2 text-xs font-semibold text-slate-900 transition-colors"
             >
-              Comprar
+              {t('settings.boosters.buy')}
             </button>
           </div>
 
           <div className="flex flex-col border border-purple-500/30 rounded-xl p-4 bg-purple-500/5 relative overflow-hidden">
-            <div className="absolute top-0 right-0 bg-purple-500 text-[9px] font-bold px-2 py-0.5 rounded-bl-lg text-white">Melhor Valor</div>
-            <h4 className="text-white font-bold text-sm">Pacote Black</h4>
-            <p className="text-purple-400 text-lg font-black my-1">+10.000 <span className="text-xs font-normal">créditos</span></p>
+            <div className="absolute top-0 right-0 bg-purple-500 text-[9px] font-bold px-2 py-0.5 rounded-bl-lg text-white">{t('settings.boosters.bestValue')}</div>
+            <h4 className="text-white font-bold text-sm">{t('settings.boosters.black')}</h4>
+            <p className="text-purple-400 text-lg font-black my-1">+10.000 <span className="text-xs font-normal">{t('settings.boosters.credits')}</span></p>
             <p className="text-slate-500 text-xs mb-3">R$ 149,90</p>
             <button
               onClick={() => handleBuyBooster('price_1TMC3bDQroLP2zVYlMVUU5Oj')}
               disabled={upgrading}
               className="mt-auto w-full rounded-lg bg-purple-600 hover:bg-purple-500 px-3 py-2 text-xs font-semibold text-white transition-colors"
             >
-              Comprar
+              {t('settings.boosters.buy')}
             </button>
           </div>
         </div>
@@ -418,16 +419,16 @@ export default function SettingsPage() {
               }`} />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-white">Plano atual</h3>
+              <h3 className="text-sm font-semibold text-white">{t('settings.plan.title')}</h3>
               <p className="text-xs text-slate-400 mt-0.5">
                 {(profile?.plan_type || profile?.plan || 'free') === 'pro' ? (
                   profile?.plan_expires_at ? (
-                    <span className="text-amber-400 font-bold">PRO — Cancelado, acesso até {new Date(profile.plan_expires_at).toLocaleDateString('pt-BR')}</span>
+                    <span className="text-amber-400 font-bold">{t('settings.plan.proCancelled')}{new Date(profile.plan_expires_at).toLocaleDateString(t('dashboard.pagination.itemsPerPage') === 'Items per page:' ? 'en-US' : 'pt-BR')}</span>
                   ) : (
-                    <span className="text-emerald-400 font-bold">PRO — Franquia de 10.000 créditos mensais</span>
+                    <span className="text-emerald-400 font-bold">{t('settings.plan.proActive')}</span>
                   )
                 ) : (
-                  <span>Plano <span className="font-bold text-indigo-400 uppercase">gratuito</span> — 300 créditos de avaliação</span>
+                  <span><span className="font-bold text-indigo-400 uppercase">{t('settings.plan.free')}</span>{t('settings.plan.freeDesc')}</span>
                 )}
               </p>
             </div>
@@ -460,16 +461,16 @@ export default function SettingsPage() {
                 transition-all duration-200 shadow-lg shadow-indigo-500/25"
             >
               {upgrading ? (
-                <><Loader2 className="h-4 w-4 animate-spin" /> Redirecionando...</>
+                <><Loader2 className="h-4 w-4 animate-spin" /> {t('settings.plan.redirecting')}</>
               ) : (
-                <><Crown className="h-4 w-4" /> Upgrade para Pro</>
+                <><Crown className="h-4 w-4" /> {t('settings.plan.upgradeBtn')}</>
               )}
             </button>
           ) : profile?.plan_expires_at ? (
             /* Cancelamento pendente — acesso até fim do ciclo */
             <div className="flex flex-col items-end gap-1.5">
               <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 uppercase tracking-wider">
-                ⏳ Cancelado
+                {t('settings.plan.statusCancelled')}
               </span>
               <button
                 onClick={async () => {
@@ -490,14 +491,14 @@ export default function SettingsPage() {
                 disabled={upgrading}
                 className="text-[11px] text-indigo-400 hover:text-indigo-300 transition-colors underline underline-offset-2 font-medium"
               >
-                {upgrading ? '⏳ Redirecionando...' : 'Reativar assinatura'}
+                {upgrading ? `⏳ ${t('settings.plan.redirecting')}` : t('settings.plan.reactivateBtn')}
               </button>
             </div>
           ) : (
             /* Pro ativo normal */
             <div className="flex flex-col items-end gap-1.5">
               <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
-                ✅ Ativo
+                {t('settings.plan.statusActive')}
               </span>
               <button
                 onClick={async () => {
@@ -518,7 +519,7 @@ export default function SettingsPage() {
                 disabled={upgrading}
                 className="text-[11px] text-slate-400 hover:text-indigo-400 transition-colors underline underline-offset-2"
               >
-                {upgrading ? '⏳ Redirecionando...' : 'Gerenciar assinatura'}
+                {upgrading ? `⏳ ${t('settings.plan.redirecting')}` : t('settings.plan.manageBtn')}
               </button>
             </div>
           )}
@@ -534,11 +535,11 @@ export default function SettingsPage() {
           transition-all duration-200 shadow-lg shadow-indigo-500/25"
       >
         {saving ? (
-          <><Loader2 className="h-5 w-5 animate-spin" /> Salvando...</>
+          <><Loader2 className="h-5 w-5 animate-spin" /> {t('settings.saving')}</>
         ) : saved ? (
-          <><CheckCircle className="h-5 w-5" /> Salvo com sucesso!</>
+          <><CheckCircle className="h-5 w-5" /> {t('settings.saved')}</>
         ) : (
-          <><Save className="h-5 w-5" /> Salvar alterações</>
+          <><Save className="h-5 w-5" /> {t('settings.saveChanges')}</>
         )}
       </button>
     </div>
@@ -560,6 +561,7 @@ function LinkChannelsCard({
   supabase: SupabaseClient; 
   onUpdate: () => void;
 }) {
+  const { t } = useLocale();
   const [generating, setGenerating] = useState(false);
   const [countdown, setCountdown] = useState('');
   const [isExpired, setIsExpired] = useState(false);
@@ -673,8 +675,8 @@ function LinkChannelsCard({
             {icon}
           </div>
           <div>
-            <h3 className="text-md font-semibold text-white">{isTelegram ? 'Telegram' : 'WhatsApp'} Vinculado</h3>
-            <p className="text-xs text-slate-400">Ativo e aguardando comandos.</p>
+            <h3 className="text-md font-semibold text-white">{isTelegram ? 'Telegram' : 'WhatsApp'}{t('settings.channels.linked')}</h3>
+            <p className="text-xs text-slate-400">{t('settings.channels.activeStatus')}</p>
           </div>
         </div>
         
@@ -682,7 +684,7 @@ function LinkChannelsCard({
           onClick={() => handleUnlink(channel)}
           className="text-xs text-slate-500 hover:text-red-400 mt-auto flex items-center gap-1 transition-colors self-start"
         >
-          <Unlink className="w-3 h-3" /> Desvincular {isTelegram ? 'Telegram' : 'WhatsApp'}
+          <Unlink className="w-3 h-3" /> {t('settings.channels.unlink')}{isTelegram ? 'Telegram' : 'WhatsApp'}
         </button>
       </div>
     );
@@ -700,9 +702,9 @@ function LinkChannelsCard({
     return (
       <div className="p-4 rounded-xl border border-indigo-500/20 bg-slate-900/50 flex flex-col space-y-4 h-full">
         <div>
-          <h4 className="text-sm font-semibold text-white mb-1">Vincular {isTelegram ? 'Telegram' : 'WhatsApp'}</h4>
+          <h4 className="text-sm font-semibold text-white mb-1">{t('settings.channels.link')}{isTelegram ? 'Telegram' : 'WhatsApp'}</h4>
           <p className="text-[11px] text-slate-400 leading-relaxed mb-3">
-            {isTelegram ? 'O aplicativo mais fluido e rápido para lidar com arquivos grandes.' : 'O mensageiro líder de mercado. Praticidade extrema para consultas rápidas.'}
+            {isTelegram ? t('settings.channels.tgDesc') : t('settings.channels.waDesc')}
           </p>
         </div>
         
@@ -714,7 +716,7 @@ function LinkChannelsCard({
                className="flex justify-center items-center gap-2 rounded-lg bg-slate-800 hover:bg-slate-700 px-4 py-2.5 text-white font-medium transition-all shadow-sm text-xs border border-slate-700"
              >
                {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />}
-               Gerar Código de Vínculo
+               {t('settings.channels.genPin')}
             </button>
           ) : (
             <a 
@@ -723,7 +725,7 @@ function LinkChannelsCard({
               rel="noreferrer"
               className={`flex justify-center items-center gap-2 rounded-lg ${isTelegram ? 'bg-[#2AABEE] hover:bg-[#228cbd]' : 'bg-[#25D366] hover:bg-[#1DA851]'} px-4 py-2.5 text-white font-medium transition-all shadow-md text-xs`}
             >
-              {isTelegram ? '📱 Enviar no Telegram' : '📱 Enviar no WhatsApp'}
+              {isTelegram ? t('settings.channels.sendTg') : t('settings.channels.sendWa')}
             </a>
           )}
         </div>
@@ -738,8 +740,8 @@ function LinkChannelsCard({
           <Link2 className="w-5 h-5 text-indigo-400" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-white">Mensageiros e Dispositivos</h3>
-          <p className="text-sm text-slate-400">Gerencie por onde a Judite vai responder aos seus comandos.</p>
+          <h3 className="text-lg font-semibold text-white">{t('settings.channels.title')}</h3>
+          <p className="text-sm text-slate-400">{t('settings.channels.subtitle')}</p>
         </div>
       </div>
 
@@ -754,8 +756,8 @@ function LinkChannelsCard({
       {hasPinActive && (
         <div className="col-span-full bg-slate-900/50 border border-slate-800 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-2">
            <div className="flex flex-col gap-1 w-full text-center sm:text-left">
-             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Seu Magic Code (PIN)</span>
-             <p className="text-[11px] text-slate-500 mb-1">Pesquise pela Judite no celular e envie esse código, ou clique nos botões acima.</p>
+             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{t('settings.channels.pinTitle')}</span>
+             <p className="text-[11px] text-slate-500 mb-1">{t('settings.channels.pinDesc')}</p>
              <code className="text-xl font-mono text-white tracking-widest">{profile.telegram_pin}</code>
            </div>
            
@@ -780,7 +782,7 @@ function LinkChannelsCard({
         <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-amber-400 text-sm flex items-center gap-2">
             <Timer className="w-4 h-4" />
-            O código expirou.
+            {t('settings.channels.expired')}
           </p>
           <button
             onClick={handleGeneratePin}
@@ -788,7 +790,7 @@ function LinkChannelsCard({
             className="rounded-xl bg-indigo-600 hover:bg-indigo-700 px-4 py-2 text-sm text-white font-medium transition-all flex items-center gap-2"
           >
             {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-            Gerar Novo
+            {t('settings.channels.genNew')}
           </button>
         </div>
       )}

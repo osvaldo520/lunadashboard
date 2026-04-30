@@ -4,6 +4,7 @@ import { FileText } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { useLocale } from '@/lib/i18n';
 
 interface Document {
   id: string;
@@ -21,6 +22,7 @@ interface DocumentsTableProps {
 export function DocumentsTable({ documents: initialDocuments }: DocumentsTableProps) {
   const [documents, setDocuments] = useState<Document[]>(initialDocuments);
   const supabase = createClient();
+  const { t, locale } = useLocale();
 
   // Sync state if server component params change (pagination, search)
   useEffect(() => {
@@ -62,9 +64,9 @@ export function DocumentsTable({ documents: initialDocuments }: DocumentsTablePr
         <div className="flex items-center justify-center w-16 h-16 rounded-full bg-indigo-500/10 mb-6">
           <FileText className="h-8 w-8 text-indigo-400" />
         </div>
-        <h3 className="text-lg font-semibold text-white mb-2">Nenhum documento encontrado</h3>
+        <h3 className="text-lg font-semibold text-white mb-2">{t('dashboard.table.noDocsTitle')}</h3>
         <p className="text-sm text-slate-400 max-w-sm text-center mb-6">
-          Nenhum contrato corresponde aos seus filtros de busca ou nada foi enviado ainda.
+          {t('dashboard.table.noDocsSubtitle')}
         </p>
       </div>
     );
@@ -75,11 +77,11 @@ export function DocumentsTable({ documents: initialDocuments }: DocumentsTablePr
       <table className="w-full min-w-[750px]">
         <thead>
           <tr className="border-b border-slate-800">
-            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Título</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Tipo</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Risco</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Data</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('dashboard.table.title')}</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('dashboard.table.type')}</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('dashboard.table.status')}</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('dashboard.table.risk')}</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('dashboard.table.date')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-800">
@@ -93,9 +95,9 @@ export function DocumentsTable({ documents: initialDocuments }: DocumentsTablePr
                   <span className="text-sm font-medium text-white group-hover:text-indigo-400 transition-colors">{doc.title}</span>
                 </Link>
               </td>
-              <td className="px-6 py-4 text-sm text-slate-400 capitalize">{doc.doc_type || '—'}</td>
+              <td className="px-6 py-4 text-sm text-slate-400 capitalize">{doc.doc_type ? t(`upload.types.${doc.doc_type}`)?.replace(/^.*?\s/, '') || doc.doc_type : '—'}</td>
               <td className="px-6 py-4">
-                <StatusBadge status={doc.status} />
+                <StatusBadge status={doc.status} t={t} />
               </td>
               <td className="px-6 py-4">
                 {doc.risk_score != null ? (
@@ -105,7 +107,7 @@ export function DocumentsTable({ documents: initialDocuments }: DocumentsTablePr
                 )}
               </td>
               <td className="px-6 py-4 text-sm text-slate-400">
-                {new Date(doc.created_at).toLocaleDateString('pt-BR')}
+                {new Date(doc.created_at).toLocaleDateString(locale === 'en' ? 'en-US' : 'pt-BR')}
               </td>
             </tr>
           ))}
@@ -115,7 +117,7 @@ export function DocumentsTable({ documents: initialDocuments }: DocumentsTablePr
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status, t }: { status: string, t: any }) {
   const styles: Record<string, string> = {
     uploaded: 'bg-slate-500/10 text-slate-400 ring-1 ring-slate-500/20',
     pending: 'bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/20',
@@ -124,17 +126,9 @@ function StatusBadge({ status }: { status: string }) {
     error: 'bg-red-500/10 text-red-400 ring-1 ring-red-500/20',
   };
 
-  const labels: Record<string, string> = {
-    uploaded: 'Enviado',
-    pending: 'Pendente',
-    analyzing: 'Analisando',
-    completed: 'Concluído',
-    error: 'Erro',
-  };
-
   return (
     <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${styles[status] || styles.pending} transition-colors duration-300`}>
-      {labels[status] || status}
+      {t(`dashboard.status.${status}`) || status}
     </span>
   );
 }
