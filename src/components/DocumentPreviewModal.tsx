@@ -9,9 +9,10 @@ interface DocumentPreviewModalProps {
   filePath: string;
   previewLabel?: string;
   defaultType?: string;
+  initialContent?: string | null;
 }
 
-export function DocumentPreviewModal({ fileUrl, docType, filePath, previewLabel, defaultType }: DocumentPreviewModalProps) {
+export function DocumentPreviewModal({ fileUrl, docType, filePath, previewLabel, defaultType, initialContent }: DocumentPreviewModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [textContent, setTextContent] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +33,10 @@ export function DocumentPreviewModal({ fileUrl, docType, filePath, previewLabel,
   const handleOpen = async () => {
     setIsOpen(true);
     if (isTextFile && !textContent) {
+      if (initialContent) {
+        setTextContent(initialContent);
+        return;
+      }
       setIsLoading(true);
       try {
         const response = await fetch(fileUrl);

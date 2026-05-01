@@ -74,6 +74,7 @@ export default async function DocumentDetailsPage({
                   docType={doc.doc_type} 
                   filePath={doc.file_path} 
                   previewLabel={t('dashboard.documentDetails.preview')}
+                  initialContent={doc.content}
                 />
               ) : (
                 <span className="flex items-center gap-1.5 capitalize text-slate-400">
