@@ -11,11 +11,11 @@ export const dynamic = 'force-dynamic';
 export default async function SocialApprovalPage() {
   const supabase = await createClient();
 
-  // Buscar todos os drafts pendentes
+  // Buscar drafts pendentes E aprovados (aprovados ficam visíveis para retry de publicação)
   const { data: drafts, error } = await supabase
     .from('social_drafts')
     .select('*')
-    .eq('status', 'pending')
+    .in('status', ['pending', 'approved'])
     .order('created_at', { ascending: false });
 
   if (error) {
