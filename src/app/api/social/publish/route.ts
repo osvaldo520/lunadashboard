@@ -156,13 +156,19 @@ async function publishToTwitter(text: string): Promise<{ success: boolean; url?:
         url = headTweetId ? `https://x.com/i/web/status/${headTweetId}` : undefined;
       } catch (threadErr: any) {
         const threadCode = threadErr?.code || threadErr?.data?.status;
-        console.warn(`[Twitter] tweetThread falhou (${threadCode}). Caindo para tweet único...`);
+        console.warn(`[Twitter] tweetThread falhou (${threadCode}). Tentando tweet único...`);
         
-        // Fallback: combina as duas partes em um único tweet
-        const combined = smartTruncateTwitter(parts[0].trim());
-        const tweet = await client.v2.tweet(combined);
-        const tweetId = tweet.data?.id;
-        url = tweetId ? `https://x.com/i/web/status/${tweetId}` : undefined;
+        // Fallback: posta só o primeiro tweet
+        try {
+          const combined = smartTruncateTwitter(parts[0].trim());
+          const tweet = await client.v2.tweet(combined);
+          const tweetId = tweet.data?.id;
+          url = tweetId ? `https://x.com/i/web/status/${tweetId}` : undefined;
+        } catch (singleErr: any) {
+          console.error('[Twitter] Tweet único TAMBÉM falhou:', JSON.stringify(singleErr?.data || singleErr, null, 2));
+          // Propagar o erro do single tweet (mais informativo)
+          throw singleErr;
+        }
       }
     } else {
       // É um tweet simples
