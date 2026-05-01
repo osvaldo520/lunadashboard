@@ -146,14 +146,24 @@ async function publishToTwitter(text: string): Promise<{ success: boolean; url?:
     let url: string | undefined;
 
     if (parts.length > 1) {
-      // É uma thread
-      const tweet1 = smartTruncateTwitter(parts[0].trim());
-      const tweet2 = smartTruncateTwitter(parts[1].trim());
-      
-      const thread = await client.v2.tweetThread([tweet1, tweet2]);
-      // A resposta do tweetThread é um array com os tweets postados. O primeiro é a cabeça da thread.
-      const headTweetId = thread[0]?.data?.id;
-      url = headTweetId ? `https://x.com/i/web/status/${headTweetId}` : undefined;
+      // Tentar como thread primeiro
+      try {
+        const tweet1 = smartTruncateTwitter(parts[0].trim());
+        const tweet2 = smartTruncateTwitter(parts[1].trim());
+        
+        const thread = await client.v2.tweetThread([tweet1, tweet2]);
+        const headTweetId = thread[0]?.data?.id;
+        url = headTweetId ? `https://x.com/i/web/status/${headTweetId}` : undefined;
+      } catch (threadErr: any) {
+        const threadCode = threadErr?.code || threadErr?.data?.status;
+        console.warn(`[Twitter] tweetThread falhou (${threadCode}). Caindo para tweet único...`);
+        
+        // Fallback: combina as duas partes em um único tweet
+        const combined = smartTruncateTwitter(parts[0].trim());
+        const tweet = await client.v2.tweet(combined);
+        const tweetId = tweet.data?.id;
+        url = tweetId ? `https://x.com/i/web/status/${tweetId}` : undefined;
+      }
     } else {
       // É um tweet simples
       const safeText = smartTruncateTwitter(text.trim());
@@ -176,16 +186,18 @@ async function publishToTwitter(text: string): Promise<{ success: boolean; url?:
       };
     }
 
-    // Erro 403: Permissões insuficientes (app com Read-only)
+    // Erro 403: Permissões insuficientes ou plano Free sem acesso a endpoint
     if (code === 403) {
-      console.error('[Twitter API Detail]:', error?.data || error);
+      console.error('[Twitter API 403 Full Error]:', JSON.stringify(error?.data || error, null, 2));
+      const reason = error?.data?.reason || '';
+      const isThreadIssue = detail?.toLowerCase()?.includes('thread') || false;
       return {
         success: false,
-        error: '🔒 Permissão negada. Verifique se a app no developer.x.com está com permissão "Read and Write".',
+        error: `🔒 Permissão negada (403). Reason: "${reason}". Detail: "${detail}". Tip: No plano Free do X, tweetThread pode não ser suportado. Verifique no developer.x.com.`,
       };
     }
 
-    console.error('[Twitter API Detail]:', error?.data || error);
+    console.error('[Twitter API Full Error]:', JSON.stringify(error?.data || error, null, 2));
     return { success: false, error: `Twitter API (${code}): ${detail}` };
   }
 }
