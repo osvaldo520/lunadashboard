@@ -70,7 +70,7 @@ export function Sidebar({ userName, userEmail, userPlan, userCreditsPlan, userCr
 
   const handleUpgrade = () => {
     setIsUpgrading(true);
-    router.push('/dashboard/settings');
+    router.push('/dashboard/settings#upgrade');
   };
 
   return (

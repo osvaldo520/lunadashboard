@@ -430,7 +430,7 @@ export default function SettingsPage() {
       )}
 
       {/* Plan & Upgrade */}
-      <div className={`rounded-2xl border p-6 ${
+      <div id="upgrade" className={`rounded-2xl border p-6 ${
         (profile?.plan_type || profile?.plan || 'free') === 'pro' 
           ? 'border-emerald-500/20 bg-emerald-500/5' 
           : 'border-indigo-500/20 bg-indigo-500/5'
@@ -498,7 +498,7 @@ export default function SettingsPage() {
                   className="flex flex-col items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 hover:bg-emerald-500/20 transition-all"
                 >
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 uppercase tracking-wider">🔗 Solana</span>
-                  <span className="text-white font-bold text-lg">$29.90<span className="text-xs font-normal text-slate-400"> USDC/mês</span></span>
+                  <span className="text-white font-bold text-lg">$29.90<span className="text-xs font-normal text-slate-400"> USDC / 30 dias</span></span>
                   <span className="text-[11px] text-slate-400">12.000 créditos <span className="text-emerald-400 font-semibold">(+20%)</span></span>
                   <span className="text-xs font-semibold text-emerald-400 mt-1">Pay with Crypto →</span>
                 </a>
