@@ -68,21 +68,9 @@ export function Sidebar({ userName, userEmail, userPlan, userCreditsPlan, userCr
     router.refresh();
   };
 
-  const handleUpgrade = async () => {
-    try {
-      setIsUpgrading(true);
-      const { data, error } = await supabase.functions.invoke('stripe-checkout', {
-        method: 'POST',
-      });
-      
-      if (error) throw error;
-      if (data?.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.error("Falha ao abrir o checkout", error);
-      setIsUpgrading(false);
-    }
+  const handleUpgrade = () => {
+    setIsUpgrading(true);
+    router.push('/dashboard/settings');
   };
 
   return (
