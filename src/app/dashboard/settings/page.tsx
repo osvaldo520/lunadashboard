@@ -353,13 +353,18 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Booster Packs */}
+      {/* Booster Packs — Visível apenas para Pro */}
+      {(profile?.plan_type || profile?.plan || 'free') === 'pro' && (
       <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 space-y-4">
         <h3 className="text-sm font-semibold text-white">{t('settings.boosters.title')}</h3>
         <p className="text-xs text-slate-400 mb-4">{t('settings.boosters.desc')}</p>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Pacote Emergência — Stripe (R$) */}
           <div className="flex flex-col border border-slate-700/50 rounded-xl p-4 bg-slate-800/30">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-400 border border-indigo-500/20">💳 Stripe</span>
+            </div>
             <h4 className="text-white font-bold text-sm">{t('settings.boosters.emergency')}</h4>
             <p className="text-indigo-400 text-lg font-black my-1">+1.000 <span className="text-xs font-normal">{t('settings.boosters.credits')}</span></p>
             <p className="text-slate-500 text-xs mb-3">R$ 29,90</p>
@@ -371,7 +376,28 @@ export default function SettingsPage() {
               {t('settings.boosters.buy')}
             </button>
           </div>
-          
+
+          {/* Pacote Emergência — Crypto (USDC) */}
+          <div className="flex flex-col border border-emerald-500/20 rounded-xl p-4 bg-emerald-500/5">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">🔗 Solana</span>
+            </div>
+            <h4 className="text-white font-bold text-sm">{t('settings.boosters.emergency')}</h4>
+            <p className="text-emerald-400 text-lg font-black my-1">+1.000 <span className="text-xs font-normal">{t('settings.boosters.credits')}</span></p>
+            <p className="text-slate-500 text-xs mb-3">$5 USDC</p>
+            <a
+              href="/crypto-pass"
+              className="mt-auto w-full rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/25 px-3 py-2 text-xs font-semibold text-emerald-300 text-center transition-colors"
+            >
+              Pay with Crypto
+            </a>
+          </div>
+
+          {/* ═══════════════════════════════════════
+           Pacotes Ouro e Black — COMENTADOS
+           Reativar quando houver demanda.
+          ═══════════════════════════════════════ */}
+          {/*
           <div className="flex flex-col border border-amber-500/30 rounded-xl p-4 bg-amber-500/5">
             <h4 className="text-white font-bold text-sm">{t('settings.boosters.gold')}</h4>
             <p className="text-amber-400 text-lg font-black my-1">+4.000 <span className="text-xs font-normal">{t('settings.boosters.credits')}</span></p>
@@ -398,8 +424,10 @@ export default function SettingsPage() {
               {t('settings.boosters.buy')}
             </button>
           </div>
+          */}
         </div>
       </div>
+      )}
 
       {/* Plan & Upgrade */}
       <div className={`rounded-2xl border p-6 ${
@@ -434,38 +462,48 @@ export default function SettingsPage() {
             </div>
           </div>
           {(profile?.plan_type || profile?.plan || 'free') !== 'pro' ? (
-            <button
-              onClick={async () => {
-                setUpgrading(true);
-                try {
-                  const { data, error } = await supabase.functions.invoke('stripe-checkout', {
-                    method: 'POST',
-                  });
-                  
-                  if (error) throw error;
-                  if (data?.url) {
-                    window.location.href = data.url;
-                  } else {
-                    alert('Erro ao iniciar checkout. Tente novamente.');
-                  }
-                } catch (err) {
-                  console.error('[Checkout]', err);
-                  alert('Erro ao conectar com Stripe.');
-                } finally {
-                  setUpgrading(false);
-                }
-              }}
-              disabled={upgrading}
-              className="flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white 
-                hover:bg-indigo-500 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed
-                transition-all duration-200 shadow-lg shadow-indigo-500/25"
-            >
-              {upgrading ? (
-                <><Loader2 className="h-4 w-4 animate-spin" /> {t('settings.plan.redirecting')}</>
-              ) : (
-                <><Crown className="h-4 w-4" /> {t('settings.plan.upgradeBtn')}</>
-              )}
-            </button>
+            /* ═══════════════════════════════════════
+               UPGRADE SELECTOR — Stripe vs Crypto
+            ═══════════════════════════════════════ */
+            <div className="flex flex-col gap-3 w-full mt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Opção Stripe */}
+                <button
+                  onClick={async () => {
+                    setUpgrading(true);
+                    try {
+                      const { data, error } = await supabase.functions.invoke('stripe-checkout', { method: 'POST' });
+                      if (error) throw error;
+                      if (data?.url) window.location.href = data.url;
+                      else alert('Erro ao iniciar checkout.');
+                    } catch (err) {
+                      console.error('[Checkout]', err);
+                      alert('Erro ao conectar com Stripe.');
+                    } finally { setUpgrading(false); }
+                  }}
+                  disabled={upgrading}
+                  className="flex flex-col items-center gap-2 rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-4 hover:bg-indigo-500/20 transition-all disabled:opacity-50"
+                >
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 uppercase tracking-wider">💳 Cartão</span>
+                  <span className="text-white font-bold text-lg">R$ 197<span className="text-xs font-normal text-slate-400">/mês</span></span>
+                  <span className="text-[11px] text-slate-400">10.000 créditos</span>
+                  <span className="text-xs font-semibold text-indigo-400 mt-1">
+                    {upgrading ? '⏳ Redirecionando...' : 'Assinar com Stripe →'}
+                  </span>
+                </button>
+
+                {/* Opção Crypto */}
+                <a
+                  href="/crypto-pass"
+                  className="flex flex-col items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 hover:bg-emerald-500/20 transition-all"
+                >
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 uppercase tracking-wider">🔗 Solana</span>
+                  <span className="text-white font-bold text-lg">$29.90<span className="text-xs font-normal text-slate-400"> USDC/mês</span></span>
+                  <span className="text-[11px] text-slate-400">12.000 créditos <span className="text-emerald-400 font-semibold">(+20%)</span></span>
+                  <span className="text-xs font-semibold text-emerald-400 mt-1">Pay with Crypto →</span>
+                </a>
+              </div>
+            </div>
           ) : profile?.plan_expires_at ? (
             /* Cancelamento pendente — acesso até fim do ciclo */
             <div className="flex flex-col items-end gap-1.5">
