@@ -55,8 +55,30 @@ function CryptoPassPage() {
   // Detect if user already has account (check on email blur)
   const [existingUser, setExistingUser] = useState(false);
   const [checkingEmail, setCheckingEmail] = useState(false);
+  const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
+
+  // Auto-detect logged-in session
+  useEffect(() => {
+    const detectSession = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setEmail(user.email || '');
+        setExistingUser(true);
+        setLoggedInUserId(user.id);
+        // Pre-fill name from profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user.id)
+          .single();
+        if (profile?.full_name) setFullName(profile.full_name);
+      }
+    };
+    detectSession();
+  }, []);
 
   const checkExistingEmail = async () => {
+    if (loggedInUserId) return; // Already logged in, skip check
     if (!email || !email.includes('@')) return;
     setCheckingEmail(true);
     try {
@@ -78,27 +100,30 @@ function CryptoPassPage() {
       setError('Connect your Phantom wallet first.');
       return;
     }
-    if (!fullName.trim()) {
-      setError('Full name is required.');
-      return;
-    }
-    if (!email || !email.includes('@')) {
-      setError('Valid email is required.');
-      return;
-    }
-    if (!existingUser) {
-      if (password.length < 8) {
-        setError('Password must be at least 8 characters.');
+    // Skip form validation if already logged in
+    if (!loggedInUserId) {
+      if (!fullName.trim()) {
+        setError('Full name is required.');
         return;
       }
-      if (password !== confirmPassword) {
-        setError('Passwords do not match.');
+      if (!email || !email.includes('@')) {
+        setError('Valid email is required.');
         return;
       }
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}[\];:,.?~-]).{8,}$/;
-      if (!passwordRegex.test(password)) {
-        setError('Password needs: 8+ chars, uppercase, lowercase, number, symbol.');
-        return;
+      if (!existingUser) {
+        if (password.length < 8) {
+          setError('Password must be at least 8 characters.');
+          return;
+        }
+        if (password !== confirmPassword) {
+          setError('Passwords do not match.');
+          return;
+        }
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}[\];:,.?~-]).{8,}$/;
+        if (!passwordRegex.test(password)) {
+          setError('Password needs: 8+ chars, uppercase, lowercase, number, symbol.');
+          return;
+        }
       }
     }
 
@@ -139,7 +164,20 @@ function CryptoPassPage() {
       // ═══════════════════════════════════════
       setStep('creating');
 
-      if (existingUser) {
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 30);
+
+      if (loggedInUserId) {
+        // Already logged in — just upgrade profile directly
+        console.log('[CryptoPass] User already logged in, upgrading directly:', loggedInUserId);
+        await supabase.from('profiles').update({
+          plan_type: 'pro',
+          credits_plan: 12000,
+          crypto_pass_tx: signature,
+          crypto_pass_expires_at: expiresAt.toISOString(),
+          wallet_address: publicKey.toString(),
+        }).eq('id', loggedInUserId);
+      } else if (existingUser) {
         // Existing user — sign in and upgrade via API
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) {
@@ -149,9 +187,6 @@ function CryptoPassPage() {
         // Upgrade to Pro via Supabase RPC or direct update
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          const expiresAt = new Date();
-          expiresAt.setDate(expiresAt.getDate() + 30);
-
           await supabase.from('profiles').update({
             plan_type: 'pro',
             credits_plan: 12000,
@@ -180,9 +215,6 @@ function CryptoPassPage() {
         // Upgrade to Pro immediately
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          const expiresAt = new Date();
-          expiresAt.setDate(expiresAt.getDate() + 30);
-
           await supabase.from('profiles').update({
             plan_type: 'pro',
             credits_plan: 12000,
@@ -314,6 +346,14 @@ function CryptoPassPage() {
               2. Account Details
             </label>
 
+            {loggedInUserId ? (
+              /* Already logged in — show simple confirmation */
+              <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-4 space-y-1">
+                <p className="text-sm text-emerald-400 font-medium">✅ Logged in</p>
+                <p className="text-xs text-slate-400">{fullName || email}</p>
+                <p className="text-[10px] text-slate-500">Your Pro plan will be activated instantly after payment.</p>
+              </div>
+            ) : (
             <div className="space-y-3">
               {/* Full Name */}
               <input
@@ -400,6 +440,7 @@ function CryptoPassPage() {
                 </div>
               )}
             </div>
+            )}
           </div>
 
           <div className="border-t border-slate-800 my-6" />
