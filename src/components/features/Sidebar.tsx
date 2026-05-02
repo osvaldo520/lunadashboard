@@ -68,10 +68,7 @@ export function Sidebar({ userName, userEmail, userPlan, userCreditsPlan, userCr
     router.refresh();
   };
 
-  const handleUpgrade = () => {
-    setIsUpgrading(true);
-    router.push('/dashboard/settings#upgrade');
-  };
+  // Navegação gerida via componente Link
 
   return (
     <>
@@ -155,20 +152,12 @@ export function Sidebar({ userName, userEmail, userPlan, userCreditsPlan, userCr
                 <p className="text-xs text-slate-400 mb-3 relative z-10">
                   {t('dashboard.upgradeDesc')}
                 </p>
-                <button
-                  onClick={handleUpgrade}
-                  disabled={isUpgrading}
-                  className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 relative z-10 active:scale-[0.98]"
+                <Link
+                  href="/dashboard/settings#upgrade"
+                  className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 relative z-10 active:scale-[0.98]"
                 >
-                  {isUpgrading ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      {t('dashboard.redirecting')}
-                    </>
-                  ) : (
-                    t('dashboard.subscribeNow')
-                  )}
-                </button>
+                  {t('dashboard.subscribeNow')}
+                </Link>
               </div>
             </div>
           )}
