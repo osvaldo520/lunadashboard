@@ -30,6 +30,47 @@ export default async function DashboardLayout({
     .eq('id', user.id)
     .single();
 
+  // ════════════════════════════════════════════════════
+  // GUARD: Auto-downgrade se plano expirou (Server-Side)
+  // Rede de segurança: garante que o Dashboard sempre
+  // mostra o estado real, mesmo se webhook Stripe falhou.
+  // ════════════════════════════════════════════════════
+  if (profile?.plan_type === 'pro') {
+    const now = new Date();
+    let shouldDowngrade = false;
+
+    // Stripe: plan_expires_at expirou
+    if (profile.plan_expires_at && new Date(profile.plan_expires_at) <= now) {
+      shouldDowngrade = true;
+    }
+
+    // Crypto Pass: crypto_pass_expires_at expirou (só se NÃO é Stripe)
+    if (!profile.stripe_customer_id && profile.crypto_pass_expires_at && new Date(profile.crypto_pass_expires_at) <= now) {
+      shouldDowngrade = true;
+    }
+
+    if (shouldDowngrade) {
+      console.log(`[🛡️ Dashboard Guard] Plano expirado para ${user.id}. Rebaixando para Free.`);
+      await supabase
+        .from('profiles')
+        .update({
+          plan_type: 'free',
+          plan_expires_at: null,
+          crypto_pass_expires_at: null,
+          credits_plan: 0,
+          credits_reset_at: null,
+          stripe_subscription_id: null,
+        })
+        .eq('id', user.id);
+
+      // Atualizar o objeto local para refletir na UI imediatamente
+      profile.plan_type = 'free';
+      profile.plan_expires_at = null;
+      profile.credits_plan = 0;
+      profile.stripe_subscription_id = null;
+    }
+  }
+
   // Verificação de Onboarding
   const needsMessenger = !profile?.telegram_id && !profile?.whatsapp_id;
 
