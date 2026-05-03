@@ -152,12 +152,57 @@ export function Sidebar({ userName, userEmail, userPlan, userCreditsPlan, userCr
                 <p className="text-xs text-slate-400 mb-3 relative z-10">
                   {t('dashboard.upgradeDesc')}
                 </p>
-                <Link
-                  href="/dashboard/settings#upgrade"
-                  className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 relative z-10 active:scale-[0.98]"
-                >
-                  {t('dashboard.subscribeNow')}
-                </Link>
+
+                {!isUpgrading ? (
+                  <button
+                    onClick={() => setIsUpgrading(true)}
+                    className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 relative z-10 active:scale-[0.98]"
+                  >
+                    {t('dashboard.subscribeNow')}
+                  </button>
+                ) : (
+                  <div className="relative z-10 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    {/* Stripe Option */}
+                    <button
+                      onClick={async () => {
+                        try {
+                          const { data, error } = await supabase.functions.invoke('stripe-checkout', { method: 'POST' });
+                          if (error) throw error;
+                          if (data?.url) window.location.href = data.url;
+                        } catch (err) {
+                          console.error('[Checkout]', err);
+                          setIsUpgrading(false);
+                        }
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 transition-all text-left"
+                    >
+                      <span className="text-base">💳</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] font-bold text-white">R$ 197<span className="text-[9px] font-normal text-slate-400">/mês</span></p>
+                        <p className="text-[9px] text-slate-500">10k créditos · Cartão</p>
+                      </div>
+                    </button>
+
+                    {/* Crypto Option */}
+                    <Link
+                      href="/crypto-pass"
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 transition-all text-left"
+                    >
+                      <span className="text-base">🔗</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] font-bold text-white">$29.90 <span className="text-[9px] font-normal text-slate-400">USDC / 30d</span></p>
+                        <p className="text-[9px] text-emerald-400">12k créditos (+20%) · Solana</p>
+                      </div>
+                    </Link>
+
+                    <button 
+                      onClick={() => setIsUpgrading(false)}
+                      className="w-full text-center text-[10px] text-slate-500 hover:text-slate-400 transition-colors pt-1"
+                    >
+                      ← voltar
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )}
