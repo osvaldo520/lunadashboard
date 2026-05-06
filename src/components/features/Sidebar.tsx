@@ -16,7 +16,8 @@ import {
   Loader2,
   Menu,
   X,
-  BookOpen
+  BookOpen,
+  MessageCircle
 } from 'lucide-react';
 import { useLocale, LocaleToggle } from '@/lib/i18n';
 
@@ -53,6 +54,7 @@ export function Sidebar({ userName, userEmail, userPlan, userCreditsPlan, userCr
     { href: '/dashboard', label: t('dashboard.overview'), icon: LayoutDashboard },
     { href: '/dashboard/documents', label: t('dashboard.documents'), icon: FileText },
     { href: '/dashboard/upload', label: 'Upload', icon: Upload },
+    { href: '/dashboard/chat', label: t('dashboard.chat'), icon: MessageCircle },
     { href: '/guide', label: t('nav.guide'), icon: BookOpen },
     { href: '/dashboard/settings', label: t('dashboard.settings'), icon: Settings },
   ];

@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff, Loader2, Shield, Zap, CheckCircle2 } from 'lucide-react';
+import { useLocale, LocaleToggle } from '@/lib/i18n';
 import '@solana/wallet-adapter-react-ui/styles.css';
 
 const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
@@ -39,6 +40,7 @@ function CryptoPassPage() {
   const { publicKey, sendTransaction, connected } = useWallet();
   const router = useRouter();
   const supabase = createClient();
+  const { t } = useLocale();
 
   // Form state
   const [fullName, setFullName] = useState('');
@@ -97,31 +99,31 @@ function CryptoPassPage() {
   const handleSubscribe = async () => {
     // Validation
     if (!connected || !publicKey) {
-      setError('Connect your Phantom wallet first.');
+      setError(t('cryptoPass.errorWallet'));
       return;
     }
     // Skip form validation if already logged in
     if (!loggedInUserId) {
       if (!fullName.trim()) {
-        setError('Full name is required.');
+        setError(t('cryptoPass.errorName'));
         return;
       }
       if (!email || !email.includes('@')) {
-        setError('Valid email is required.');
+        setError(t('cryptoPass.errorEmail'));
         return;
       }
       if (!existingUser) {
         if (password.length < 8) {
-          setError('Password must be at least 8 characters.');
+          setError(t('cryptoPass.errorPasswordMin'));
           return;
         }
         if (password !== confirmPassword) {
-          setError('Passwords do not match.');
+          setError(t('cryptoPass.errorPasswordMatch'));
           return;
         }
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}[\];:,.?~-]).{8,}$/;
         if (!passwordRegex.test(password)) {
-          setError('Password needs: 8+ chars, uppercase, lowercase, number, symbol.');
+          setError(t('cryptoPass.errorPasswordStrength'));
           return;
         }
       }
@@ -181,7 +183,7 @@ function CryptoPassPage() {
         // Existing user — sign in and upgrade via API
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) {
-          throw new Error('Login failed. Check your password and try again.');
+          throw new Error(t('cryptoPass.errorLogin'));
         }
 
         // Upgrade to Pro via Supabase RPC or direct update
@@ -254,10 +256,10 @@ function CryptoPassPage() {
           <div className="w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-500/50 flex items-center justify-center mx-auto mb-6 animate-pulse">
             <CheckCircle2 className="w-10 h-10 text-emerald-400" />
           </div>
-          <h1 className="text-3xl font-bold mb-3">Welcome to Pro! 🎉</h1>
+          <h1 className="text-3xl font-bold mb-3">{t('cryptoPass.successTitle')}</h1>
           <p className="text-slate-400 mb-6">
-            Your Crypto Pass is active. 12,000 credits loaded.<br />
-            Redirecting to your dashboard...
+            {t('cryptoPass.successDesc')}<br />
+            {t('cryptoPass.successRedirect')}
           </p>
           {txSignature && (
             <a
@@ -266,7 +268,7 @@ function CryptoPassPage() {
               rel="noopener noreferrer"
               className="text-xs text-indigo-400 hover:text-indigo-300 underline"
             >
-              View transaction on Solana Explorer →
+              {t('cryptoPass.viewTx')}
             </a>
           )}
         </div>
@@ -288,17 +290,21 @@ function CryptoPassPage() {
 
       <div className="w-full max-w-lg">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 relative">
+          {/* Locale Toggle */}
+          <div className="absolute top-0 right-0">
+            <LocaleToggle />
+          </div>
           <Link href="/" className="inline-block mb-6">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-600/30 to-emerald-600/30 border border-indigo-500/30 overflow-hidden">
               <img src="/judite-logo.png" alt="Judite" className="w-full h-full object-cover" />
             </div>
           </Link>
           <h1 className="text-3xl font-bold tracking-tight mb-2">
-            Crypto Pass
+            {t('cryptoPass.title')}
           </h1>
           <p className="text-slate-400 text-sm">
-            Subscribe to Judite Pro with Solana — $29.90 USDC/month
+            {t('cryptoPass.subtitle')}
           </p>
         </div>
 
@@ -306,11 +312,11 @@ function CryptoPassPage() {
         <div className="flex items-center justify-center gap-6 mb-8 text-xs text-slate-500">
           <span className="flex items-center gap-1.5">
             <Shield className="w-3.5 h-3.5 text-emerald-500" />
-            On-chain verified
+            {t('cryptoPass.onChain')}
           </span>
           <span className="flex items-center gap-1.5">
             <Zap className="w-3.5 h-3.5 text-amber-500" />
-            12K credits (+20% bonus)
+            {t('cryptoPass.bonusCredits')}
           </span>
         </div>
 
@@ -319,7 +325,7 @@ function CryptoPassPage() {
           {/* Step 1: Connect Wallet */}
           <div className="mb-6">
             <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 block">
-              1. Connect Wallet
+              {t('cryptoPass.stepWallet')}
             </label>
             <div className="flex justify-center">
               <WalletMultiButton style={{
@@ -343,15 +349,15 @@ function CryptoPassPage() {
           {/* Step 2: Account Details */}
           <div className="mb-6">
             <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 block">
-              2. Account Details
+              {t('cryptoPass.stepAccount')}
             </label>
 
             {loggedInUserId ? (
               /* Already logged in — show simple confirmation */
               <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-4 space-y-1">
-                <p className="text-sm text-emerald-400 font-medium">✅ Logged in</p>
+                <p className="text-sm text-emerald-400 font-medium">✅ {t('cryptoPass.loggedIn')}</p>
                 <p className="text-xs text-slate-400">{fullName || email}</p>
-                <p className="text-[10px] text-slate-500">Your Pro plan will be activated instantly after payment.</p>
+                <p className="text-[10px] text-slate-500">{t('cryptoPass.loggedInDesc')}</p>
               </div>
             ) : (
             <div className="space-y-3">
@@ -360,7 +366,7 @@ function CryptoPassPage() {
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="Full Name"
+                placeholder={t('cryptoPass.fullName')}
                 disabled={isProcessing}
                 className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-2.5 text-white placeholder-slate-500 
                   focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200
@@ -373,7 +379,7 @@ function CryptoPassPage() {
                 value={email}
                 onChange={(e) => { setEmail(e.target.value); setExistingUser(false); }}
                 onBlur={checkExistingEmail}
-                placeholder="Email"
+                placeholder={t('cryptoPass.email')}
                 disabled={isProcessing}
                 className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-2.5 text-white placeholder-slate-500 
                   focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200
@@ -382,7 +388,7 @@ function CryptoPassPage() {
 
               {existingUser && (
                 <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 px-3 py-2 text-xs text-amber-400">
-                  ⚡ Account found! Enter your existing password to upgrade to Pro.
+                  {t('cryptoPass.accountFound')}
                 </div>
               )}
 
@@ -392,7 +398,7 @@ function CryptoPassPage() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder={existingUser ? 'Your existing password' : 'Create password'}
+                  placeholder={existingUser ? t('cryptoPass.existingPassword') : t('cryptoPass.createPassword')}
                   disabled={isProcessing}
                   className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-2.5 pr-12 text-white placeholder-slate-500 
                     focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200
@@ -413,7 +419,7 @@ function CryptoPassPage() {
                   type={showPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm password"
+                  placeholder={t('cryptoPass.confirmPassword')}
                   disabled={isProcessing}
                   className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-2.5 text-white placeholder-slate-500 
                     focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200
@@ -425,11 +431,11 @@ function CryptoPassPage() {
               {!existingUser && password.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {[
-                    { ok: password.length >= 8, label: '8+ chars' },
-                    { ok: /[A-Z]/.test(password), label: 'Uppercase' },
-                    { ok: /[a-z]/.test(password), label: 'Lowercase' },
-                    { ok: /\d/.test(password), label: 'Number' },
-                    { ok: /[!@#$%^&*()_+{}[\];:,.?~-]/.test(password), label: 'Symbol' },
+                    { ok: password.length >= 8, label: t('cryptoPass.chars') },
+                    { ok: /[A-Z]/.test(password), label: t('cryptoPass.uppercase') },
+                    { ok: /[a-z]/.test(password), label: t('cryptoPass.lowercase') },
+                    { ok: /\d/.test(password), label: t('cryptoPass.number') },
+                    { ok: /[!@#$%^&*()_+{}[\];:,.?~-]/.test(password), label: t('cryptoPass.symbol') },
                   ].map((rule) => (
                     <span key={rule.label} className={`inline-flex items-center gap-1 text-[9px] font-medium px-2 py-0.5 rounded-full ${
                       rule.ok ? 'text-emerald-400 bg-emerald-500/10' : 'text-slate-500 bg-slate-800/50'
@@ -448,17 +454,17 @@ function CryptoPassPage() {
           {/* Step 3: Pay & Subscribe */}
           <div>
             <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 block">
-              3. Pay & Subscribe
+              {t('cryptoPass.stepPay')}
             </label>
 
             {/* Price summary */}
             <div className="rounded-xl bg-slate-800/30 border border-slate-700/30 p-4 mb-4">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm text-slate-300">Judite Pro — 30 days</span>
+                <span className="text-sm text-slate-300">{t('cryptoPass.priceSummary')}</span>
                 <span className="text-lg font-bold text-white">$29.90</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-500">12,000 credits (+20% crypto bonus)</span>
+                <span className="text-xs text-slate-500">{t('cryptoPass.priceCredits')}</span>
                 <span className="text-[10px] text-emerald-400 font-medium px-2 py-0.5 rounded-full bg-emerald-500/10">USDC</span>
               </div>
             </div>
@@ -469,7 +475,7 @@ function CryptoPassPage() {
                 {error}
                 {step === 'error' && (
                   <button onClick={() => { setStep('form'); setError(null); }} className="block mt-2 text-xs underline text-red-300 hover:text-red-200">
-                    Try again
+                    {t('cryptoPass.tryAgain')}
                   </button>
                 )}
               </div>
@@ -487,26 +493,26 @@ function CryptoPassPage() {
               {step === 'paying' ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Confirming payment on Solana...
+                  {t('cryptoPass.btnPaying')}
                 </>
               ) : step === 'creating' ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Creating your Pro account...
+                  {t('cryptoPass.btnCreating')}
                 </>
               ) : (
                 <>
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.07-9.07l4.5-4.5a4.5 4.5 0 016.364 6.364l-1.757 1.757" />
                   </svg>
-                  {existingUser ? 'Upgrade to Pro — $29.90 USDC' : 'Subscribe Pro — $29.90 USDC'}
+                  {existingUser ? t('cryptoPass.btnUpgrade') : t('cryptoPass.btnSubscribe')}
                 </>
               )}
             </button>
 
             {!connected && (
               <p className="text-[10px] text-slate-600 text-center mt-2">
-                Connect your Phantom wallet above to continue
+                {t('cryptoPass.connectWalletHint')}
               </p>
             )}
           </div>
@@ -515,14 +521,14 @@ function CryptoPassPage() {
         {/* Footer links */}
         <div className="mt-6 text-center text-xs text-slate-500">
           <p>
-            Already have Pro?{' '}
+            {t('cryptoPass.alreadyPro')}{' '}
             <Link href="/login" className="text-indigo-400 hover:text-indigo-300 transition-colors">
-              Sign in
+              {t('cryptoPass.signIn')}
             </Link>
           </p>
           <p className="mt-2">
             <Link href="/" className="text-slate-600 hover:text-slate-400 transition-colors">
-              ← Back to home
+              {t('cryptoPass.backHome')}
             </Link>
           </p>
         </div>
