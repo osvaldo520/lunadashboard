@@ -23,6 +23,15 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
+  // Load conversation history on mount
+  useEffect(() => {
+    ChatService.getHistory(30).then((history) => {
+      if (history.length > 0) {
+        setMessages(history);
+      }
+    }).catch(console.error);
+  }, []);
+
   // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
