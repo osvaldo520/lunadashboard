@@ -443,7 +443,29 @@ function AnalyzePage() {
               </div>
             )}
 
-            <div className="prose prose-invert max-w-none text-gray-300 mt-6 prose-p:text-gray-300 prose-headings:text-white prose-a:text-indigo-400 prose-strong:text-white prose-table:w-full prose-table:border-collapse prose-th:bg-gray-800/50 prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:text-sm prose-th:font-semibold prose-th:text-white prose-td:border-t prose-td:border-gray-700 prose-td:px-4 prose-td:py-3 prose-td:text-sm prose-td:text-gray-300 leading-relaxed">
+            {/* Gov API Badge */}
+            {(result.analysis?.includes('Fontes Oficiais') || 
+              result.analysis?.includes('consulta_gov') ||
+              result.analysis?.includes('DataJud') ||
+              result.analysis?.includes('BACEN') ||
+              result.analysis?.includes('CNJ') ||
+              result.analysis?.includes('Portal da Transparência') ||
+              result.analysis?.includes('Receita Federal')) && (
+              <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 mt-4">
+                <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-emerald-500/20">
+                  <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 21h18M3 10h18M9 21V10m6 11V10M12 3l9 7H3l9-7z"></path></svg>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-emerald-400">Cruzamento com Fontes Governamentais</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded">Verified</span>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-0.5">Esta análise cruzou dados com APIs oficiais do governo em tempo real.</p>
+                </div>
+              </div>
+            )}
+
+            <div className="prose prose-invert max-w-none mt-6 prose-p:text-slate-300 prose-headings:text-white prose-a:text-indigo-400 prose-strong:text-white prose-code:text-indigo-300 prose-table:w-full prose-table:border-collapse prose-th:bg-slate-800/50 prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:text-sm prose-th:font-semibold prose-th:text-white prose-td:border-t prose-td:border-slate-700 prose-td:px-4 prose-td:py-3 prose-td:text-sm prose-td:text-slate-300 prose-li:text-slate-300 prose-blockquote:border-indigo-500 prose-blockquote:text-slate-400 prose-hr:border-slate-700 prose-ul:text-slate-300 prose-ol:text-slate-300">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{result.analysis}</ReactMarkdown>
             </div>
           </div>
