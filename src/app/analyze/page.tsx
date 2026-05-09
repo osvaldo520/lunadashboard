@@ -5,6 +5,8 @@ import { ConnectionProvider, WalletProvider, useConnection, useWallet } from '@s
 import { WalletModalProvider, WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { useLocale, LocaleToggle } from '@/lib/i18n';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import '@solana/wallet-adapter-react-ui/styles.css';
 
 const NETWORK = process.env.NEXT_PUBLIC_SOLANA_NETWORK || 'devnet';
@@ -41,6 +43,7 @@ function AnalyzePage() {
 
   const [mintStatus, setMintStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [mintSignature, setMintSignature] = useState<string | null>(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   const handleMintCNFT = async () => {
     if (!result?.blockchain_proof?.hash || !publicKey) return;
@@ -272,6 +275,7 @@ function AnalyzePage() {
               </h2>
               <div className="flex flex-wrap items-center gap-2 w-full xl:w-auto">
                 <button 
+                  disabled={pdfLoading}
                   onClick={async () => {
                     const getExportContent = () => {
                       let text = result.analysis;
@@ -285,7 +289,7 @@ function AnalyzePage() {
                       return text;
                     };
                     const originalText = getExportContent();
-                    // Fazer requisição para API interna de PDF
+                    setPdfLoading(true);
                     try {
                       const res = await fetch('/api/generate-pdf', {
                         method: 'POST',
@@ -303,12 +307,26 @@ function AnalyzePage() {
                     } catch (e) {
                       console.error(e);
                       alert('Erro ao gerar PDF. Tente exportar MD ou TXT.');
+                    } finally {
+                      setPdfLoading(false);
                     }
                   }}
-                  className="px-3 md:px-4 py-2 bg-red-900/50 hover:bg-red-800 text-red-200 border border-red-500/30 rounded-lg text-xs md:text-sm transition flex items-center gap-2 flex-1 md:flex-none justify-center"
+                  className="px-3 md:px-4 py-2 bg-red-900/50 hover:bg-red-800 text-red-200 border border-red-500/30 rounded-lg text-xs md:text-sm transition flex items-center gap-2 flex-1 md:flex-none justify-center disabled:opacity-50 disabled:cursor-wait"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                  {t('analyze.exportPdf')}
+                  {pdfLoading ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4 text-red-200" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      {t('analyze.processing')}
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                      {t('analyze.exportPdf')}
+                    </>
+                  )}
                 </button>
                 <button 
                   onClick={() => {
@@ -426,7 +444,7 @@ function AnalyzePage() {
             )}
 
             <div className="prose prose-invert max-w-none text-gray-300 mt-6 prose-p:text-gray-300 prose-headings:text-white prose-a:text-indigo-400 prose-strong:text-white prose-table:w-full prose-table:border-collapse prose-th:bg-gray-800/50 prose-th:px-4 prose-th:py-3 prose-th:text-left prose-th:text-sm prose-th:font-semibold prose-th:text-white prose-td:border-t prose-td:border-gray-700 prose-td:px-4 prose-td:py-3 prose-td:text-sm prose-td:text-gray-300 leading-relaxed">
-              {result.analysis}
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{result.analysis}</ReactMarkdown>
             </div>
           </div>
         )}
