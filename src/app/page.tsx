@@ -367,7 +367,7 @@ export default async function LandingPage() {
                   </div>
                   <p className="text-xs text-slate-400 mb-3">{t('features.audioDesc')}</p>
                   <audio controls preload="none" className="w-full h-8 [&::-webkit-media-controls-panel]:bg-slate-900 [&::-webkit-media-controls-current-time-display]:text-slate-400 [&::-webkit-media-controls-time-remaining-display]:text-slate-400">
-                    <source src="/demo-analise.mp3" type="audio/mpeg" />
+                    <source src={locale === 'en' ? "/qwen_cherry_en.mp3" : "/qwen_cherry_pt.mp3"} type="audio/mpeg" />
                   </audio>
                 </div>
                 

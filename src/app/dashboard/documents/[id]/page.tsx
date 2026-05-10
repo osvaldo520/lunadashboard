@@ -8,6 +8,7 @@ import { ExportDocumentButton } from '@/components/ExportDocumentButton';
 import { RealtimeDocumentRefresher } from '@/components/RealtimeDocumentRefresher';
 import { AnalyzeButton } from '@/components/AnalyzeButton';
 import { DeleteButton } from '@/components/DeleteButton';
+import { MintCNFTButton } from '@/components/MintCNFTButton';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { getServerLocale, createT } from '@/lib/i18n/server';
@@ -40,6 +41,14 @@ export default async function DocumentDetailsPage({
     .select('*')
     .eq('document_id', id)
     .order('created_at', { ascending: false });
+
+  // Buscar perfil do usuário para plano e wallet
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: profile } = user ? await supabase
+    .from('profiles')
+    .select('plan_type, wallet_address')
+    .eq('id', user.id)
+    .single() : { data: null };
 
   // Gerar URL assinada para o documento original se existir
   let fileUrl = null;
@@ -93,6 +102,12 @@ export default async function DocumentDetailsPage({
           <div className="flex flex-col items-start md:items-end justify-start gap-4 w-full md:w-auto">
             <div className="flex flex-wrap items-center gap-2">
               <AnalyzeButton documentId={doc.id} status={doc.status} />
+              {doc.status === 'completed' && doc.blockchain_hash && (
+                <MintCNFTButton 
+                  blockchainHash={doc.blockchain_hash} 
+                  planType={profile?.plan_type || 'free'} 
+                />
+              )}
               <DeleteButton documentId={doc.id} documentTitle={doc.title} />
             </div>
             
