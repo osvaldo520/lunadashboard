@@ -280,11 +280,11 @@ function AnalyzePage() {
                     const getExportContent = () => {
                       let text = result.analysis;
                       if (result.blockchain_proof) {
-                        text += `\n\n---\n\n### 🔗 Selo de Autenticidade Blockchain\n`;
+                        text += `\n\n---\n\n### 🔗 Selo de Autenticidade Blockchain / Blockchain Authenticity Seal\n`;
                         text += `**Hash SHA-256:** \`${result.blockchain_proof.hash}\`\n`;
-                        text += `**Assinatura Solana:** [${result.blockchain_proof.signature}](https://explorer.solana.com/tx/${result.blockchain_proof.signature}?cluster=devnet)\n`;
-                        text += `**🛡️ Verificação de Integridade:** [Verificar no Judite](${window.location.origin}/verify/${result.blockchain_proof.signature})\n`;
-                        text += `\n*Nota: Este documento foi analisado de forma avulsa. Documentos originais são mantidos em cofre criptográfico exclusivamente para assinantes do plano PRO.*`;
+                        text += `**Assinatura Solana / Solana Signature:** [${result.blockchain_proof.signature}](https://explorer.solana.com/tx/${result.blockchain_proof.signature}?cluster=devnet)\n`;
+                        text += `**🛡️ Verificação de Integridade / Integrity Verification:** [Verificar no Judite / Verify on Judite](${window.location.origin}/verify/${result.blockchain_proof.signature})\n`;
+                        text += `\n*Nota: Este documento foi analisado de forma avulsa. Documentos originais são mantidos em cofre criptográfico exclusivamente para assinantes do plano PRO.* / *Note: This document was analyzed individually. Original documents are kept in a cryptographic vault exclusively for PRO plan subscribers.*`;
                       }
                       return text;
                     };
@@ -333,11 +333,11 @@ function AnalyzePage() {
                     const getExportContent = () => {
                       let text = result.analysis;
                       if (result.blockchain_proof) {
-                        text += `\n\n---\n\n### 🔗 Selo de Autenticidade Blockchain\n`;
+                        text += `\n\n---\n\n### 🔗 Selo de Autenticidade Blockchain / Blockchain Authenticity Seal\n`;
                         text += `**Hash SHA-256:** \`${result.blockchain_proof.hash}\`\n`;
-                        text += `**Assinatura Solana:** [${result.blockchain_proof.signature}](https://explorer.solana.com/tx/${result.blockchain_proof.signature}?cluster=devnet)\n`;
-                        text += `**🛡️ Verificação de Integridade:** [Verificar no Judite](${window.location.origin}/verify/${result.blockchain_proof.signature})\n`;
-                        text += `\n*Nota: Este documento foi analisado de forma avulsa. Documentos originais são mantidos em cofre criptográfico exclusivamente para assinantes do plano PRO.*`;
+                        text += `**Assinatura Solana / Solana Signature:** [${result.blockchain_proof.signature}](https://explorer.solana.com/tx/${result.blockchain_proof.signature}?cluster=devnet)\n`;
+                        text += `**🛡️ Verificação de Integridade / Integrity Verification:** [Verificar no Judite / Verify on Judite](${window.location.origin}/verify/${result.blockchain_proof.signature})\n`;
+                        text += `\n*Nota: Este documento foi analisado de forma avulsa. Documentos originais são mantidos em cofre criptográfico exclusivamente para assinantes do plano PRO.* / *Note: This document was analyzed individually. Original documents are kept in a cryptographic vault exclusively for PRO plan subscribers.*`;
                       }
                       return text;
                     };
@@ -358,11 +358,11 @@ function AnalyzePage() {
                     const getExportContent = () => {
                       let text = result.analysis;
                       if (result.blockchain_proof) {
-                        text += `\n\n---\n\n### 🔗 Selo de Autenticidade Blockchain\n`;
+                        text += `\n\n---\n\n### 🔗 Selo de Autenticidade Blockchain / Blockchain Authenticity Seal\n`;
                         text += `**Hash SHA-256:** \`${result.blockchain_proof.hash}\`\n`;
-                        text += `**Assinatura Solana:** ${result.blockchain_proof.signature}\n`;
-                        text += `**Verificação de Integridade:** ${window.location.origin}/verify/${result.blockchain_proof.signature}\n`;
-                        text += `\n*Nota: Este documento foi analisado de forma avulsa. Documentos originais são mantidos em cofre criptográfico exclusivamente para assinantes do plano PRO.*`;
+                        text += `**Assinatura Solana / Solana Signature:** ${result.blockchain_proof.signature}\n`;
+                        text += `**Verificação de Integridade / Integrity Verification:** ${window.location.origin}/verify/${result.blockchain_proof.signature}\n`;
+                        text += `\n*Nota: Este documento foi analisado de forma avulsa. Documentos originais são mantidos em cofre criptográfico exclusivamente para assinantes do plano PRO.* / *Note: This document was analyzed individually. Original documents are kept in a cryptographic vault exclusively for PRO plan subscribers.*`;
                       }
                       return text;
                     };
