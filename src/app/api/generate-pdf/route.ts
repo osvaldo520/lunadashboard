@@ -107,8 +107,6 @@ export async function POST(req: NextRequest) {
         padding: 2px 6px; 
         border-radius: 4px; 
         font-size: 12px;
-        word-break: break-all;
-        white-space: pre-wrap;
       }
       strong { color: #0f172a; }
       ul, ol { padding-left: 20px; }
