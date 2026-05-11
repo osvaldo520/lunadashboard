@@ -296,7 +296,12 @@ function AnalyzePage() {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ content: originalText, title: 'Análise Judite' })
                       });
-                      if (!res.ok) throw new Error('Falha ao gerar PDF');
+                      if (!res.ok) {
+                        const errBody = await res.text();
+                        console.error(`[PDF] Status: ${res.status}`, errBody);
+                        throw new Error(`Falha ao gerar PDF (${res.status})`);
+                      }
+                      console.log('[PDF] ✅ PDF received from server');
                       
                       const blob = await res.blob();
                       const url = URL.createObjectURL(blob);
@@ -304,8 +309,8 @@ function AnalyzePage() {
                       a.href = url;
                       a.download = `Analise_Judite_${new Date().getTime()}.pdf`;
                       a.click();
-                    } catch (e) {
-                      console.error(e);
+                    } catch (e: any) {
+                      console.error('[PDF] Error:', e?.message || e);
                       alert('Erro ao gerar PDF. Tente exportar MD ou TXT.');
                     } finally {
                       setPdfLoading(false);

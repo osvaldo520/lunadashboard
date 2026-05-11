@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from 'next/server';
 /**
  * API Route: /api/generate-pdf
  * 
- * Converte Markdown → PDF usando o serviço externo md-to-pdf.fly.dev
- * Como o painel Next.js roda na Vercel, ele não tem acesso ao Puppeteer local da VPS do bot.
- * Portanto, ele delega a transformação para este microserviço em nuvem,
- * enviando os atributos de CSS Premium para que o resultado fique idêntico ao do bot.
+ * Delega a geração de PDF para o PdfEngine Premium da VPS (Puppeteer).
+ * Isso garante qualidade visual idêntica em todos os canais (Dashboard, Telegram, WhatsApp).
+ * 
+ * Fallback: Se a VPS estiver fora do ar, usa o serviço externo md-to-pdf.fly.dev.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -16,27 +16,60 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Conteúdo é obrigatório.' }, { status: 400 });
     }
 
-    const pdfServiceUrl = process.env.PDF_SERVICE_URL || 'https://md-to-pdf.fly.dev';
+    // ═══════════════════════════════════════════
+    // Estratégia 1: VPS PdfEngine (Puppeteer) — Premium Quality
+    // ═══════════════════════════════════════════
+    const vpsApiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.usejudite.com.br';
+    
+    try {
+      console.log(`[API /generate-pdf] Requesting premium PDF from VPS for: ${title || 'untitled'}`);
+      
+      const vpsResponse = await fetch(`${vpsApiUrl}/v1/pdf`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ markdown: content, title }),
+        signal: AbortSignal.timeout(60000), // 60s timeout
+      });
+
+      if (vpsResponse.ok) {
+        const pdfBuffer = await vpsResponse.arrayBuffer();
+        const safeTitle = (title || 'documento').replace(/[^a-zA-Z0-9]/g, '_');
+
+        return new NextResponse(pdfBuffer, {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment; filename="${safeTitle}.pdf"`,
+          },
+        });
+      }
+
+      // Se a VPS retornou erro, cai no fallback
+      console.warn(`[API /generate-pdf] VPS returned ${vpsResponse.status}. Falling back to cloud service.`);
+    } catch (vpsErr: any) {
+      console.warn(`[API /generate-pdf] VPS unreachable: ${vpsErr.message}. Falling back to cloud service.`);
+    }
 
     // ═══════════════════════════════════════════
-    // Pré-processamento Seguro: Trocando emojis do Telegram
-    // por marcadores de texto (O serviço Fly.dev usa Pandoc/WeasyPrint 
-    // que falha ao tentar renderizar @import de fontes web)
+    // Estratégia 2: Fallback — md-to-pdf.fly.dev (qualidade inferior)
     // ═══════════════════════════════════════════
+    console.log(`[API /generate-pdf] Using cloud fallback for: ${title || 'untitled'}`);
+
+    // Emojis que o WeasyPrint não suporta — substituir por símbolos neutros
     const emojiMap: Record<string, string> = {
-      '⚠️': '[ATENÇÃO]', '⚡': '[!]', '🔴': '[CRÍTICO]', '🟡': '[MODERADO]', '🟢': '[OK]',
-      '✅': '[✓]', '❌': '[✗]', '⭐': '[★]', '🔥': '[!]', '💡': '[DICA]',
-      '📋': '[DOC]', '📄': '[DOC]', '📊': '[ANÁLISE]', '📈': '[GRÁFICO]', '📌': '[PONTO]',
-      '🔒': '[SEGURANÇA]', '🔓': '[DESBLOQUEADO]', '🛡️': '[PROTEÇÃO]', '⚖️': '[JURÍDICO]',
-      '👤': '[PARTE]', '👥': '[PARTES]', '🏢': '[EMPRESA]', '🏠': '[IMÓVEL]',
-      '💰': '[VALOR]', '💵': '[R$]', '💳': '[PAGAMENTO]', '📅': '[DATA]', '⏰': '[PRAZO]',
-      '🔗': '[LINK]', '📝': '[NOTA]', '📎': '[ANEXO]', '🗂️': '[SEÇÃO]',
-      '🎯': '[OBJETIVO]', '🚨': '[ALERTA]', '💼': '[CONTRATO]', '🔍': '[DETALHE]',
-      '✨': '[DESTAQUE]', '❗': '[!]', '❓': '[?]', '➡️': '→', '⬆️': '↑', '⬇️': '↓',
+      '⚠️': '[!]', '⚡': '[!]', '🔴': '[!]', '🟡': '[!]', '🟢': '[OK]',
+      '✅': '[✓]', '❌': '[✗]', '⭐': '[★]', '🔥': '[!]', '💡': '[i]',
+      '📋': '[DOC]', '📄': '[DOC]', '📊': '[CHART]', '📈': '[CHART]', '📌': '[*]',
+      '🔒': '[SEC]', '🔓': '[UNSEC]', '🛡️': '[SEC]', '⚖️': '[LAW]',
+      '👤': '[USER]', '👥': '[USERS]', '🏢': '[ORG]', '🏠': '[ORG]',
+      '💰': '[$]', '💵': '[$]', '💳': '[$]', '📅': '[DATE]', '⏰': '[TIME]',
+      '🔗': '[LINK]', '📝': '[NOTE]', '📎': '[ATTACH]', '🗂️': '[SECTION]',
+      '🎯': '[TARGET]', '🚨': '[!]', '💼': '[CASE]', '🔍': '[SEARCH]',
+      '✨': '[*]', '❗': '[!]', '❓': '[?]', '➡️': '→', '⬆️': '↑', '⬇️': '↓',
       '1️⃣': '1.', '2️⃣': '2.', '3️⃣': '3.', '4️⃣': '4.', '5️⃣': '5.',
       '6️⃣': '6.', '7️⃣': '7.', '8️⃣': '8.', '9️⃣': '9.', '🔟': '10.',
-      '📢': '[AVISO]', '🏆': '[DESTAQUE]', '💬': '[OBS]', '🧾': '[RECIBO]',
-      '🏷️': '[TAG]', '📜': '[CLÁUSULA]', '⚙️': '[CONFIG]', '🔑': '[CHAVE]',
+      '📢': '[!]', '🏆': '[*]', '💬': '[MSG]', '🧾': '[RECEIPT]',
+      '🏷️': '[TAG]', '📜': '[CLAUSE]', '⚙️': '[CONFIG]', '🔑': '[KEY]',
     };
 
     let processedContent = content;
@@ -45,13 +78,11 @@ export async function POST(req: NextRequest) {
     }
     processedContent = processedContent.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '');
 
+    const pdfServiceUrl = process.env.PDF_SERVICE_URL || 'https://md-to-pdf.fly.dev';
+
     const params = new URLSearchParams();
     params.append('markdown', processedContent);
-    
-    // Injetamos um título pro Pandoc não reclamar
     params.append('title', title || 'Documento Judite');
-    
-    // CSS Institucional Seguro (Sem @import, box-shadow ou fonts externas)
     params.append('css', `
       body { 
         font-family: 'Segoe UI', 'Noto Sans', Tahoma, Geneva, Verdana, sans-serif; 
@@ -114,8 +145,6 @@ export async function POST(req: NextRequest) {
       hr { border: none; border-top: 1px solid #e2e8f0; margin: 24px 0; }
     `);
 
-    console.log(`[API /generate-pdf] Solicitando PDF Cloud externo para: ${title || 'sem título'}`);
-
     const response = await fetch(pdfServiceUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -124,11 +153,10 @@ export async function POST(req: NextRequest) {
 
     if (!response.ok) {
       const err = await response.text();
-      throw new Error(`Serviço de Nuvem (md-to-pdf) retornou status ${response.status}: ${err}`);
+      throw new Error(`Cloud PDF service returned status ${response.status}: ${err}`);
     }
 
     const pdfBuffer = await response.arrayBuffer();
-
     const safeTitle = (title || 'documento').replace(/[^a-zA-Z0-9]/g, '_');
 
     return new NextResponse(pdfBuffer, {
@@ -141,7 +169,7 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     console.error('[API /generate-pdf] Error:', err.message);
     return NextResponse.json(
-      { error: err.message || 'Falha ao conectar no Motor de PDF Local.' },
+      { error: err.message || 'Failed to generate PDF.' },
       { status: 500 }
     );
   }
