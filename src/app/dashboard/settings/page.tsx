@@ -353,8 +353,8 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Booster Packs — Visível apenas para Pro */}
-      {(profile?.plan_type || profile?.plan || 'free') === 'pro' && (
+      {/* Booster Packs — HIDDEN for Hackathon (Pro has 10k credits, no payment flow ready) */}
+      {false && (profile?.plan_type || profile?.plan || 'free') === 'pro' && (
       <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 space-y-4">
         <h3 className="text-sm font-semibold text-white">{t('settings.boosters.title')}</h3>
         <p className="text-xs text-slate-400 mb-4">{t('settings.boosters.desc')}</p>
