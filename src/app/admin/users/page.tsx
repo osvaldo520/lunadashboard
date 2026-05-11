@@ -70,9 +70,20 @@ export default function AdminUsersPage() {
       p.id === profileId ? { ...p, plan_type: newPlan } : p
     ));
 
+    // Definir créditos conforme o plano
+    const creditsByPlan: Record<string, number> = { free: 300, pro: 10000, enterprise: 999999 };
+    const credits = creditsByPlan[newPlan] || 300;
+    const resetAt = newPlan === 'free' 
+      ? null 
+      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+
     const { error } = await supabase
       .from('profiles')
-      .update({ plan_type: newPlan })
+      .update({ 
+        plan_type: newPlan,
+        credits_plan: credits,
+        credits_reset_at: resetAt,
+      })
       .eq('id', profileId);
 
     setSavingId(null);

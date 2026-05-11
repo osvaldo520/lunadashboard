@@ -359,24 +359,7 @@ export default function SettingsPage() {
         <h3 className="text-sm font-semibold text-white">{t('settings.boosters.title')}</h3>
         <p className="text-xs text-slate-400 mb-4">{t('settings.boosters.desc')}</p>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Pacote Emergência — Stripe (R$) */}
-          <div className="flex flex-col border border-slate-700/50 rounded-xl p-4 bg-slate-800/30">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-400 border border-indigo-500/20">💳 Stripe</span>
-            </div>
-            <h4 className="text-white font-bold text-sm">{t('settings.boosters.emergency')}</h4>
-            <p className="text-indigo-400 text-lg font-black my-1">+1.000 <span className="text-xs font-normal">{t('settings.boosters.credits')}</span></p>
-            <p className="text-slate-500 text-xs mb-3">R$ 29,90</p>
-            <button
-              onClick={() => handleBuyBooster('price_1TMBynDQroLP2zVYU4Qskc74')}
-              disabled={upgrading}
-              className="mt-auto w-full rounded-lg bg-slate-700 hover:bg-slate-600 px-3 py-2 text-xs font-semibold text-white transition-colors"
-            >
-              {t('settings.boosters.buy')}
-            </button>
-          </div>
-
+        <div className="grid grid-cols-1 gap-4">
           {/* Pacote Emergência — Crypto (USDC) */}
           <div className="flex flex-col border border-emerald-500/20 rounded-xl p-4 bg-emerald-500/5">
             <div className="flex items-center gap-2 mb-1">
@@ -384,12 +367,13 @@ export default function SettingsPage() {
             </div>
             <h4 className="text-white font-bold text-sm">{t('settings.boosters.emergency')}</h4>
             <p className="text-emerald-400 text-lg font-black my-1">+1.000 <span className="text-xs font-normal">{t('settings.boosters.credits')}</span></p>
-            <p className="text-slate-500 text-xs mb-3">$5 USDC</p>
+            <p className="text-slate-500 text-xs mb-1">$5 USDC</p>
+            <p className="text-slate-600 text-[10px] mb-3">{t('settings.boosters.topUpNote') || 'Credits are added instantly to your current balance.'}</p>
             <a
-              href="/crypto-pass"
+              href="/crypto-pass?mode=booster"
               className="mt-auto w-full rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/25 px-3 py-2 text-xs font-semibold text-emerald-300 text-center transition-colors"
             >
-              Pay with Crypto
+              {t('settings.boosters.buyCrypto') || 'Buy Credits with Crypto →'}
             </a>
           </div>
 
