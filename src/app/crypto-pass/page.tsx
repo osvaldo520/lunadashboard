@@ -93,7 +93,7 @@ function CryptoPassPage() {
     }
     // Skip form validation if already logged in
     if (!loggedInUserId) {
-      if (!fullName.trim()) {
+      if (!isLoginMode && !fullName.trim()) {
         setError(t('cryptoPass.errorName'));
         return;
       }
@@ -360,14 +360,14 @@ function CryptoPassPage() {
                   onClick={() => setIsLoginMode(false)}
                   className={`flex-1 text-xs font-semibold py-2 rounded-lg transition ${!isLoginMode ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'}`}
                 >
-                  Novo Usuário
+                  {t('cryptoPass.newUser')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsLoginMode(true)}
                   className={`flex-1 text-xs font-semibold py-2 rounded-lg transition ${isLoginMode ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'}`}
                 >
-                  Já tenho conta
+                  {t('cryptoPass.existingUser')}
                 </button>
               </div>
 

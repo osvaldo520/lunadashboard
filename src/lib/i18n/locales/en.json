@@ -699,6 +699,8 @@
     "stepWallet": "1. Connect Wallet",
     "stepAccount": "2. Account Details",
     "stepPay": "3. Pay & Activate",
+    "newUser": "New User",
+    "existingUser": "I have an account",
     "loggedIn": "Logged in",
     "loggedInDesc": "Your Pro plan will be activated instantly after payment.",
     "fullName": "Full Name",
