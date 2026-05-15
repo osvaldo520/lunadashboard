@@ -61,6 +61,9 @@ function CryptoPassPage() {
   const [checkingEmail, setCheckingEmail] = useState(false);
   const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
 
+  // Toggle for manual user selection
+  const [isLoginMode, setIsLoginMode] = useState(false);
+
   // Auto-detect logged-in session
   useEffect(() => {
     const detectSession = async () => {
@@ -81,23 +84,7 @@ function CryptoPassPage() {
     detectSession();
   }, []);
 
-  const checkExistingEmail = async () => {
-    if (loggedInUserId) return; // Already logged in, skip check
-    if (!email || !email.includes('@')) return;
-    setCheckingEmail(true);
-    try {
-      // Try to sign in — if it works, user exists
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password: '___check___' });
-      // If error is "Invalid login credentials", user exists but wrong password
-      // If error is "Email not confirmed" or similar, user exists
-      // If no error at all, impossible with wrong password
-      setExistingUser(signInError?.message === 'Invalid login credentials');
-    } catch {
-      setExistingUser(false);
-    }
-    setCheckingEmail(false);
-  };
-
+  // checkExistingEmail removido devido à proteção anti-enumeração do Supabase.
   const handleSubscribe = async () => {
     // Validation
     if (!connected || !publicKey) {
@@ -114,7 +101,7 @@ function CryptoPassPage() {
         setError(t('cryptoPass.errorEmail'));
         return;
       }
-      if (!existingUser) {
+      if (!isLoginMode) {
         if (password.length < 8) {
           setError(t('cryptoPass.errorPasswordMin'));
           return;
@@ -156,6 +143,9 @@ function CryptoPassPage() {
       });
 
       console.log('[CryptoPass] Requesting wallet signature...');
+      const latestBlockhash = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = latestBlockhash.blockhash;
+      transaction.feePayer = publicKey;
       const signature = await sendTransaction(transaction, connection);
       console.log('[CryptoPass] Transaction sent:', signature);
       setTxSignature(signature);
@@ -181,7 +171,7 @@ function CryptoPassPage() {
           crypto_pass_expires_at: expiresAt.toISOString(),
           wallet_address: publicKey.toString(),
         }).eq('id', loggedInUserId);
-      } else if (existingUser) {
+      } else if (isLoginMode) {
         // Existing user — sign in and upgrade via API
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) {
@@ -363,24 +353,43 @@ function CryptoPassPage() {
               </div>
             ) : (
             <div className="space-y-3">
+              {/* Toggle Login/Register */}
+              <div className="flex bg-slate-800/50 p-1 rounded-xl mb-4">
+                <button
+                  type="button"
+                  onClick={() => setIsLoginMode(false)}
+                  className={`flex-1 text-xs font-semibold py-2 rounded-lg transition ${!isLoginMode ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'}`}
+                >
+                  Novo Usuário
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsLoginMode(true)}
+                  className={`flex-1 text-xs font-semibold py-2 rounded-lg transition ${isLoginMode ? 'bg-indigo-600 text-white shadow' : 'text-slate-400 hover:text-white'}`}
+                >
+                  Já tenho conta
+                </button>
+              </div>
+
               {/* Full Name */}
-              <input
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder={t('cryptoPass.fullName')}
-                disabled={isProcessing}
-                className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-2.5 text-white placeholder-slate-500 
-                  focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200
-                  disabled:opacity-50"
-              />
+              {!isLoginMode && (
+                <input
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder={t('cryptoPass.fullName')}
+                  disabled={isProcessing}
+                  className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-2.5 text-white placeholder-slate-500 
+                    focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200
+                    disabled:opacity-50"
+                />
+              )}
 
               {/* Email */}
               <input
                 type="email"
                 value={email}
-                onChange={(e) => { setEmail(e.target.value); setExistingUser(false); }}
-                onBlur={checkExistingEmail}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder={t('cryptoPass.email')}
                 disabled={isProcessing}
                 className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-2.5 text-white placeholder-slate-500 
@@ -388,19 +397,13 @@ function CryptoPassPage() {
                   disabled:opacity-50"
               />
 
-              {existingUser && (
-                <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 px-3 py-2 text-xs text-amber-400">
-                  {t('cryptoPass.accountFound')}
-                </div>
-              )}
-
               {/* Password */}
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder={existingUser ? t('cryptoPass.existingPassword') : t('cryptoPass.createPassword')}
+                  placeholder={isLoginMode ? t('cryptoPass.existingPassword') : t('cryptoPass.createPassword')}
                   disabled={isProcessing}
                   className="w-full rounded-xl border border-slate-700/50 bg-slate-800/50 px-4 py-2.5 pr-12 text-white placeholder-slate-500 
                     focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200
@@ -416,7 +419,7 @@ function CryptoPassPage() {
               </div>
 
               {/* Confirm Password — only for new users */}
-              {!existingUser && (
+              {!isLoginMode && (
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={confirmPassword}
@@ -430,7 +433,7 @@ function CryptoPassPage() {
               )}
 
               {/* Password strength — only for new users */}
-              {!existingUser && password.length > 0 && (
+              {!isLoginMode && password.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {[
                     { ok: password.length >= 8, label: t('cryptoPass.chars') },
@@ -507,7 +510,7 @@ function CryptoPassPage() {
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.07-9.07l4.5-4.5a4.5 4.5 0 016.364 6.364l-1.757 1.757" />
                   </svg>
-                  {existingUser ? t('cryptoPass.btnUpgrade') : t('cryptoPass.btnSubscribe')}
+                  {isLoginMode ? t('cryptoPass.btnUpgrade') : t('cryptoPass.btnSubscribe')}
                 </>
               )}
             </button>

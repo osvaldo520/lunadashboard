@@ -172,7 +172,7 @@
   "analyze": {
     "title": "Judite Instant Analysis",
     "subtitle": "Análise jurídica profunda de PDFs. Pagamento on-chain. Zero burocracia.",
-    "step1": "1. Conecte sua Carteira (Devnet)",
+    "step1": "1. Conecte sua Carteira",
     "step1Desc": "Precisamos de uma carteira para o pagamento on-chain.",
     "step2": "2. Anexe o Documento (PDF, DOCX)",
     "dropzone": "Clique para escolher ou arraste o arquivo",

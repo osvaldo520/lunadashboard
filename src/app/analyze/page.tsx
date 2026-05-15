@@ -131,6 +131,9 @@ function AnalyzePage() {
       });
 
       console.log('Solicitando assinatura...');
+      const latestBlockhash = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = latestBlockhash.blockhash;
+      transaction.feePayer = publicKey;
       const signature = await sendTransaction(transaction, connection);
       console.log('Transação enviada:', signature);
 

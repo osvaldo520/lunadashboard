@@ -175,7 +175,7 @@
   "analyze": {
     "title": "Judite Instant Analysis",
     "subtitle": "Deep legal analysis of PDFs. On-chain payment. Zero bureaucracy.",
-    "step1": "1. Connect your Wallet (Devnet)",
+    "step1": "1. Connect your Wallet",
     "step1Desc": "We need a wallet for the on-chain payment.",
     "step2": "2. Attach your Document (PDF, DOCX)",
     "dropzone": "Click to select or drag and drop your file",
