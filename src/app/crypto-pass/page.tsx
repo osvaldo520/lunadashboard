@@ -11,8 +11,10 @@ import { Eye, EyeOff, Loader2, Shield, Zap, CheckCircle2 } from 'lucide-react';
 import { useLocale, LocaleToggle } from '@/lib/i18n';
 import '@solana/wallet-adapter-react-ui/styles.css';
 
-const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
-const RECEIVER_WALLET = '7f9aofD6rodBT3cH7LwQLW1gUUGSw3AnZ92ZRWNKXzEe';
+const NETWORK = process.env.NEXT_PUBLIC_SOLANA_NETWORK || 'mainnet-beta';
+const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
+const PAYMENT_WALLET = process.env.NEXT_PUBLIC_SOLANA_PAYMENT_WALLET || 'FQvfMvCbzYXNqBioVbktjomzKLYR1euZewkTa6GgMzGC';
+const IS_MAINNET = !RPC_URL.includes('devnet');
 
 // Devnet: simula $29.90 USDC com SOL (0.15 SOL ≈ $29.90)
 // Mainnet: trocar por SPL USDC transfer real
@@ -136,7 +138,7 @@ function CryptoPassPage() {
       // ═══════════════════════════════════════
       // STEP 1: SOLANA PAYMENT
       // ═══════════════════════════════════════
-      const receiverPubKey = new PublicKey(RECEIVER_WALLET);
+      const receiverPubKey = new PublicKey(PAYMENT_WALLET);
       const transaction = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: publicKey,
@@ -238,7 +240,7 @@ function CryptoPassPage() {
     } catch (err: any) {
       console.error('[CryptoPass] Error:', err);
       if (err.name === 'WalletSendTransactionError') {
-        setError('Transaction failed. Do you have enough SOL? Visit faucet.solana.com for free devnet SOL.');
+        setError(`Transaction failed. Do you have enough SOL?${!IS_MAINNET ? ' Visit faucet.solana.com for free devnet SOL.' : ''}`);
       } else {
         setError(err.message || 'An error occurred during the process.');
       }
@@ -263,7 +265,7 @@ function CryptoPassPage() {
           </p>
           {txSignature && (
             <a
-              href={`https://explorer.solana.com/tx/${txSignature}?cluster=devnet`}
+              href={`https://solscan.io/tx/${txSignature}${!IS_MAINNET ? '?cluster=devnet' : ''}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs text-indigo-400 hover:text-indigo-300 underline"

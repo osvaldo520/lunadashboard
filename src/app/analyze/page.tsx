@@ -9,8 +9,10 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import '@solana/wallet-adapter-react-ui/styles.css';
 
-const NETWORK = process.env.NEXT_PUBLIC_SOLANA_NETWORK || 'devnet';
-const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.devnet.solana.com';
+const NETWORK = process.env.NEXT_PUBLIC_SOLANA_NETWORK || 'mainnet-beta';
+const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
+const PAYMENT_WALLET = process.env.NEXT_PUBLIC_SOLANA_PAYMENT_WALLET || 'FQvfMvCbzYXNqBioVbktjomzKLYR1euZewkTa6GgMzGC';
+const IS_MAINNET = !RPC_URL.includes('devnet');
 
 export default function AnalyzePageWrapper() {
   const wallets = useMemo(() => [], []);
@@ -111,8 +113,8 @@ function AnalyzePage() {
     setError(null);
 
     try {
-      // 1. Pagamento USDC (Simulado com SOL na Devnet)
-      const receiverPubKey = new PublicKey('7f9aofD6rodBT3cH7LwQLW1gUUGSw3AnZ92ZRWNKXzEe'); 
+      // 1. Pagamento via SOL
+      const receiverPubKey = new PublicKey(PAYMENT_WALLET); 
       const transaction = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: publicKey,
@@ -160,7 +162,7 @@ function AnalyzePage() {
     } catch (err: any) {
       console.error(err);
       if (err.name === 'WalletSendTransactionError') {
-         setError('Erro na transação. Você tem saldo suficiente de SOL na Devnet? Acesse faucet.solana.com para ganhar SOL grátis.');
+         setError(`Erro na transação. Verifique se você tem saldo suficiente de SOL na sua carteira.${!IS_MAINNET ? ' Acesse faucet.solana.com para SOL de teste.' : ''}`);
       } else {
          setError(err.message || 'Ocorreu um erro durante o pagamento ou análise.');
       }
@@ -339,7 +341,7 @@ function AnalyzePage() {
                       if (result.blockchain_proof) {
                         text += `\n\n---\n\n### 🔗 Selo de Autenticidade Blockchain / Blockchain Authenticity Seal\n`;
                         text += `**Hash SHA-256:** \`${result.blockchain_proof.hash}\`\n`;
-                        text += `**Assinatura Solana / Solana Signature:** [${result.blockchain_proof.signature}](https://explorer.solana.com/tx/${result.blockchain_proof.signature}?cluster=devnet)\n`;
+                        text += `**Assinatura Solana / Solana Signature:** [${result.blockchain_proof.signature}](https://solscan.io/tx/${result.blockchain_proof.signature}${!IS_MAINNET ? '?cluster=devnet' : ''})\n`;
                         text += `**🛡️ Verificação de Integridade / Integrity Verification:** [Verificar no Judite / Verify on Judite](${window.location.origin}/verify/${result.blockchain_proof.signature})\n`;
                         text += `\n*Nota: Este documento foi analisado de forma avulsa. Documentos originais são mantidos em cofre criptográfico exclusivamente para assinantes do plano PRO.* / *Note: This document was analyzed individually. Original documents are kept in a cryptographic vault exclusively for PRO plan subscribers.*`;
                       }
@@ -426,7 +428,7 @@ function AnalyzePage() {
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <a 
-                    href={`https://explorer.solana.com/tx/${result.blockchain_proof.signature}?cluster=devnet`}
+                    href={`https://solscan.io/tx/${result.blockchain_proof.signature}${!IS_MAINNET ? '?cluster=devnet' : ''}`}
                     target="_blank"
                     rel="noreferrer"
                     className="text-sm font-semibold text-purple-400 hover:text-purple-300 hover:underline flex items-center gap-1 w-max"
