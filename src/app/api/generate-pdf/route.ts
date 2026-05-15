@@ -10,7 +10,7 @@ import { NextRequest, NextResponse } from 'next/server';
  */
 export async function POST(req: NextRequest) {
   try {
-    const { content, title } = await req.json();
+    const { content, title, blockchainOptions } = await req.json();
 
     if (!content) {
       return NextResponse.json({ error: 'Conteúdo é obrigatório.' }, { status: 400 });
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       const vpsResponse = await fetch(`${vpsApiUrl}/v1/pdf`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ markdown: content, title }),
+        body: JSON.stringify({ markdown: content, title, blockchainOptions }),
         signal: AbortSignal.timeout(60000), // 60s timeout
       });
 

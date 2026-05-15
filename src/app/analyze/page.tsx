@@ -277,24 +277,23 @@ function AnalyzePage() {
                 <button 
                   disabled={pdfLoading}
                   onClick={async () => {
-                    const getExportContent = () => {
-                      let text = result.analysis;
-                      if (result.blockchain_proof) {
-                        text += `\n\n---\n\n### 🔗 Selo de Autenticidade Blockchain / Blockchain Authenticity Seal\n`;
-                        text += `**Hash SHA-256:** <code style="word-wrap: break-word;">${result.blockchain_proof.hash}</code>\n`;
-                        text += `**Assinatura Solana / Solana Signature:** [<code style="word-wrap: break-word;">${result.blockchain_proof.signature}</code>](https://explorer.solana.com/tx/${result.blockchain_proof.signature}?cluster=devnet)\n`;
-                        text += `**🛡️ Verificação de Integridade / Integrity Verification:** [Verificar no Judite / Verify on Judite](${window.location.origin}/verify/${result.blockchain_proof.signature})\n`;
-                        text += `\n*Nota: Este documento foi analisado de forma avulsa. Documentos originais são mantidos em cofre criptográfico exclusivamente para assinantes do plano PRO.* / *Note: This document was analyzed individually. Original documents are kept in a cryptographic vault exclusively for PRO plan subscribers.*`;
-                      }
-                      return text;
-                    };
-                    const originalText = getExportContent();
+                    const originalText = result.analysis;
+                    const blockchainOptions = result.blockchain_proof ? {
+                      blockchainTx: result.blockchain_proof.signature,
+                      blockchainHash: result.blockchain_proof.hash,
+                      blockchainNetwork: result.blockchain_proof.network || 'solana-devnet',
+                    } : undefined;
+                    
                     setPdfLoading(true);
                     try {
                       const res = await fetch('/api/generate-pdf', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ content: originalText, title: 'Análise Judite' })
+                        body: JSON.stringify({ 
+                          content: originalText, 
+                          title: 'Análise Judite',
+                          blockchainOptions 
+                        })
                       });
                       if (!res.ok) {
                         const errBody = await res.text();
