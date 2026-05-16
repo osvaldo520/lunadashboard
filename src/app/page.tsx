@@ -269,7 +269,7 @@ export default async function LandingPage() {
               <div className="mt-4 pt-3 border-t border-slate-800/80">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-slate-500">{t('demo.legalBasis')}</span>
-                  <span className="text-xs font-mono text-indigo-400">Lei 8.078/90 · Lei 13.709/18</span>
+                  <span className="text-xs font-mono text-indigo-400">{t('demo.legalBasisValue')}</span>
                 </div>
               </div>
             </div>
@@ -550,12 +550,21 @@ export default async function LandingPage() {
                   </span>
                 </Link>
               ) : (
+                <div className="space-y-2.5">
                 <Link
                   href="/register?plan=pro"
                   className="block text-center py-2.5 rounded-xl text-sm font-semibold transition-all bg-indigo-600 hover:bg-indigo-500 text-white hover:shadow-lg hover:shadow-indigo-500/25"
                 >
                   {t('pricing.proCta')}
                 </Link>
+                <Link
+                  href="/crypto-pass"
+                  className="flex items-center justify-center gap-1.5 text-[11px] text-emerald-400/80 hover:text-emerald-300 transition-colors font-medium"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.07-9.07l4.5-4.5a4.5 4.5 0 016.364 6.364l-1.757 1.757" /></svg>
+                  {t('pricing.proCryptoAlt')}
+                </Link>
+              </div>
               )}
             </div>
           </div>

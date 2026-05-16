@@ -17,8 +17,8 @@ const PAYMENT_WALLET = process.env.NEXT_PUBLIC_SOLANA_PAYMENT_WALLET || 'FQvfMvC
 const IS_MAINNET = !RPC_URL.includes('devnet');
 
 // Devnet: simula $29.90 USDC com SOL (0.15 SOL ≈ $29.90)
-// Mainnet: reduzido temporariamente para 0.001 SOL (~$0.18 USD) para testes do Hackathon
-const CRYPTO_PASS_LAMPORTS = 0.001 * LAMPORTS_PER_SOL;
+// Mainnet: trocar por SPL USDC transfer real
+const CRYPTO_PASS_LAMPORTS = 0.15 * LAMPORTS_PER_SOL;
 
 export default function CryptoPassWrapper() {
   const wallets = useMemo(() => [], []);
